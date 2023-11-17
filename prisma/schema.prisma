@@ -9,3 +9,89 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+enum Kategori {
+  PEMERINTAH
+  LEMBAGASWADAYAMASYARAKAT
+  INSTITUSIPENDIDIKAN
+  DUNIAUSAHA
+  MEDIA
+  MASYARAKATTERDAMPAK
+}
+
+enum StatusKegiatan {
+  SUDAHTERLAKSANA
+  BELUMTERLAKSANA
+  SEDANGBERJALAN
+  TAHAPKOORDINASI
+  SEDANGTERKENDALA
+}
+
+//TODO: Update enum
+enum KategoriMasalah {
+  MASALAH
+}
+
+model Testing {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id          Int    @id @default(autoincrement())
+  namaLengkap String @db.VarChar(255)
+  alamat      String @db.VarChar(255)
+  email       String @unique @db.VarChar(255)
+  noHandphone String @unique @db.VarChar(255)
+
+  kegiatan LaporanKegiatan[]
+  berita   Berita[]
+  masalah  LaporanMasalah[]
+
+  lembaga    Lembaga @relation(fields: [lembaga_id], references: [id])
+  lembaga_id Int
+}
+
+model Lembaga {
+  id       Int      @id @default(autoincrement())
+  nama     String   @db.VarChar(255)
+  kategori Kategori
+
+  user User[]
+}
+
+model LaporanKegiatan {
+  id                    Int            @id @default(autoincrement())
+  tujuan                String         @db.Text
+  deskripsi             String         @db.Text
+  statusKegiatan        StatusKegiatan
+  indikatorKeberhasilan String         @db.Text
+  target                String         @db.Text
+  jadwal                DateTime
+  kebutuhanLogistik     String         @db.Text
+  linkDokumen           String         @db.Text
+
+  user    User @relation(fields: [user_id], references: [id])
+  user_id Int
+}
+
+model Berita {
+  id        Int    @id @default(autoincrement())
+  judul     String @db.Text
+  detail    String @db.Text
+  linkPhoto String @db.Text
+
+  user    User @relation(fields: [user_id], references: [id])
+  user_id Int
+}
+
+model LaporanMasalah {
+  id              Int             @id @default(autoincrement())
+  masalah         String          @db.Text
+  kategoriMasalah KategoriMasalah
+
+  user    User? @relation(fields: [user_id], references: [id])
+  user_id Int?
+}
