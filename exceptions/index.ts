@@ -3,4 +3,5 @@ export * from "./forbiddenException"
 export * from "./internalServerErrorException"
 export * from "./notFoundException"
 export * from "./unauthorizedException"
+export * from "./httpException"
 
