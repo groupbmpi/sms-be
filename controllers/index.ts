@@ -3,5 +3,5 @@ import NewsController from "./newsController";
 
 export {
     ProblemController,
-    NewsController
+    NewsController,
 }
