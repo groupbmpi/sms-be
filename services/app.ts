@@ -1,5 +1,9 @@
 import express from 'express';
 import cors from 'cors';
+import morgan from 'morgan';
+import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
+import ProblemRoutes from '../routes/problemRoutes';
 
 export class ExpressInstance{
     private static expressInstance : ExpressInstance;
@@ -11,8 +15,22 @@ export class ExpressInstance{
 
         this._app.use(cors());
 
+        this.setupMiddlewares();
+        this.setupRoutes();
+    }
+
+    private setupMiddlewares(): void{
         this._app.use(express.json({limit: '50mb'}));
         this._app.use(express.urlencoded({limit: '50mb', extended:true}));
+        this._app.use(morgan("dev"));
+        // TODO: set spesific origin
+        this._app.use(cors({ origin: "*", credentials: true }));
+        this._app.use(helmet({ crossOriginResourcePolicy: false }));
+        this._app.use(cookieParser());
+    }
+
+    private setupRoutes(): void{
+        this._app.use("/api/v1/problems", ProblemRoutes);
     }
 
     public static getInstance(): ExpressInstance{

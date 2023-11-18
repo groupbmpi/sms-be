@@ -12,9 +12,5 @@ app.listen(port, () =>{
     console.log(`======= ENV: ${env} =======`);
     console.log(`🚀 App listening on the port ${port}`);
     console.log(`=================================`);
-
 })
 
-app.get('/', (req, res) => {
-    res.send("Success");
-})
