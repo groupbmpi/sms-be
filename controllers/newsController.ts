@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import  { NewsHandler } from "../handlers/newsHandler";
-import ResponseBuilder from "../types/response/builder";
+import { ResponseBuilder } from "../types/response";
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from "../exceptions";
 import HttpException from "../exceptions/httpException";
 
-export class NewsController {
+class NewsController {
     private newsHandler: NewsHandler;
 
     constructor() {
@@ -13,7 +13,8 @@ export class NewsController {
 
     public async getNewsById(req: Request, res: Response): Promise<void> {
         try {
-            const user = req.body;
+
+            const user = req.body
             
             const newsId: number = parseInt(req.params.newsId);
             const creatorId: number = parseInt(req.params.creatorId);
@@ -212,3 +213,5 @@ export class NewsController {
         }
     }
 }
+
+export default new NewsController();

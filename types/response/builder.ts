@@ -1,40 +1,16 @@
-class ResponseFormatter {
-    private static response: {
-        meta: {
-            code: number,
-            status: 'success'|'error',
-            message: string|null,
-        },
-        data: any
-    }
-
-    private static setResponse(
-        code: number,
-        status: 'success'|'error',
-        message: string|null,
-        data: any
-    ): void {
-        ResponseFormatter.response.meta = {
-            code,
-            status,
-            message
-        };
-        ResponseFormatter.response.data = data;
-    }
+export class ResponseBuilder {
 
     public static success(
         data: any = null, 
         message: string|null = null, 
         code: number = 200
     ) {
-        ResponseFormatter.setResponse(
+        return {
             code,
-            'success',
+            status: 'success',
             message,
             data
-        );
-
-        return ResponseFormatter.response;
+        }
     }
 
     public static error(
@@ -42,15 +18,12 @@ class ResponseFormatter {
         message: string|null = null, 
         code: number = 400
     ) {
-        ResponseFormatter.setResponse(
+        return {
             code,
-            'error',
+            status: 'error',
             message,
             data
-        );
-
-        return ResponseFormatter.response;
+        }
     }
 }
 
-export default ResponseFormatter;

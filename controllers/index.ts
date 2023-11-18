@@ -1,5 +1,5 @@
 import ProblemController from "./problemController";
-import { NewsController } from "./newsController";
+import NewsController from "./newsController";
 
 export {
     ProblemController,
