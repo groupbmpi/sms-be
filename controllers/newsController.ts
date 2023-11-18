@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import NewsHandler from "../handlers/NewsHandler";
+import NewsHandler from "../handlers/newsHandler";
 
 class NewsController {
     private newsService: NewsHandler;

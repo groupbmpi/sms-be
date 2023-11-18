@@ -14,12 +14,12 @@ class ResponseFormatter {
         message: string|null,
         data: any
     ): void {
-        this.response.meta = {
+        ResponseFormatter.response.meta = {
             code,
             status,
             message
         };
-        this.response.data = data;
+        ResponseFormatter.response.data = data;
     }
 
     public static success(
@@ -27,14 +27,14 @@ class ResponseFormatter {
         message: string|null = null, 
         code: number = 200
     ) {
-        this.setResponse(
+        ResponseFormatter.setResponse(
             code,
             'success',
             message,
             data
         );
 
-        return this.response;
+        return ResponseFormatter.response;
     }
 
     public static error(
@@ -42,13 +42,15 @@ class ResponseFormatter {
         message: string|null = null, 
         code: number = 400
     ) {
-        this.setResponse(
+        ResponseFormatter.setResponse(
             code,
             'error',
             message,
             data
         );
 
-        return this.response;
+        return ResponseFormatter.response;
     }
 }
+
+export default ResponseFormatter;

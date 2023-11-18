@@ -1,3 +1,5 @@
+import HttpException from "./httpException";
+
 class BadRequestException extends HttpException {
     public static readonly MESSAGE = 'Bad Request';
 
@@ -10,3 +12,5 @@ class BadRequestException extends HttpException {
         );
     }
 }
+
+export default BadRequestException;

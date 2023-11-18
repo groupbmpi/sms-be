@@ -1,3 +1,5 @@
+import HttpException from "./httpException";
+
 class InternalServerErrorException extends HttpException {
     public static readonly MESSAGE = 'Internal Server Error';
 
@@ -10,3 +12,5 @@ class InternalServerErrorException extends HttpException {
         );
     }
 }
+
+export default InternalServerErrorException;

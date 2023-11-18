@@ -1,3 +1,5 @@
+import HttpException from "./httpException";
+
 class UnauthorizedException extends HttpException {
     public static readonly MESSAGE = 'Unauthorized';
 
@@ -10,3 +12,5 @@ class UnauthorizedException extends HttpException {
         );
     }
 }
+
+export default UnauthorizedException;

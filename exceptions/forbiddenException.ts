@@ -1,3 +1,5 @@
+import HttpException from "./httpException";
+
 class ForbiddenException extends HttpException {
     public static readonly MESSAGE = 'Forbidden';
 
@@ -10,3 +12,5 @@ class ForbiddenException extends HttpException {
         );
     }
 }
+
+export default ForbiddenException;
