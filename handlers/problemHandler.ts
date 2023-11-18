@@ -1,4 +1,4 @@
-import { KategoriMasalah } from "@prisma/client";
+import { KategoriMasalah, LaporanMasalah } from "@prisma/client";
 import BaseHandler from "./baseHandler";
 
 export class ProblemHandler extends BaseHandler{
@@ -46,17 +46,17 @@ export class ProblemHandler extends BaseHandler{
         problem: string,
         category: KategoriMasalah,
         creatorId: number
-    ): Promise<void> {
+    ): Promise<LaporanMasalah> {
 
         if(creatorId === -1) {
-            await this.prisma.laporanMasalah.create({
+            return await this.prisma.laporanMasalah.create({
                 data: {
                     masalah: problem,
                     kategoriMasalah: category,
                 }
             });
         } else {
-            await this.prisma.laporanMasalah.create({
+            return await this.prisma.laporanMasalah.create({
                 data: {
                     masalah: problem,
                     kategoriMasalah: category,
