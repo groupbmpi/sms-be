@@ -1,14 +1,19 @@
 import { Request, Response } from "express";
 import NewsHandler from "../handlers/newsHandler";
+import ForbiddenException from "../exceptions/forbiddenException";
+import BadRequestException from "../exceptions/badRequestException";
+import HttpException from "../exceptions/httpException";
+import ResponseFormatter from "../utils/responseFormatter";
+import InternalServerErrorException from "../exceptions/internalServerErrorException";
 
 class NewsController {
-    private newsService: NewsHandler;
+    private newsHandler: NewsHandler;
 
     constructor() {
-        this.newsService = new NewsHandler();
+        this.newsHandler = new NewsHandler();
     }
 
-    public async getNewsById(req: Request, res: Response) {
+    public async getNewsById(req: Request, res: Response): Promise<void> {
         try {
             const user = req.user;
             
@@ -19,7 +24,7 @@ class NewsController {
                 throw new ForbiddenException();                
             }
 
-            const news = await this.newsService.getNewsById(newsId);
+            const news = await this.newsHandler.getNewsById(newsId);
 
             if (news === null) {
                 throw new BadRequestException('Berita tidak ditemukan');
@@ -49,7 +54,7 @@ class NewsController {
         }
     }
 
-    public async getUserNews(req: Request, res: Response) {
+    public async getUserNews(req: Request, res: Response): Promise<void> {
         try {
             const user = req.user;
 
@@ -59,7 +64,7 @@ class NewsController {
                 throw new ForbiddenException();                
             }
 
-            const news = await this.newsService.getNewsByUserId(user.id);
+            const news = await this.newsHandler.getNewsByUserId(user.id);
 
             res.json(ResponseFormatter.success(news));
         } catch (error) {
@@ -75,7 +80,7 @@ class NewsController {
         }
     }
 
-    public async storeNews(req: Request, res: Response) {
+    public async storeNews(req: Request, res: Response): Promise<void> {
         try {
             const user = req.user;
 
@@ -89,7 +94,7 @@ class NewsController {
                 throw new ForbiddenException();                
             }
 
-            await this.newsService.storeNews(
+            await this.newsHandler.storeNews(
                 title,
                 detail,
                 photoLink,
@@ -110,7 +115,7 @@ class NewsController {
         }
     }
 
-    public async updateNews(req: Request, res: Response) {
+    public async updateNews(req: Request, res: Response): Promise<void> {
         try {
             const user = req.user;
 
@@ -126,13 +131,13 @@ class NewsController {
                 throw new ForbiddenException();                
             }
 
-            const isNewsExist = await this.newsService.isNewsExistById(newsId);
+            const isNewsExist = await this.newsHandler.isNewsExistById(newsId);
 
             if (isNewsExist === false) {
                 throw new BadRequestException('Berita tidak ditemukan');
             }
 
-            await this.newsService.updateNews(
+            await this.newsHandler.updateNews(
                 newsId,
                 {
                     title,
@@ -166,7 +171,7 @@ class NewsController {
         }
     }
 
-    public async deleteNews(req: Request, res: Response) {
+    public async deleteNews(req: Request, res: Response): Promise<void> {
         try {
             const user = req.user;
 
@@ -177,13 +182,13 @@ class NewsController {
                 throw new ForbiddenException();                
             }
 
-            const isNewsExist = await this.newsService.isNewsExistById(newsId);
+            const isNewsExist = await this.newsHandler.isNewsExistById(newsId);
 
             if (isNewsExist === false) {
                 throw new BadRequestException('Berita tidak ditemukan');
             }
 
-            await this.newsService.deleteNews(newsId);
+            await this.newsHandler.deleteNews(newsId);
 
             res.json(ResponseFormatter.success());
         } catch (error) {
