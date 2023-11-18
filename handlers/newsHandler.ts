@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Lembaga, PrismaClient, User } from "@prisma/client";
 import { PrismaInstance } from "../services/prisma";
 
 class NewsHandler {
@@ -9,33 +9,38 @@ class NewsHandler {
     }
 
     public async getNewsById(id: number): Promise<{
-        id: number, 
-        judul: string, 
+        title: string, 
         detail: string, 
-        linkPhoto: string,
-        user_id: number,
+        photoLink: string,
     } | null> {
-        return await this.prisma.berita.findUnique({
+        const news = await this.prisma.berita.findUnique({
             select: {
-                id: true,
                 judul: true,
                 detail: true,
                 linkPhoto: true,
-                user_id: true,
             },
             where: {
                 id: id,
             }
         });
+
+        if (news === null) {
+            return null;
+        }
+
+        return {
+            title: news.judul,
+            detail: news.detail,
+            photoLink: news.linkPhoto,
+        };
     }
 
     public async getNewsByUserId(userId: number): Promise<{
-        id: number, 
-        judul: string, 
+        title: string, 
         detail: string, 
-        linkPhoto: string,
+        photoLink: string,
     }[]> {
-        return await this.prisma.berita.findMany({
+        const news = await this.prisma.berita.findMany({
             select: {
                 id: true,
                 judul: true,
@@ -45,7 +50,15 @@ class NewsHandler {
             where: {
                 user_id: userId
             }
-        })
+        });
+
+        return news.map(function (value) {
+            return {
+                title: value.judul,
+                detail: value.detail,
+                photoLink: value.linkPhoto,
+            };
+        });
     }
 
     public async isNewsExistById(id: number): Promise<boolean> {
@@ -89,7 +102,7 @@ class NewsHandler {
         photoLink: string,
         creatorId: number,
     ): Promise<void> {
-        this.prisma.berita.create({
+        await this.prisma.berita.create({
             data: {
                 judul: title,
                 detail,
@@ -108,7 +121,7 @@ class NewsHandler {
             creatorId: number,
         }
     ): Promise<void> {
-        this.prisma.berita.update({
+        await this.prisma.berita.update({
             data: {
                 judul: data.title,
                 detail: data.detail,
@@ -122,7 +135,7 @@ class NewsHandler {
     }
 
     public async deleteNews(id: number): Promise<void> {
-        this.prisma.berita.delete({
+        await this.prisma.berita.delete({
             where: {
                 id
             }
