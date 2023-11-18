@@ -2,33 +2,38 @@ import BaseHandler from "./baseHandler";
 
 export class NewsHandler extends BaseHandler{
     public async getNewsById(id: number): Promise<{
-        id: number, 
-        judul: string, 
+        title: string, 
         detail: string, 
-        linkPhoto: string,
-        user_id: number,
+        photoLink: string,
     } | null> {
-        return await this.prisma.berita.findUnique({
+        const news = await this.prisma.berita.findUnique({
             select: {
-                id: true,
                 judul: true,
                 detail: true,
                 linkPhoto: true,
-                user_id: true,
             },
             where: {
                 id: id,
             }
         });
+
+        if (news === null) {
+            return null;
+        }
+
+        return {
+            title: news.judul,
+            detail: news.detail,
+            photoLink: news.linkPhoto,
+        };
     }
 
     public async getNewsByUserId(userId: number): Promise<{
-        id: number, 
-        judul: string, 
+        title: string, 
         detail: string, 
-        linkPhoto: string,
+        photoLink: string,
     }[]> {
-        return await this.prisma.berita.findMany({
+        const news = await this.prisma.berita.findMany({
             select: {
                 id: true,
                 judul: true,
@@ -38,7 +43,15 @@ export class NewsHandler extends BaseHandler{
             where: {
                 user_id: userId
             }
-        })
+        });
+
+        return news.map(function (value) {
+            return {
+                title: value.judul,
+                detail: value.detail,
+                photoLink: value.linkPhoto,
+            };
+        });
     }
 
     public async isNewsExistById(id: number): Promise<boolean> {
@@ -82,7 +95,7 @@ export class NewsHandler extends BaseHandler{
         photoLink: string,
         creatorId: number,
     ): Promise<void> {
-        this.prisma.berita.create({
+        await this.prisma.berita.create({
             data: {
                 judul: title,
                 detail,
@@ -101,7 +114,7 @@ export class NewsHandler extends BaseHandler{
             creatorId: number,
         }
     ): Promise<void> {
-        this.prisma.berita.update({
+        await this.prisma.berita.update({
             data: {
                 judul: data.title,
                 detail: data.detail,
@@ -115,7 +128,7 @@ export class NewsHandler extends BaseHandler{
     }
 
     public async deleteNews(id: number): Promise<void> {
-        this.prisma.berita.delete({
+        await this.prisma.berita.delete({
             where: {
                 id
             }
