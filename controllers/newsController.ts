@@ -13,6 +13,7 @@ class NewsController {
 
     public async getNewsById(req: Request, res: Response): Promise<void> {
         try {
+
             const user = req.body
             
             const newsId: number = parseInt(req.params.newsId);
