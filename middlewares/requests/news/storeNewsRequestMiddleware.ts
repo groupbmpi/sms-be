@@ -7,7 +7,7 @@ export const storeNewsRequestMiddleware = (req: Request, res: Response, next: Ne
         const { title, detail, photoLink } = req.body;
 
         if (title === undefined) {
-            throw new BadRequestException('title field has to be be present');
+            throw new BadRequestException('title field must be present');
         }
 
         if (typeof title !== 'string') {
@@ -15,7 +15,7 @@ export const storeNewsRequestMiddleware = (req: Request, res: Response, next: Ne
         }
 
         if (detail === undefined) {
-            throw new BadRequestException('detail field has to be be present');
+            throw new BadRequestException('detail field must be present');
         }
 
         if (typeof detail !== 'string') {
@@ -23,7 +23,7 @@ export const storeNewsRequestMiddleware = (req: Request, res: Response, next: Ne
         }
 
         if (photoLink === undefined) {
-            throw new BadRequestException('photoLink field has to be be present');
+            throw new BadRequestException('photoLink field must be present');
         }
 
         if (typeof photoLink !== 'string') {
