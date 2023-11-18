@@ -1,4 +1,4 @@
-import HttpException from "./httpException";
+import { HttpException } from "./httpException";
 
 export class BadRequestException extends HttpException {
     public static readonly MESSAGE = 'Bad Request';
