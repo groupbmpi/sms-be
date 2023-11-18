@@ -11,10 +11,10 @@ class ProblemController {
         this.problemHandler = new ProblemHandler()
     }
 
-    getProblems = async (req: Request, res: Response) => {
+    getAll = async (req: Request, res: Response) => {
         try {
 
-            const problems = await this.problemHandler.getAllProblems();
+            const problems = await this.problemHandler.getAll();
 
             res.status(200).json(
                 ResponseBuilder.success(
@@ -46,11 +46,11 @@ class ProblemController {
         }
     }
 
-    getProblemByCreatorId = async (req: Request, res: Response) => {
+    getByCreatorId = async (req: Request, res: Response) => {
         try { 
             const creatorId = parseInt(req.params.creatorId)
 
-            const problems = await this.problemHandler.getProblemByCreatorId(creatorId);
+            const problems = await this.problemHandler.getByCreatorId(creatorId);
 
             res.status(200).json(
                 ResponseBuilder.success(
@@ -83,11 +83,11 @@ class ProblemController {
 
     
 
-	createProblem = async (req: Request, res: Response) => {
+	create = async (req: Request, res: Response) => {
         try {
             const { description, category, creatorId } = req.body
 
-            const problem = await this.problemHandler.createProblem(description, category, creatorId)
+            const problem = await this.problemHandler.create(description, category, creatorId)
 
             res.status(201).json(
                 ResponseBuilder.success(

@@ -2,7 +2,7 @@ import { KategoriMasalah } from "@prisma/client";
 import BaseHandler from "./baseHandler";
 
 export class ProblemHandler extends BaseHandler{
-    public async getAllProblems(sortBy?: string): Promise<{
+    public async getAll(sortBy?: string): Promise<{
         id: number,
         problem: string,
         category: KategoriMasalah,
@@ -42,7 +42,7 @@ export class ProblemHandler extends BaseHandler{
         });
     }
 
-    public async getProblemByCreatorId(creatorId: number): Promise<{
+    public async getByCreatorId(creatorId: number): Promise<{
         id: number,
         problem: string,
         category: KategoriMasalah,
@@ -85,7 +85,7 @@ export class ProblemHandler extends BaseHandler{
 
     }
 
-    public async createProblem(
+    public async create(
         problem: string,
         category: KategoriMasalah,
         creatorId: number
