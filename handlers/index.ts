@@ -1,2 +1,5 @@
-export * from './newsHandler'
-export * from './problemHandler'
+import { ProblemHandler } from "./problemHandler";
+
+export {
+    ProblemHandler
+}
