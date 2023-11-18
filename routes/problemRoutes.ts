@@ -1,5 +1,5 @@
 import BaseRoutes from "./baseRoutes";
-import ProblemController from "../controller/problemController";
+import { ProblemController } from "../controllers"
 
 class ProblemRoutes extends BaseRoutes{
    public setRoutes(): void {
@@ -7,4 +7,5 @@ class ProblemRoutes extends BaseRoutes{
         this.routes.post("/", ProblemController.createProblem);
    }
 }
-export default new ProblemRoutes().getRoutes()
+
+export default new ProblemRoutes().getRoutes();

@@ -1,13 +1,6 @@
-import { PrismaClient } from "@prisma/client";
-import { PrismaInstance } from "../services/prisma";
+import BaseHandler from "./baseHandler";
 
-class NewsHandler {
-    private prisma: PrismaClient;
-
-    constructor() {
-        this.prisma = PrismaInstance.getInstance().getClient();
-    }
-
+export class NewsHandler extends BaseHandler{
     public async getNewsById(id: number): Promise<{
         id: number, 
         judul: string, 
@@ -129,5 +122,3 @@ class NewsHandler {
         });
     }
 }
-
-export default NewsHandler;

@@ -3,7 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
-import ProblemRoutes from '../routes/problemRoutes';
+import { ProblemRoutes } from '../routes';
 
 export class ExpressInstance{
     private static expressInstance : ExpressInstance;

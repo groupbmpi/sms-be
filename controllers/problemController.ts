@@ -1,8 +1,7 @@
-import BaseController from "./baseController";
 import { Request, Response } from "express";
 import ResponseBuilder from "../types/response/builder";
 
-class ProblemController extends BaseController {
+class ProblemController {
     getProblems = async (req: Request, res: Response) => {
         try {
             throw new Error("Test error")
@@ -14,7 +13,7 @@ class ProblemController extends BaseController {
             )
         } catch (error: any) {
             res.status(500).json(
-                ResponseBuilder.err(
+                ResponseBuilder.error(
                     500,
                     error.message
                 )
@@ -26,4 +25,5 @@ class ProblemController extends BaseController {
 
     }
 }
+
 export default new ProblemController

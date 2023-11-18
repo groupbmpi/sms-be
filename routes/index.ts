@@ -1,1 +1,5 @@
-export * from './problemRoutes'
+import ProblemRoutes from "./problemRoutes";
+
+export {
+    ProblemRoutes
+}

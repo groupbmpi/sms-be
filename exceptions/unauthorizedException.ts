@@ -1,6 +1,6 @@
 import HttpException from "./httpException";
 
-class UnauthorizedException extends HttpException {
+export class UnauthorizedException extends HttpException {
     public static readonly MESSAGE = 'Unauthorized';
 
     public static readonly STATUS_CODE = 401;
@@ -12,5 +12,3 @@ class UnauthorizedException extends HttpException {
         );
     }
 }
-
-export default UnauthorizedException;

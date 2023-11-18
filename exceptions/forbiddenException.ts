@@ -1,6 +1,6 @@
 import HttpException from "./httpException";
 
-class ForbiddenException extends HttpException {
+export class ForbiddenException extends HttpException {
     public static readonly MESSAGE = 'Forbidden';
 
     public static readonly STATUS_CODE = 403;
@@ -12,5 +12,3 @@ class ForbiddenException extends HttpException {
         );
     }
 }
-
-export default ForbiddenException;

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 abstract class BaseRoutes {
-    public routes: Router;
+    protected routes: Router;
 
     constructor() {
         this.routes = Router();

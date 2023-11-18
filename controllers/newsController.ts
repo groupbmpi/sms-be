@@ -1,7 +1,10 @@
 import { Request, Response } from "express";
-import NewsHandler from "../handlers/newsHandler";
+import  { NewsHandler } from "../handlers/newsHandler";
+import ResponseBuilder from "../types/response/builder";
+import { BadRequestException, ForbiddenException, InternalServerErrorException } from "../exceptions";
+import HttpException from "../exceptions/httpException";
 
-class NewsController {
+export class NewsController {
     private newsService: NewsHandler;
 
     constructor() {
@@ -16,7 +19,7 @@ class NewsController {
             const creatorId: number = parseInt(req.params.creatorId);
 
             if (user.isAdmin == false && user.id !== creatorId) {
-                throw new ForbiddenException();                
+                throw new ForbiddenException();            
             }
 
             const news = await this.newsService.getNewsById(newsId);
@@ -25,13 +28,13 @@ class NewsController {
                 throw new BadRequestException('Berita tidak ditemukan');
             }
 
-            res.json(ResponseFormatter.success(news));
-        } catch (error) {
+            res.json(ResponseBuilder.success(news));
+        } catch (error: any) {
             console.error(error);
 
             if (error instanceof HttpException) {
                 res.json(
-                    ResponseFormatter.error(
+                    ResponseBuilder.error(
                         null, 
                         error.getMessage(), 
                         error.getStatusCode()
@@ -40,7 +43,7 @@ class NewsController {
             }
 
             res.json(
-                ResponseFormatter.error(
+                ResponseBuilder.error(
                     null, 
                     InternalServerErrorException.MESSAGE,
                     InternalServerErrorException.STATUS_CODE
@@ -61,12 +64,12 @@ class NewsController {
 
             const news = await this.newsService.getNewsByUserId(user.id);
 
-            res.json(ResponseFormatter.success(news));
+            res.json(ResponseBuilder.success(news));
         } catch (error) {
             console.error(error);
 
             res.json(
-                ResponseFormatter.error(
+                ResponseBuilder.error(
                     null, 
                     InternalServerErrorException.MESSAGE,
                     InternalServerErrorException.STATUS_CODE
@@ -96,12 +99,12 @@ class NewsController {
                 creatorId
             );
 
-            res.json(ResponseFormatter.success());
+            res.json(ResponseBuilder.success());
         } catch (error) {
             console.error(error);
 
             res.json(
-                ResponseFormatter.error(
+                ResponseBuilder.error(
                     null, 
                     InternalServerErrorException.MESSAGE,
                     InternalServerErrorException.STATUS_CODE
@@ -142,13 +145,13 @@ class NewsController {
                 }
             );
 
-            res.json(ResponseFormatter.success());
+            res.json(ResponseBuilder.success());
         } catch (error) {
             console.error(error);
 
             if (error instanceof HttpException) {
                 res.json(
-                    ResponseFormatter.error(
+                    ResponseBuilder.error(
                         null, 
                         error.getMessage(), 
                         error.getStatusCode()
@@ -157,7 +160,7 @@ class NewsController {
             }
 
             res.json(
-                ResponseFormatter.error(
+                ResponseBuilder.error(
                     null, 
                     InternalServerErrorException.MESSAGE,
                     InternalServerErrorException.STATUS_CODE
@@ -185,13 +188,13 @@ class NewsController {
 
             await this.newsService.deleteNews(newsId);
 
-            res.json(ResponseFormatter.success());
+            res.json(ResponseBuilder.success());
         } catch (error) {
             console.error(error);
 
             if (error instanceof HttpException) {
                 res.json(
-                    ResponseFormatter.error(
+                    ResponseBuilder.error(
                         null, 
                         error.getMessage(), 
                         error.getStatusCode()
@@ -200,7 +203,7 @@ class NewsController {
             }
 
             res.json(
-                ResponseFormatter.error(
+                ResponseBuilder.error(
                     null, 
                     InternalServerErrorException.MESSAGE,
                     InternalServerErrorException.STATUS_CODE
@@ -209,5 +212,3 @@ class NewsController {
         }
     }
 }
-
-export default new NewsController;
