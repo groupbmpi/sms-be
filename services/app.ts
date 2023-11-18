@@ -3,7 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
-import { ProblemRoutes } from '../routes';
+import { ProblemRoutes, UserRoutes } from '../routes';
 
 export class ExpressInstance{
     private static expressInstance : ExpressInstance;
@@ -31,6 +31,7 @@ export class ExpressInstance{
 
     private setupRoutes(): void{
         this._app.use("/api/v1/problems", ProblemRoutes);
+        this._app.use("/api/v1/users", UserRoutes);
     }
 
     public static getInstance(): ExpressInstance{
