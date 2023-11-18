@@ -13,7 +13,7 @@ export class NewsController {
 
     public async getNewsById(req: Request, res: Response): Promise<void> {
         try {
-            const user = req.user;
+            const user = req.body;
             
             const newsId: number = parseInt(req.params.newsId);
             const creatorId: number = parseInt(req.params.creatorId);
@@ -54,7 +54,7 @@ export class NewsController {
 
     public async getUserNews(req: Request, res: Response): Promise<void> {
         try {
-            const user = req.user;
+            const user = req.body;
 
             const creatorId: number = parseInt(req.params.creatorId);
 
@@ -80,7 +80,7 @@ export class NewsController {
 
     public async storeNews(req: Request, res: Response): Promise<void> {
         try {
-            const user = req.user;
+            const user = req.body;
 
             const creatorId: number = parseInt(req.params.creatorId);
 
@@ -115,7 +115,7 @@ export class NewsController {
 
     public async updateNews(req: Request, res: Response): Promise<void> {
         try {
-            const user = req.user;
+            const user = req.body;
 
             const newsId: number = parseInt(req.params.newsId);
 
@@ -171,7 +171,7 @@ export class NewsController {
 
     public async deleteNews(req: Request, res: Response): Promise<void> {
         try {
-            const user = req.user;
+            const user = req.body;
 
             const newsId: number = parseInt(req.params.newsId);
             const creatorId: number = parseInt(req.params.creatorId);
