@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import NewsService from "../services/NewsService";
+import NewsHandler from "../handlers/NewsHandler";
 
 class NewsController {
-    private newsService: NewsService;
+    private newsService: NewsHandler;
 
     constructor() {
-        this.newsService = new NewsService();
+        this.newsService = new NewsHandler();
     }
 
     public async getNewsById(req: Request, res: Response) {

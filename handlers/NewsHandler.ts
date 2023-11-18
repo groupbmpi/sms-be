@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { PrismaInstance } from "./prisma";
+import { PrismaInstance } from "../services/prisma";
 
-class NewsService {
+class NewsHandler {
     private prisma: PrismaClient;
 
     constructor() {
@@ -130,4 +130,4 @@ class NewsService {
     }
 }
 
-export default NewsService;
+export default NewsHandler;
