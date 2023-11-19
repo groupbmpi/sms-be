@@ -32,7 +32,9 @@ class ProblemController {
                         error.getMessage(),
                         error.getStatusCode()
                     )
-                )
+                );
+
+                return;
             }
 
             res.status(500).json(
@@ -67,7 +69,9 @@ class ProblemController {
                         error.getMessage(),
                         error.getStatusCode()
                     )
-                )
+                );
+
+                return;
             }
 
             res.status(500).json(
@@ -106,7 +110,9 @@ class ProblemController {
                         error.getMessage(),
                         error.getStatusCode()
                     )
-                )
+                );
+
+                return;
             }
 
             res.status(500).json(

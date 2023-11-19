@@ -34,7 +34,9 @@ class UserController {
                         error.getMessage(),
                         error.getStatusCode()
                     )
-                )
+                );
+
+                return;
             }
         }
     }
