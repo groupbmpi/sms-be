@@ -40,11 +40,15 @@ model Testing {
 }
 
 model User {
-  id          Int    @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   namaLengkap String @db.VarChar(255)
   alamat      String @db.VarChar(255)
   email       String @unique @db.VarChar(255)
   noHandphone String @unique @db.VarChar(255)
+  linkFoto    String @db.Text
 
   kegiatan LaporanKegiatan[]
   berita   Berita[]
@@ -52,10 +56,29 @@ model User {
 
   lembaga    Lembaga @relation(fields: [lembaga_id], references: [id])
   lembaga_id Int
+  role       Role    @relation(fields: [role_id], references: [id])
+  role_id    Int
+
+  is_verified Boolean @default(false)
+  is_accepted Boolean @default(false)
+}
+
+model Role {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  role  String @db.VarChar(255)
+  akses String @db.Text
+
+  user User[]
 }
 
 model Lembaga {
-  id       Int      @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   nama     String   @db.VarChar(255)
   kategori Kategori
 
@@ -63,7 +86,10 @@ model Lembaga {
 }
 
 model LaporanKegiatan {
-  id                    Int            @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   tujuan                String         @db.Text
   deskripsi             String         @db.Text
   statusKegiatan        StatusKegiatan
@@ -78,7 +104,10 @@ model LaporanKegiatan {
 }
 
 model Berita {
-  id        Int    @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   judul     String @db.Text
   detail    String @db.Text
   linkPhoto String @db.Text
@@ -88,7 +117,10 @@ model Berita {
 }
 
 model LaporanMasalah {
-  id              Int             @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   masalah         String          @db.Text
   kategoriMasalah KategoriMasalah
 

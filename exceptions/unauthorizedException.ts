@@ -1,4 +1,4 @@
-import HttpException from "./httpException";
+import { HttpException } from "./httpException";
 
 export class UnauthorizedException extends HttpException {
     public static readonly MESSAGE = 'Unauthorized';

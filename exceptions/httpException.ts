@@ -1,4 +1,4 @@
-abstract class HttpException extends Error {
+export abstract class HttpException extends Error {
     protected code: number;
 
     constructor(code: number, message: string) {
@@ -15,5 +15,3 @@ abstract class HttpException extends Error {
         return this.message;
     }
 }
-
-export default HttpException;

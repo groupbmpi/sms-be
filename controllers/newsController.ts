@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
-import  { NewsHandler } from "../handlers/newsHandler";
 import { ResponseBuilder } from "../types/response";
-import { BadRequestException, ForbiddenException, InternalServerErrorException } from "../exceptions";
-import HttpException from "../exceptions/httpException";
+import { BadRequestException, HttpException, InternalServerErrorException } from "../exceptions";
+import { NewsHandler } from "../handlers";
 
 class NewsController {
     private newsHandler: NewsHandler;
@@ -11,65 +10,19 @@ class NewsController {
         this.newsHandler = new NewsHandler();
     }
 
-    public async getNewsById(req: Request, res: Response): Promise<void> {
+    /**
+     * @Method ('GET')
+     * @Route ('/api/v1/news')
+     */
+    public getAllNews = async (req: Request, res: Response): Promise<void> => {
         try {
+            const news = await this.newsHandler.getAllNews();
 
-            const user = req.body
-            
-            const newsId: number = parseInt(req.params.newsId);
-            const creatorId: number = parseInt(req.params.creatorId);
-
-            if (user.isAdmin == false && user.id !== creatorId) {
-                throw new ForbiddenException();            
-            }
-
-            const news = await this.newsHandler.getNewsById(newsId);
-
-            if (news === null) {
-                throw new BadRequestException('Berita tidak ditemukan');
-            }
-
-            res.json(ResponseBuilder.success(news));
-        } catch (error: any) {
-            console.error(error);
-
-            if (error instanceof HttpException) {
-                res.json(
-                    ResponseBuilder.error(
-                        null, 
-                        error.getMessage(), 
-                        error.getStatusCode()
-                    )
-                );
-            }
-
-            res.json(
-                ResponseBuilder.error(
-                    null, 
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE
-                )
-            );
-        }
-    }
-
-    public async getUserNews(req: Request, res: Response): Promise<void> {
-        try {
-            const user = req.body;
-
-            const creatorId: number = parseInt(req.params.creatorId);
-
-            if (user.isAdmin == false && user.id !== creatorId) {
-                throw new ForbiddenException();                
-            }
-
-            const news = await this.newsHandler.getNewsByUserId(user.id);
-
-            res.json(ResponseBuilder.success(news));
+            res.status(200).json(ResponseBuilder.success(news));
         } catch (error) {
             console.error(error);
 
-            res.json(
+            res.status(InternalServerErrorException.STATUS_CODE).json(
                 ResponseBuilder.error(
                     null, 
                     InternalServerErrorException.MESSAGE,
@@ -79,19 +32,41 @@ class NewsController {
         }
     }
 
-    public async storeNews(req: Request, res: Response): Promise<void> {
+    /**
+     * @Method ('GET')
+     * @Route ('/api/v1/users/:creatorId/news')
+     */
+    public getUserNews = async (req: Request, res: Response): Promise<void> => {
         try {
-            const user = req.body;
+            const creatorId: number = parseInt(req.params.creatorId);
 
+            const news = await this.newsHandler.getNewsByUserId(creatorId);
+
+            res.status(200).json(ResponseBuilder.success(news));
+        } catch (error) {
+            console.error(error);
+
+            res.status(InternalServerErrorException.STATUS_CODE).json(
+                ResponseBuilder.error(
+                    null, 
+                    InternalServerErrorException.MESSAGE,
+                    InternalServerErrorException.STATUS_CODE
+                )
+            );
+        }
+    }
+
+    /**
+     * @Method ('POST')
+     * @Route ('/api/v1/users/:creatorId/news')
+     */
+    public storeNews = async(req: Request, res: Response): Promise<void> => {
+        try {
             const creatorId: number = parseInt(req.params.creatorId);
 
             const title: string = req.body.title;
             const detail: string = req.body.detail; 
             const photoLink: string = req.body.photoLink;
-
-            if (user.isAdmin == false && user.id !== creatorId) {
-                throw new ForbiddenException();                
-            }
 
             await this.newsHandler.storeNews(
                 title,
@@ -100,11 +75,11 @@ class NewsController {
                 creatorId
             );
 
-            res.json(ResponseBuilder.success());
+            res.status(200).json(ResponseBuilder.success());
         } catch (error) {
             console.error(error);
 
-            res.json(
+            res.status(InternalServerErrorException.STATUS_CODE).json(
                 ResponseBuilder.error(
                     null, 
                     InternalServerErrorException.MESSAGE,
@@ -114,10 +89,12 @@ class NewsController {
         }
     }
 
-    public async updateNews(req: Request, res: Response): Promise<void> {
+    /**
+     * @Method ('PUT')
+     * @Route ('/api/v1/users/:creatorId/news/:newsId')
+     */
+    public updateNews = async (req: Request, res: Response): Promise<void> => {
         try {
-            const user = req.body;
-
             const newsId: number = parseInt(req.params.newsId);
 
             const creatorId: number = parseInt(req.params.creatorId);
@@ -126,14 +103,10 @@ class NewsController {
             const detail: string = req.body.detail; 
             const photoLink: string = req.body.photoLink;
 
-            if (user.isAdmin == false && user.id !== creatorId) {
-                throw new ForbiddenException();                
-            }
-
             const isNewsExist = await this.newsHandler.isNewsExistById(newsId);
 
             if (isNewsExist === false) {
-                throw new BadRequestException('Berita tidak ditemukan');
+                throw new BadRequestException('News was not found');
             }
 
             await this.newsHandler.updateNews(
@@ -146,21 +119,23 @@ class NewsController {
                 }
             );
 
-            res.json(ResponseBuilder.success());
+            res.status(200).json(ResponseBuilder.success());
         } catch (error) {
             console.error(error);
 
             if (error instanceof HttpException) {
-                res.json(
+                res.status(error.getStatusCode()).json(
                     ResponseBuilder.error(
                         null, 
                         error.getMessage(), 
                         error.getStatusCode()
                     )
                 );
+
+                return;
             }
 
-            res.json(
+            res.status(InternalServerErrorException.STATUS_CODE).json(
                 ResponseBuilder.error(
                     null, 
                     InternalServerErrorException.MESSAGE,
@@ -170,40 +145,39 @@ class NewsController {
         }
     }
 
-    public async deleteNews(req: Request, res: Response): Promise<void> {
+    /**
+     * @Method ('DELETE')
+     * @Route ('/api/v1/users/:creatorId/news/:newsId')
+     */
+    public deleteNews = async (req: Request, res: Response): Promise<void> => {
         try {
-            const user = req.body;
-
             const newsId: number = parseInt(req.params.newsId);
-            const creatorId: number = parseInt(req.params.creatorId);
-
-            if (user.isAdmin == false && user.id !== creatorId) {
-                throw new ForbiddenException();                
-            }
 
             const isNewsExist = await this.newsHandler.isNewsExistById(newsId);
 
             if (isNewsExist === false) {
-                throw new BadRequestException('Berita tidak ditemukan');
+                throw new BadRequestException('News was not found');
             }
 
             await this.newsHandler.deleteNews(newsId);
 
-            res.json(ResponseBuilder.success());
+            res.status(200).json(ResponseBuilder.success());
         } catch (error) {
             console.error(error);
 
             if (error instanceof HttpException) {
-                res.json(
+                res.status(error.getStatusCode()).json(
                     ResponseBuilder.error(
                         null, 
                         error.getMessage(), 
                         error.getStatusCode()
                     )
                 );
+                
+                return;
             }
 
-            res.json(
+            res.status(InternalServerErrorException.STATUS_CODE).json(
                 ResponseBuilder.error(
                     null, 
                     InternalServerErrorException.MESSAGE,

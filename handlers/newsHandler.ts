@@ -1,47 +1,20 @@
 import BaseHandler from "./baseHandler";
 
-export class NewsHandler extends BaseHandler{
-    public async getNewsById(id: number): Promise<{
+export class NewsHandler extends BaseHandler {
+    public async getAllNews(): Promise<{
         title: string, 
         detail: string, 
         photoLink: string,
-    } | null> {
-        const news = await this.prisma.berita.findUnique({
-            select: {
-                judul: true,
-                detail: true,
-                linkPhoto: true,
-            },
-            where: {
-                id: id,
-            }
-        });
-
-        if (news === null) {
-            return null;
-        }
-
-        return {
-            title: news.judul,
-            detail: news.detail,
-            photoLink: news.linkPhoto,
-        };
-    }
-
-    public async getNewsByUserId(userId: number): Promise<{
-        title: string, 
-        detail: string, 
-        photoLink: string,
+        createdAt: Date,
+        updatedAt: Date,
     }[]> {
         const news = await this.prisma.berita.findMany({
             select: {
-                id: true,
                 judul: true,
                 detail: true,
                 linkPhoto: true,
-            },
-            where: {
-                user_id: userId
+                createdAt: true,
+                updatedAt: true,
             }
         });
 
@@ -50,6 +23,39 @@ export class NewsHandler extends BaseHandler{
                 title: value.judul,
                 detail: value.detail,
                 photoLink: value.linkPhoto,
+                createdAt: value.createdAt,
+                updatedAt: value.updatedAt
+            };
+        });
+    }
+
+    public async getNewsByUserId(userId: number): Promise<{
+        title: string, 
+        detail: string, 
+        photoLink: string,
+        createdAt: Date,
+        updatedAt: Date,
+    }[]> {
+        const news = await this.prisma.berita.findMany({
+            select: {
+                judul: true,
+                detail: true,
+                linkPhoto: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+            where: {
+                user_id: userId,
+            },
+        });
+
+        return news.map(function (value) {
+            return {
+                title: value.judul,
+                detail: value.detail,
+                photoLink: value.linkPhoto,
+                createdAt: value.createdAt,
+                updatedAt: value.updatedAt
             };
         });
     }
@@ -60,8 +66,8 @@ export class NewsHandler extends BaseHandler{
                 id: true,
             },
             where: {
-                id
-            }
+                id,
+            },
         });
 
         if (news === null) {
@@ -78,8 +84,8 @@ export class NewsHandler extends BaseHandler{
             },
             where: {
                 id: newsId,
-                user_id: creatorId
-            }
+                user_id: creatorId,
+            },
         });
 
         if (news === null) {
@@ -100,8 +106,12 @@ export class NewsHandler extends BaseHandler{
                 judul: title,
                 detail,
                 linkPhoto: photoLink,
-                user_id: creatorId
-            }
+                user: {
+                    connect: {
+                        id: creatorId,
+                    },
+                },
+            },
         });
     }
 
@@ -119,19 +129,23 @@ export class NewsHandler extends BaseHandler{
                 judul: data.title,
                 detail: data.detail,
                 linkPhoto: data.photoLink,
-                user_id: data.creatorId
+                user: {
+                    connect: {
+                        id: data.creatorId,
+                    },
+                },
             },
             where: {
-                id
-            }
+                id,
+            },
         });
     }
 
     public async deleteNews(id: number): Promise<void> {
         await this.prisma.berita.delete({
             where: {
-                id
-            }
+                id,
+            },
         });
     }
 }

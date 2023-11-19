@@ -1,7 +1,9 @@
 import ProblemRoutes from "./problemRoutes";
-import UserRoutes from "./userRoutes";
+import NewsRoutes from './newsRoutes';
+import UserRoutes from './userRoutes';
 
 export {
     ProblemRoutes,
-    UserRoutes
+    NewsRoutes,
+    UserRoutes,
 }

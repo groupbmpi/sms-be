@@ -1,13 +1,13 @@
-import HttpException from "./httpException";
+import { HttpException } from "./httpException";
 
-export class notFoundException extends HttpException {
+export class NotFoundException extends HttpException {
     public static readonly MESSAGE = 'Not Found';
 
     public static readonly STATUS_CODE = 400;
 
-    constructor(message: string = notFoundException.MESSAGE) {
+    constructor(message: string = NotFoundException.MESSAGE) {
         super(
-            notFoundException.STATUS_CODE, 
+            NotFoundException.STATUS_CODE, 
             message
         );
     }

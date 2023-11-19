@@ -1,14 +1,22 @@
 export class ResponseBuilder {
-
     public static success(
         data: any = null, 
         message: string|null = null, 
         code: number = 200
-    ) {
-        return {
-            code,
+    ): {
+        meta: {
+            code: number,
             status: 'success',
-            message,
+            message: string|null,
+        },
+        data: any
+    } {
+        return {
+            meta: {
+                code,
+                status: 'success',
+                message,
+            },
             data
         }
     }
@@ -17,11 +25,20 @@ export class ResponseBuilder {
         data: any = null, 
         message: string|null = null, 
         code: number = 400
-    ) {
-        return {
-            code,
+    ): {
+        meta: {
+            code: number,
             status: 'error',
-            message,
+            message: string|null,
+        },
+        data: any
+    } {
+        return {
+            meta: {
+                code,
+                status: 'error',
+                message,
+            },
             data
         }
     }
