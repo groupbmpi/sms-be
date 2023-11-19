@@ -9,6 +9,7 @@
       "@routes" : ["routes/"],
       "@services" :  ["services/"],
       "@types" : ["types/"],
+      "@utils" : ["utils/"],
     },
     "target": "esnext",
     "lib": ["esnext"],

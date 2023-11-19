@@ -13,7 +13,7 @@ export class PrismaInstance{
         if( !PrismaInstance.prismaInstance){
             PrismaInstance.prismaInstance = new PrismaInstance();
         }
-
+        
         return PrismaInstance.prismaInstance;
     }
 
