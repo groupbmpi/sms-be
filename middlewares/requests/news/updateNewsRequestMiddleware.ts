@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { ResponseBuilder } from "../../../types";
-import { BadRequestException, HttpException, InternalServerErrorException } from "../../../exceptions";
+import { ResponseBuilder } from "@types";
+import { BadRequestException, HttpException, InternalServerErrorException } from "@exceptions";
 
 export const updateNewsRequestMiddleware = (req: Request, res: Response, next: NextFunction) => {
     try {

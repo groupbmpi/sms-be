@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { ResponseBuilder } from "../types/response";
-import { BadRequestException, HttpException, InternalServerErrorException } from "../exceptions";
-import { NewsHandler } from "../handlers";
+import { ResponseBuilder } from "@types";
+import { BadRequestException, HttpException, InternalServerErrorException } from "@exceptions";
+import { NewsHandler } from "@handlers";
 
 class NewsController {
     private newsHandler: NewsHandler;

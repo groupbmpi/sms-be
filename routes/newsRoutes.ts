@@ -1,6 +1,5 @@
-import { NewsController } from "../controllers";
-import { storeNewsRequestMiddleware } from "../middlewares/requests/news/storeNewsRequestMiddleware";
-import { updateNewsRequestMiddleware } from "../middlewares/requests/news/updateNewsRequestMiddleware";
+import { NewsController } from "@controllers";
+import { storeNewsRequestMiddleware, updateNewsRequestMiddleware } from "@middlewares";
 import BaseRoutes from "./baseRoutes";
 
 class NewsRoutes extends BaseRoutes {

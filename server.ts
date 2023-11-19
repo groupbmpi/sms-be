@@ -1,5 +1,5 @@
 import express from 'express'
-import { ExpressInstance } from './services/app';
+import { ExpressInstance } from '@services';
 
 require('dotenv').config();
 

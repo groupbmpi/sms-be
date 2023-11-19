@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { ResponseBuilder } from "../types/response";
-import { HttpException, InternalServerErrorException } from "../exceptions";
-import { ProblemHandler } from "../handlers";
+import { ResponseBuilder } from "@types";
+import { HttpException, InternalServerErrorException } from "@exceptions";
+import { ProblemHandler } from "@handlers";
 
 class ProblemController {
     private problemHandler: ProblemHandler

@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { PrismaInstance } from "../services/prisma"
+import { PrismaInstance } from "@services"
 
 abstract class BaseHandler {
     protected prisma: PrismaClient;

@@ -1,5 +1,5 @@
 import BaseRoutes from "./baseRoutes";
-import { UserController } from "../controllers"
+import { UserController } from "@controllers"
 
 class UserRoutes extends BaseRoutes{
    public setRoutes(): void {

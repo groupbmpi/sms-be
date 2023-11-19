@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
-import { ResponseBuilder } from "../types/response";
-import { InternalServerErrorException } from "../exceptions";
-import {HttpException }from "../exceptions/httpException";
-import { UserHandler } from "../handlers";
+import { ResponseBuilder } from "@types";
+import { InternalServerErrorException, HttpException } from "@exceptions";
+import { UserHandler } from "@handlers";
 
 class UserController {
     private userHandler: UserHandler
