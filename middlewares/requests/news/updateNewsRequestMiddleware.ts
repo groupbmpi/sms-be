@@ -34,6 +34,8 @@ export const updateNewsRequestMiddleware = (req: Request, res: Response, next: N
                     error.getStatusCode()
                 )
             );
+
+            return;
         }
 
         res.status(InternalServerErrorException.STATUS_CODE).json(

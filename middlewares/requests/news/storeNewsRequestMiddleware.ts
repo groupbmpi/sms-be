@@ -42,6 +42,8 @@ export const storeNewsRequestMiddleware = (req: Request, res: Response, next: Ne
                     error.getStatusCode()
                 )
             );
+
+            return;
         }
 
         res.status(InternalServerErrorException.STATUS_CODE).json(
