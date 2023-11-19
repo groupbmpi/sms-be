@@ -3,13 +3,14 @@ import BaseHandler from "./baseHandler";
 import { IActivityReportBody, IActivityReportQuery } from "types/request/activityReport";
 import { IPagination } from "types/request";
 import { countSkipped } from "utils";
+import { IActivityReportData } from "types/response/activityReport";
 
 export class ActivityHandler extends BaseHandler{
 
     public async getReport(
         query : Omit<IActivityReportQuery, "limit" | "offset">,
         pagination : IPagination,
-    ): Promise<LaporanKegiatan[]>{
+    ): Promise<IActivityReportData[]>{
         const skipped = countSkipped(pagination.page!!, pagination.limit!!)
 
         const activityReport : LaporanKegiatan[] = await this.prisma.laporanKegiatan.findMany({
