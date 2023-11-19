@@ -1,6 +1,8 @@
 import express from 'express'
 import { ExpressInstance } from '@services';
 
+import 'module-alias/register';
+
 require('dotenv').config();
 
 const port = process.env.PORT || 3002;

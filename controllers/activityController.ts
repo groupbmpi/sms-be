@@ -1,20 +1,21 @@
 import { Request, Response } from "express";
 import { IActivityReportBody, IActivityReportQuery, ResponseBuilder } from "@types";
 import { ActivityHandler } from "@handlers";
-import { IActivityReportData } from "types/response/activityReport";
-import { HttpException, InternalServerErrorException } from "exceptions";
+import { IActivityReportData } from "@types";
+import {InternalServerErrorException } from "exceptions";
 
 class ActivityController{
-    private activityHandler: ActivityHandler
+    private activityHandler: ActivityHandler;
 
     constructor(){
-        this.activityHandler = new ActivityHandler()
+        this.activityHandler = new ActivityHandler();
     }
 
-    public async getReport(req: Request<unknown, unknown, unknown, IActivityReportQuery>, res: Response){
+    public getReport = async(req: Request<unknown, unknown, unknown, IActivityReportQuery>, res: Response)=>{
         try{
-            const { limit, page, ...query } = req.query
-
+            
+            let { limit, page, ...query } = req.query
+            
             const activityReport : IActivityReportData[] = await this.activityHandler.getReport(
                 query,
                 { limit, page }
@@ -40,7 +41,7 @@ class ActivityController{
         }
     }
 
-    public async createReport(req: Request<unknown, unknown, IActivityReportBody>, res: Response){
+    public createReport = async (req: Request<unknown, unknown, IActivityReportBody>, res: Response) =>{
         try{
             //TODO: Get user id from middleware
             const id = 1
@@ -71,7 +72,7 @@ class ActivityController{
         }
     } 
 
-    public async updateReport(req: Request<unknown, unknown, IActivityReportBody, number>, res: Response){
+    public updateReport = async (req: Request<unknown, unknown, IActivityReportBody, number>, res: Response) =>{
         try{
             const id : number = req.query
             const body : IActivityReportBody = req.body
@@ -101,7 +102,7 @@ class ActivityController{
         }
     }
 
-    public async deleteReport(req: Request<unknown, unknown, unknown, number>, res: Response){
+    public deleteReport = async (req: Request<unknown, unknown, unknown, number>, res: Response) =>{
         try{
             const id : number = req.query
 
@@ -129,3 +130,5 @@ class ActivityController{
         }
     }
 }
+
+export default new ActivityController();

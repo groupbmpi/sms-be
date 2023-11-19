@@ -1,5 +1,5 @@
 import { LaporanKegiatan, StatusKegiatan } from "@prisma/client";
-import { IPagination } from ".";
+import { IPagination } from "./pagination";
 
 export interface IActivityReportQuery extends IPagination {
     id? : number,
