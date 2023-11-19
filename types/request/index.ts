@@ -1,1 +1,7 @@
-import { Testing } from "@prisma/client"
+export * from "./activityReport"
+
+export interface IPagination {
+    limit?: number,
+    page?: number,
+}
+
