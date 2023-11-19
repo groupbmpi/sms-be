@@ -59,6 +59,7 @@ class NewsController {
     /**
      * @Method ('POST')
      * @Route ('/api/v1/users/:creatorId/news')
+     * @Middleware ([storeNewsRequestMiddleware])
      */
     public storeNews = async(req: Request, res: Response): Promise<void> => {
         try {
@@ -92,6 +93,7 @@ class NewsController {
     /**
      * @Method ('PUT')
      * @Route ('/api/v1/users/:creatorId/news/:newsId')
+     * @Middleware ([updateNewsRequestMiddleware])
      */
     public updateNews = async (req: Request, res: Response): Promise<void> => {
         try {
