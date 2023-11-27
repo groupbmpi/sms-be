@@ -11,7 +11,8 @@ datasource db {
 }
 
 enum Kategori {
-  PEMERINTAH
+  KEMENTRIAN
+  PEMERINTAHDAERAH
   LEMBAGASWADAYAMASYARAKAT
   INSTITUSIPENDIDIKAN
   DUNIAUSAHA
@@ -29,7 +30,13 @@ enum StatusKegiatan {
 
 //TODO: Update enum
 enum KategoriMasalah {
-  MASALAH
+  ADVOKASI
+  EDUKASI
+}
+
+enum TipeDaerah {
+  KABUPATEN
+  KOTA
 }
 
 model Testing {
@@ -80,9 +87,13 @@ model Lembaga {
   updatedAt DateTime @updatedAt
 
   nama     String   @db.VarChar(255)
+  alamat   String   @db.Text
   kategori Kategori
 
   user User[]
+
+  daerah    KabupatenKota @relation(fields: [daerah_id], references: [id])
+  daerah_id Int
 }
 
 model LaporanKegiatan {
@@ -90,6 +101,7 @@ model LaporanKegiatan {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  namaKegiatan          String         @db.Text
   tujuan                String         @db.Text
   deskripsi             String         @db.Text
   statusKegiatan        StatusKegiatan
@@ -124,6 +136,33 @@ model LaporanMasalah {
   masalah         String          @db.Text
   kategoriMasalah KategoriMasalah
 
-  user    User? @relation(fields: [user_id], references: [id])
-  user_id Int?
+  user        User?    @relation(fields: [user_id], references: [id])
+  user_id     Int?
+  provinsi    Provinsi @relation(fields: [provinsi_id], references: [id])
+  provinsi_id Int
+}
+
+model Provinsi {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  nama String @db.VarChar(255)
+
+  kabupatenKota  KabupatenKota[]
+  laporanMasalah LaporanMasalah[]
+}
+
+model KabupatenKota {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  nama String     @db.VarChar(255)
+  tipe TipeDaerah
+
+  lembaga Lembaga[]
+
+  provinsi    Provinsi @relation(fields: [provinsi_id], references: [id])
+  provinsi_id Int
 }
