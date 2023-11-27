@@ -6,6 +6,6 @@ type PropsRegisterUserOmitted = "id" | "lembaga_id" | "role_id" | "createdAt" | 
 export interface IRegisterUserBody extends Omit<User,PropsRegisterUserOmitted>{}
 
 export interface IVerifyUserBody{
-    userID?: number,
-    statusAcc?: boolean
+    userID: number,
+    statusAcc: boolean
 }

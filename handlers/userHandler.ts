@@ -32,7 +32,7 @@ export class UserHandler extends BaseHandler{
     ): Promise<User>{
         const newUser : User = await this.prisma.user.update({
             where: {
-                id: body.userID,
+                id : body.userID
             },
             data: {
                 is_verified: true,
