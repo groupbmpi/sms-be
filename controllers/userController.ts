@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ResponseBuilder } from "@types";
+import { IRegisterUserBody, IVerifyUserBody, ResponseBuilder } from "@types";
 import { InternalServerErrorException, HttpException } from "@exceptions";
 import { UserHandler } from "@handlers";
 
@@ -41,10 +41,20 @@ class UserController {
     }
     public registerUser = async (req: Request, res: Response) => {
         try{
-            const { namaLengkap, alamat, email, noHandphone, lembagaID, linkFoto } = req.body
+            const body : IRegisterUserBody = {
+                alamat : req.body.alamat,
+                email : req.body.email,
+                linkFoto : req.body.linkFoto,
+                namaLengkap : req.body.namaLengkap,
+                noHandphone : req.body.noHandphone,
+                is_accepted : false,
+                is_verified : false,
+            }
+            const lembagaID : number = req.body.lembagaID;
+            const roleID : number = 1;
         
             // TODO: add role user to database
-            await this.userHandler.addUser(namaLengkap, alamat, email, noHandphone, lembagaID, linkFoto,1)
+            await this.userHandler.addUser(body, lembagaID,roleID )
 
 
             res.status(201).json(
@@ -69,9 +79,9 @@ class UserController {
 
     public verifyUser = async (req: Request, res: Response) => {
         try{
-            const {userID, statusAcc} = req.body
+            const body : IVerifyUserBody = req.body
         
-            await this.userHandler.verifyUser(userID, statusAcc)
+            await this.userHandler.verifyUser(body)
 
 
             res.status(200).json(
