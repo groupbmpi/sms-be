@@ -1,7 +1,7 @@
-import BaseRoutes from "./baseRoutes";
+import { BaseRoutes } from "@routes";
 import { ProblemController } from "@controllers"
 
-class ProblemRoutes extends BaseRoutes{
+class ProblemRoutes extends BaseRoutes {
    public setRoutes(): void {
         this.routes.get("/", ProblemController.getAll);
         this.routes.get("/:creatorId", ProblemController.getByCreatorId);

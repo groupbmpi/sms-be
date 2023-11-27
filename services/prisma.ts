@@ -1,27 +1,27 @@
-import {PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 export class PrismaInstance{
     private static prismaInstance : PrismaInstance;
 
     private _client: PrismaClient;
 
-    private constructor(){
+    private constructor() {
         this._client = new PrismaClient();
     }
 
-    public static getInstance(): PrismaInstance{
-        if( !PrismaInstance.prismaInstance){
+    public static getInstance(): PrismaInstance {
+        if(! PrismaInstance.prismaInstance) {
             PrismaInstance.prismaInstance = new PrismaInstance();
         }
         
         return PrismaInstance.prismaInstance;
     }
 
-    public getClient(): PrismaClient{
+    public getClient(): PrismaClient {
         return this._client;
     }
 
-    public disconnect(){
+    public disconnect() {
         this._client.$disconnect(); 
     }
 }

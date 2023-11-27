@@ -32,7 +32,7 @@ export class ExpressInstance {
     private setupRoutes(): void {
         this._app.use('/api/v1/problems', ProblemRoutes);
         this._app.use('/api/v1/user', UserRoutes);
-        this._app.use('/api/v1', NewsRoutes);
+        this._app.use('/api/v1/news', NewsRoutes);
         this._app.use('/api/v1/activity', ActivityRoutes);
     }
 

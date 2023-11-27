@@ -1,6 +1,5 @@
 import { HttpException } from "./httpException";
 
-
 export class ForbiddenException extends HttpException {
     public static readonly MESSAGE = 'Forbidden';
 

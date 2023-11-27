@@ -1,8 +1,8 @@
 import { User } from "@prisma/client";
-import { IRegisterUserBody,IVerifyUserBody } from "types/request/user";
-import BaseHandler from "./baseHandler";
-import { IPagination, IUnverifiedUserData } from "types";
-import { countSkipped } from "utils";
+import { IRegisterUserBody,IVerifyUserBody } from "@types";
+import { BaseHandler } from "@handlers";
+import { IPagination, IUnverifiedUserData } from "@types";
+import { countSkipped } from "@utils";
 
 export class UserHandler extends BaseHandler{
 

@@ -1,7 +1,7 @@
-import BaseRoutes  from "./baseRoutes";
+import { BaseRoutes } from "@routes";
 import { ActivityController } from "@controllers";
 
-class ActivityRoutes extends BaseRoutes{
+class ActivityRoutes extends BaseRoutes {
     public setRoutes(): void {
         this.routes.get("/", ActivityController.getReport);
         this.routes.post("/", ActivityController.createReport);

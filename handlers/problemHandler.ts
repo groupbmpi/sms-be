@@ -1,5 +1,5 @@
 import { KategoriMasalah, LaporanMasalah } from "@prisma/client";
-import BaseHandler from "./baseHandler";
+import { BaseHandler } from "@handlers";
 
 export class ProblemHandler extends BaseHandler{
     public async getAll(sortBy?: string): Promise<{

@@ -1,9 +1,9 @@
 import { LaporanKegiatan } from "@prisma/client";
-import BaseHandler from "./baseHandler";
-import { IActivityReportBody, IActivityReportQuery } from "types/request/activityReport";
-import { IPagination } from "types/request";
-import { countSkipped } from "utils";
-import { IActivityReportData } from "types/response/activityReport";
+import { BaseHandler } from "@handlers";
+import { IActivityReportBody, IActivityReportQuery } from "@types";
+import { IPagination } from "@types";
+import { countSkipped } from "@utils";
+import { IActivityReportData } from "@types";
 
 export class ActivityHandler extends BaseHandler{
 
