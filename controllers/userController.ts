@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { IRegisterUserBody, IVerifyUserBody, ResponseBuilder } from "@types";
+import { IPagination, IRegisterUserBody, IUnverifiedUserData, IVerifyUserBody, ResponseBuilder } from "@types";
 import { InternalServerErrorException, HttpException } from "@exceptions";
 import { UserHandler } from "@handlers";
 
@@ -60,6 +60,34 @@ class UserController {
             res.status(201).json(
                 ResponseBuilder.success(
                     null,
+                    "Register user successfully",
+                    201
+                )
+            )
+        }catch(error){
+            console.error(error)
+
+            res.status(500).json(
+                ResponseBuilder.error(
+                    null,
+                    InternalServerErrorException.MESSAGE,
+                    InternalServerErrorException.STATUS_CODE
+                )
+            )
+        }
+    }
+
+    public getUnverifiedUser = async (req: Request, res: Response) => {
+        try{
+            const pagination : IPagination = req.query
+        
+            // TODO: add role user to database
+            const listUnverifiedUser : IUnverifiedUserData[] = await this.userHandler.getUnverifiedUser(pagination);
+
+
+            res.status(201).json(
+                ResponseBuilder.success(
+                    listUnverifiedUser,
                     "Register user successfully",
                     201
                 )

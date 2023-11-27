@@ -1,6 +1,8 @@
 import { User } from "@prisma/client";
 import { IRegisterUserBody,IVerifyUserBody } from "types/request/user";
 import BaseHandler from "./baseHandler";
+import { IPagination, IUnverifiedUserData } from "types";
+import { countSkipped } from "utils";
 
 export class UserHandler extends BaseHandler{
 
@@ -41,6 +43,22 @@ export class UserHandler extends BaseHandler{
         });
 
         return newUser;
+    }
+
+    public async getUnverifiedUser(
+        pagination : IPagination
+    ): Promise<IUnverifiedUserData[]>{
+        const skipped = countSkipped(pagination.page!!, pagination.limit!!)
+
+        const users : User[] = await this.prisma.user.findMany({
+            where : {
+                is_verified : false
+            },
+            take: pagination.limit,
+            skip: skipped,
+        })
+
+        return users;
     }
 
     public async edit(userId: number, name?: string, address?:string, institutionId?:number): Promise<User> {
