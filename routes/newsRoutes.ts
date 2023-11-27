@@ -1,15 +1,14 @@
 import { NewsController } from "@controllers";
-import { storeNewsRequestMiddleware, updateNewsRequestMiddleware } from "@middlewares";
-import BaseRoutes from "./baseRoutes";
+import { createNewsRequestMiddleware, updateNewsRequestMiddleware, paramNewsRequestMiddleware, deleteNewsRequestMiddleware } from "@middlewares";
+import { BaseRoutes } from "@routes";
 
 class NewsRoutes extends BaseRoutes {
     public setRoutes(): void {
-        this.routes.get('/news', NewsController.getAllNews);
-
-        this.routes.get('/users/:creatorId/news', NewsController.getUserNews);
-        this.routes.post('/users/:creatorId/news', [storeNewsRequestMiddleware], NewsController.storeNews);
-        this.routes.put('/users/:creatorId/news/:newsId', [updateNewsRequestMiddleware],NewsController.updateNews);
-        this.routes.delete('/users/:creatorId/news/:newsId', NewsController.deleteNews);
+        this.routes.get('/', NewsController.getAllNews);
+        this.routes.get('/:newsId', [paramNewsRequestMiddleware], NewsController.getNewsById);
+        this.routes.post('/', [createNewsRequestMiddleware], NewsController.createNews);
+        this.routes.put('/:newsId', [updateNewsRequestMiddleware], NewsController.updateNews);
+        this.routes.delete('/:newsId', [deleteNewsRequestMiddleware], NewsController.deleteNews);
     }
 }
 
