@@ -2,18 +2,17 @@ import { Request, Response } from "express";
 import { ResponseBuilder } from "@types";
 import { HttpException, InternalServerErrorException } from "@exceptions";
 import { ProblemHandler } from "@handlers";
+import { BaseController } from "@controllers";
 
-class ProblemController {
-    private problemHandler: ProblemHandler
-
+class ProblemController extends BaseController<ProblemHandler> {
     constructor() {
-        this.problemHandler = new ProblemHandler()
+        super(new ProblemHandler());
     }
 
     getAll = async (req: Request, res: Response) => {
         try {
 
-            const problems = await this.problemHandler.getAll();
+            const problems = await this.handler.getAll();
 
             res.status(200).json(
                 ResponseBuilder.success(
@@ -51,7 +50,7 @@ class ProblemController {
         try { 
             const creatorId = parseInt(req.params.creatorId)
 
-            const problems = await this.problemHandler.getByCreatorId(creatorId);
+            const problems = await this.handler.getByCreatorId(creatorId);
 
             res.status(200).json(
                 ResponseBuilder.success(
@@ -90,7 +89,7 @@ class ProblemController {
         try {
             const { description, category, creatorId } = req.body
 
-            const problem = await this.problemHandler.create(description, category, creatorId)
+            const problem = await this.handler.create(description, category, creatorId)
 
             res.status(201).json(
                 ResponseBuilder.success(

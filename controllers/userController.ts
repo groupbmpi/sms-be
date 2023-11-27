@@ -2,19 +2,18 @@ import { Request, Response } from "express";
 import { IPagination, IRegisterUserBody, IUnverifiedUserData, IVerifyUserBody, ResponseBuilder } from "@types";
 import { InternalServerErrorException, HttpException } from "@exceptions";
 import { UserHandler } from "@handlers";
+import { BaseController } from "@controllers";
 
-class UserController {
-    private userHandler: UserHandler
-
+class UserController extends BaseController<UserHandler> {
     constructor() {
-        this.userHandler = new UserHandler()
+        super(new UserHandler());
     }
 
     edit = async (req: Request, res: Response) => {
         try {
             const { id, name, address, institutionId } = req.body
 
-            const user = await this.userHandler.edit(id, name, address, institutionId)
+            const user = await this.handler.edit(id, name, address, institutionId)
 
             res.status(200).json(
                 ResponseBuilder.success(
@@ -54,7 +53,7 @@ class UserController {
             const roleID : number = 1;
         
             // TODO: add role user to database
-            await this.userHandler.addUser(body, lembagaID,roleID )
+            await this.handler.addUser(body, lembagaID,roleID )
 
 
             res.status(201).json(
@@ -82,7 +81,7 @@ class UserController {
             const pagination : IPagination = req.query
         
             // TODO: add role user to database
-            const listUnverifiedUser : IUnverifiedUserData[] = await this.userHandler.getUnverifiedUser(pagination);
+            const listUnverifiedUser : IUnverifiedUserData[] = await this.handler.getUnverifiedUser(pagination);
 
 
             res.status(201).json(
@@ -109,7 +108,7 @@ class UserController {
         try{
             const body : IVerifyUserBody = req.body
         
-            await this.userHandler.verifyUser(body)
+            await this.handler.verifyUser(body)
 
 
             res.status(200).json(

@@ -3,12 +3,11 @@ import { IActivityReportBody, IActivityReportQuery, ResponseBuilder } from "@typ
 import { ActivityHandler } from "@handlers";
 import { IActivityReportData } from "@types";
 import {InternalServerErrorException } from "exceptions";
+import { BaseController } from "@controllers";
 
-class ActivityController{
-    private activityHandler: ActivityHandler;
-
-    constructor(){
-        this.activityHandler = new ActivityHandler();
+class ActivityController extends BaseController<ActivityHandler> {
+    constructor() {
+        super(new ActivityHandler());
     }
 
     public getReport = async(req: Request<unknown, unknown, unknown, IActivityReportQuery>, res: Response)=>{
@@ -16,7 +15,7 @@ class ActivityController{
             
             let { limit, page, ...query } = req.query
             
-            const activityReport : IActivityReportData[] = await this.activityHandler.getReport(
+            const activityReport : IActivityReportData[] = await this.handler.getReport(
                 query,
                 { limit, page }
             )
@@ -47,7 +46,7 @@ class ActivityController{
             const id = 1
             const body : IActivityReportBody = req.body
 
-            const newLaporanKegiatan : IActivityReportData = await this.activityHandler.createReport(
+            const newLaporanKegiatan : IActivityReportData = await this.handler.createReport(
                 body,
                 id,
             )
@@ -77,7 +76,7 @@ class ActivityController{
             const id : number = req.query
             const body : IActivityReportBody = req.body
 
-            const updatedLaporanKegiatan : IActivityReportData = await this.activityHandler.updateReport(
+            const updatedLaporanKegiatan : IActivityReportData = await this.handler.updateReport(
                 body,
                 id,
             )
@@ -106,7 +105,7 @@ class ActivityController{
         try{
             const id : number = req.query
 
-            const deletedLaporanKegiatan : boolean = await this.activityHandler.deleteReport(
+            const deletedLaporanKegiatan : boolean = await this.handler.deleteReport(
                 id,
             )
 
