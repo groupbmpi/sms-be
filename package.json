@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "prisma": {
-    "seed": "./prisma/seeders/index.ts"
+    "seed": "ts-node --transpile-only ./prisma/seeders/index.ts"
   },
   "scripts": {
     "prisma:migrate": "npx prisma migrate dev",
