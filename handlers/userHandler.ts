@@ -1,5 +1,5 @@
-import { User } from "@prisma/client";
-import { IRegisterUserBody,IVerifyUserBody } from "@types";
+import { Lembaga, User } from "@prisma/client";
+import { IRegisterUserBody,IVerifyUserBody, LEMBAGA_OTHERS } from "@types";
 import { BaseHandler } from "@handlers";
 import { IPagination, IUnverifiedUserData } from "@types";
 import { countSkipped } from "@utils";
@@ -8,25 +8,62 @@ export class UserHandler extends BaseHandler{
 
     public async addUser(
         body: IRegisterUserBody,
-        lembagaID : number,
+        lembagaName : string,
+        lembagaOthers : string | null,
         roleID : number,
+        kabupatenKotaID : number
     ): Promise<User>{
-        const newUser : User = await this.prisma.user.create({
-            data: {
-                ...body,
-                lembaga: {
-                    connect: {
-                        id: lembagaID,
+        if(lembagaName == LEMBAGA_OTHERS){
+            const lembagaID = undefined;
+
+            const newUser : User = await this.prisma.user.create({
+                data: {
+                    ...body,
+                    lembagaOthers : lembagaOthers,
+                    role : {
+                        connect : {
+                            id : roleID,
+                        }
+                    },
+                    kabupatenKota : {
+                        connect : {
+                            id : kabupatenKotaID
+                        }
                     }
                 },
-                role : {
-                    connect : {
-                        id : roleID,
-                    }
+            });
+            return newUser;
+        }else{
+            const lembagaUser : Lembaga = await this.prisma.lembaga.findFirstOrThrow({
+                where : {
+                    nama : lembagaName
                 }
-            },
-        });
-        return newUser;
+            })
+            const lembagaID = lembagaUser.id;
+            const newUser : User = await this.prisma.user.create({
+                data: {
+                    ...body,
+                    lembagaOthers : lembagaOthers,
+                    lembaga: {
+                        connect: {
+                            id: lembagaID,
+                        }
+                    },
+                    role : {
+                        connect : {
+                            id : roleID,
+                        }
+                    },
+                    kabupatenKota : {
+                        connect : {
+                            id : kabupatenKotaID
+                        }
+                    }
+                },
+            });
+            return newUser;
+        }
+
     }
 
     public async verifyUser(

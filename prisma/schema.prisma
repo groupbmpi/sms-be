@@ -52,13 +52,14 @@ model User {
   email       String @unique @db.VarChar(255)
   noHandphone String @unique @db.VarChar(255)
   linkFoto    String @db.Text
+  lembagaOthers String? @db.Text
 
   kegiatan LaporanKegiatan[]
   berita   Berita[]
   masalah  LaporanMasalah[]
 
-  lembaga    Lembaga @relation(fields: [lembaga_id], references: [id])
-  lembaga_id Int
+  lembaga    Lembaga? @relation(fields: [lembaga_id], references: [id])
+  lembaga_id Int?
   role       Role    @relation(fields: [role_id], references: [id])
   role_id    Int
   kabupatenKota KabupatenKota @relation(fields: [kabupatenKota_id], references: [id])
