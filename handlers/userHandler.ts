@@ -3,6 +3,9 @@ import { IRegisterUserBody,IVerifyUserBody, LEMBAGA_OTHERS } from "@types";
 import { BaseHandler } from "@handlers";
 import { IPagination, IUnverifiedUserData } from "@types";
 import { countSkipped } from "@utils";
+import { generatePassword, generateRandomNumber } from "utils/user";
+import { OTP_LENGTH, SALT_ROUND } from "constant";
+import bcrypt from "bcrypt";
 
 export class UserHandler extends BaseHandler{
 
@@ -69,15 +72,34 @@ export class UserHandler extends BaseHandler{
     public async verifyUser(
         body: IVerifyUserBody
     ): Promise<User>{
-        const newUser : User = await this.prisma.user.update({
-            where: {
-                id : body.userID
-            },
-            data: {
-                is_verified: true,
-                is_accepted: body.statusAcc,
-            },
-        });
+
+        let newUser : User;
+
+        if(body.statusAcc){
+            const pass : string = generatePassword();
+            const otp : string = generateRandomNumber(OTP_LENGTH);
+            newUser = await this.prisma.user.update({
+                where: {
+                    id : body.userID
+                },
+                data: {
+                    is_verified: true,
+                    is_accepted: body.statusAcc,
+                    password : await bcrypt.hash(pass,SALT_ROUND),
+                    otp_token : await bcrypt.hash(otp, SALT_ROUND)
+                },
+            });
+        }else{
+            newUser = await this.prisma.user.update({
+                where: {
+                    id : body.userID
+                },
+                data: {
+                    is_verified: true,
+                    is_accepted: body.statusAcc,
+                },
+            });
+        }
 
         return newUser;
     }
