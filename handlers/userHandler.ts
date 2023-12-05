@@ -120,6 +120,41 @@ export class UserHandler extends BaseHandler{
         return users;
     }
 
+    public async getUser(
+        userID : number
+    ) : Promise<User>{
+        const user : User = await this.prisma.user.findFirstOrThrow({
+            where : {
+                id : userID
+            }
+        });
+        return user;
+    }
+
+    public async getUserByEmail(
+        email : string
+    ) : Promise<User>{
+        const user : User = await this.prisma.user.findFirstOrThrow({
+            where : {
+                email : email
+            }
+        });
+        return user;
+    }
+
+    public async activateUser(
+        userID : number
+    ) : Promise<void>{
+        await this.prisma.user.update({
+            where : {
+                id : userID
+            },
+            data : {
+                is_activated : true
+            }
+        })
+    }
+
     public async edit(userId: number, name?: string, address?:string, institutionId?:number): Promise<User> {
         const payload: any = {}
         if (name) {

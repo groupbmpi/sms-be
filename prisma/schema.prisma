@@ -69,6 +69,7 @@ model User {
 
   is_verified Boolean @default(false)
   is_accepted Boolean @default(false)
+  is_activated Boolean @default(false)
 }
 
 model Role {

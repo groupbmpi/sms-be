@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
-import { IPagination, IRegisterUserBody, IUnverifiedUserData, IVerifyUserBody, ResponseBuilder } from "@types";
-import { InternalServerErrorException, HttpException } from "@exceptions";
+import { IActivateUserBody, IPagination, IRegisterUserBody, IUnverifiedUserData, IVerifyUserBody, ResponseBuilder } from "@types";
+import { InternalServerErrorException, HttpException, BadRequestException } from "@exceptions";
 import { UserHandler } from "@handlers";
 import { BaseController } from "@controllers";
+import { User } from "@prisma/client";
+import bcrypt from "bcrypt";
 
 class UserController extends BaseController<UserHandler> {
     constructor() {
@@ -120,6 +122,94 @@ class UserController extends BaseController<UserHandler> {
                     200
                 )
             )
+        }catch(error){
+            console.error(error)
+
+            res.status(500).json(
+                ResponseBuilder.error(
+                    null,
+                    InternalServerErrorException.MESSAGE,
+                    InternalServerErrorException.STATUS_CODE
+                )
+            )
+        }
+    }
+
+    public activateUser = async (req: Request, res: Response) => {
+        try{
+            const body : IActivateUserBody = req.body;
+            const user : User = await this.handler.getUserByEmail(body.email);
+
+            if(!user){
+                res.status(400).json(
+                    ResponseBuilder.error(
+                        null,
+                        "User not found",
+                        BadRequestException.STATUS_CODE
+                    )
+                );
+                return;
+            }
+
+            
+            if(!user.is_verified){
+                res.status(400).json(
+                    ResponseBuilder.error(
+                        null,
+                        "User is not verified yet",
+                        BadRequestException.STATUS_CODE
+                    )
+                );
+                return;
+            }
+
+            if(!user.is_accepted){
+                res.status(400).json(
+                    ResponseBuilder.error(
+                        null,
+                        "User is not accepted",
+                        BadRequestException.STATUS_CODE
+                    )
+                );
+                return;
+            }
+
+            if(user.is_activated){
+                res.status(400).json(
+                    ResponseBuilder.error(
+                        null,
+                        "User already activated",
+                        BadRequestException.STATUS_CODE
+                    )
+                );
+                return;
+            }
+
+            const isPassCorrect : boolean = await bcrypt.compare(body.password,user.password as string);
+            const isOtpCorrect : boolean = await bcrypt.compare(body.otp, user.otp_token as string);
+
+            if(isPassCorrect && isOtpCorrect){
+
+                await this.handler.activateUser(user.id);
+    
+                res.status(200).json(
+                    ResponseBuilder.success(
+                        null,
+                        "User is activated successfully",
+                        200
+                    )
+                )
+            }else{
+                res.status(400).json(
+                    ResponseBuilder.success(
+                        null,
+                        "Password or otp is incorrect",
+                        BadRequestException.STATUS_CODE
+                    )
+                )
+            }
+
+
         }catch(error){
             console.error(error)
 
