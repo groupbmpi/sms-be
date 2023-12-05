@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
-import { IActivateUserBody, IPagination, IRegisterUserBody, IUnverifiedUserData, IVerifyUserBody, ResponseBuilder } from "@types";
+import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterUserBody, IUnverifiedUserData, IVerifyUserBody, ResponseBuilder } from "@types";
 import { InternalServerErrorException, HttpException, BadRequestException } from "@exceptions";
 import { UserHandler } from "@handlers";
 import { BaseController } from "@controllers";
 import { User } from "@prisma/client";
 import bcrypt from "bcrypt";
+import { ILoginResponse } from "@types";
 
 class UserController extends BaseController<UserHandler> {
     constructor() {
@@ -135,10 +136,50 @@ class UserController extends BaseController<UserHandler> {
         }
     }
 
+    public loginUser = async (req: Request, res: Response) => {
+        try{
+            const body : ILoginUserBody = req.body;
+            
+            const token = await this.handler.login(body);
+
+            if(token == ""){
+                res.status(400).json(
+                    ResponseBuilder.error(
+                        null,
+                        "Login fail",
+                        BadRequestException.STATUS_CODE
+                    )
+                );
+                return;
+            }else{
+                const response : ILoginResponse = {
+                    token : token
+                }
+                res.status(200).json(
+                    ResponseBuilder.success(
+                        token,
+                        "Login successful",
+                        200
+                    )
+                )
+            }
+        }catch(error){
+            console.log(error);
+
+            res.status(500).json(
+                ResponseBuilder.error(
+                    null,
+                    InternalServerErrorException.MESSAGE,
+                    InternalServerErrorException.STATUS_CODE
+                )
+            );
+        }
+    }
+
     public activateUser = async (req: Request, res: Response) => {
         try{
             const body : IActivateUserBody = req.body;
-            const user : User = await this.handler.getUserByEmail(body.email);
+            const user : User | null = await this.handler.getUserByEmail(body.email);
 
             if(!user){
                 res.status(400).json(

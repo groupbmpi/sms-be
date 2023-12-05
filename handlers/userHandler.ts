@@ -1,11 +1,12 @@
 import { Lembaga, User } from "@prisma/client";
-import { IRegisterUserBody,IVerifyUserBody, LEMBAGA_OTHERS } from "@types";
+import { ILoginUserBody, IRegisterUserBody,IVerifyUserBody, LEMBAGA_OTHERS } from "@types";
 import { BaseHandler } from "@handlers";
 import { IPagination, IUnverifiedUserData } from "@types";
 import { countSkipped } from "@utils";
 import { generatePassword, generateRandomNumber } from "utils/user";
 import { OTP_LENGTH, SALT_ROUND } from "constant";
 import bcrypt from "bcrypt";
+import * as jwt from "../utils/jwt";
 
 export class UserHandler extends BaseHandler{
 
@@ -67,6 +68,39 @@ export class UserHandler extends BaseHandler{
             return newUser;
         }
 
+    }
+
+    public async login(
+        body : ILoginUserBody
+    ) : Promise<string>{
+        const user = await this.prisma.user.findFirst({
+            where : {
+                email : body.email
+            },
+            include : {
+                role : true
+            }
+        })
+
+        if(!user){
+            return "";
+        }
+
+        if(!user.is_activated || !user.is_verified || !user.is_accepted){
+            return "";
+        }
+
+        const isPassCorrect : boolean = await bcrypt.compare(body.password,user.password as string);
+
+        if(isPassCorrect){
+            const token = jwt.sign({
+                id : user.id,
+                role : user.role.akses
+            });
+            return token;
+        }else{
+            return "";
+        }
     }
 
     public async verifyUser(
@@ -133,12 +167,13 @@ export class UserHandler extends BaseHandler{
 
     public async getUserByEmail(
         email : string
-    ) : Promise<User>{
-        const user : User = await this.prisma.user.findFirstOrThrow({
+    ) : Promise<User | null>{
+        const user : User | null = await this.prisma.user.findFirst({
             where : {
                 email : email
             }
         });
+
         return user;
     }
 

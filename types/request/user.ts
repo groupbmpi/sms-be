@@ -16,4 +16,9 @@ export interface IActivateUserBody{
     otp : string
 }
 
+export interface ILoginUserBody{
+    email : string,
+    password : string
+}
+
 export const LEMBAGA_OTHERS = "Others"

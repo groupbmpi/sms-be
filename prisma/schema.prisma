@@ -53,8 +53,8 @@ model User {
   noHandphone String @unique @db.VarChar(255)
   linkFoto    String @db.Text
   lembagaOthers String? @db.Text
-  password String? @db.Text
-  otp_token String? @db.Text
+  password String @db.Text @default("")
+  otp_token String @db.Text @default("")
 
   kegiatan LaporanKegiatan[]
   berita   Berita[]
