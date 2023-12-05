@@ -12,28 +12,35 @@ datasource db {
 
 enum Kategori {
   KEMENTRIAN
-  PEMERINTAHDAERAH
-  LEMBAGASWADAYAMASYARAKAT
-  INSTITUSIPENDIDIKAN
-  DUNIAUSAHA
+  PEMERINTAH_DAERAH
+  LEMBAGA_SWADAYA_MASYARAKAT
+  INSTITUSI_PENDIDIKAN
+  DUNIA_USAHA
   MEDIA
-  MASYARAKATTERDAMPAK
+  MASYARAKAT_TERDAMPAK
 }
 
 enum StatusKegiatan {
-  SUDAHTERLAKSANA
-  BELUMTERLAKSANA
-  SEDANGBERJALAN
-  TAHAPKOORDINASI
-  SEDANGTERKENDALA
+  BELUM_TERLAKSANA
+  TAHAP_KOORDINASI
+  SEDANG_BERJALAN
+  SUDAH_TERLAKSANA
+  SEDANG_TERKENDALA
 }
 
-//TODO: Update enum
 enum KategoriMasalah {
   ADVOKASI
   EDUKASI
+  PEMBERDAYAAN_MASYARAKAT
 }
 
+enum MetodePelaksanaan {
+  DARING
+  LURING
+  HYBRID
+  FOCUS_GROUP_DISCUSSION
+  TALKSHOW
+}
 
 model Testing {
   id        Int      @id @default(autoincrement())
@@ -47,28 +54,31 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  namaLengkap String @db.VarChar(255)
-  alamat      String @db.VarChar(255)
-  email       String @unique @db.VarChar(255)
-  noHandphone String @unique @db.VarChar(255)
-  linkFoto    String @db.Text
+  namaLengkap   String  @db.VarChar(255)
+  alamat        String  @db.VarChar(255)
+  email         String  @unique @db.VarChar(255)
+  noHandphone   String  @unique @db.VarChar(255)
+  linkFoto      String  @db.Text
   lembagaOthers String? @db.Text
-  password String @db.Text @default("")
-  otp_token String @db.Text @default("")
+  kecamatan     String  @db.VarChar(255)
+  kelurahan     String  @db.VarChar(255)
+  kodePos       String  @db.VarChar(255)
+  password      String  @default("") @db.Text
+  otp_token     String  @default("") @db.Text
 
   kegiatan LaporanKegiatan[]
   berita   Berita[]
   masalah  LaporanMasalah[]
 
-  lembaga    Lembaga? @relation(fields: [lembaga_id], references: [id])
-  lembaga_id Int?
-  role       Role    @relation(fields: [role_id], references: [id])
-  role_id    Int
-  kabupatenKota KabupatenKota @relation(fields: [kabupatenKota_id], references: [id])
+  lembaga          Lembaga?      @relation(fields: [lembaga_id], references: [id])
+  lembaga_id       Int?
+  role             Role          @relation(fields: [role_id], references: [id])
+  role_id          Int
+  kabupatenKota    KabupatenKota @relation(fields: [kabupatenKota_id], references: [id])
   kabupatenKota_id Int
 
-  is_verified Boolean @default(false)
-  is_accepted Boolean @default(false)
+  is_verified  Boolean @default(false)
+  is_accepted  Boolean @default(false)
   is_activated Boolean @default(false)
 }
 
@@ -100,15 +110,18 @@ model LaporanKegiatan {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  namaKegiatan          String         @db.Text
-  tujuan                String         @db.Text
-  deskripsi             String         @db.Text
-  statusKegiatan        StatusKegiatan
-  indikatorKeberhasilan String         @db.Text
-  target                String         @db.Text
-  jadwal                DateTime
-  kebutuhanLogistik     String         @db.Text
-  linkDokumen           String         @db.Text
+  namaKegiatan                String         @db.Text
+  tujuan                      String         @db.Text
+  deskripsi                   String         @db.Text
+  statusKegiatan              StatusKegiatan
+  indikatorKeberhasilan       String         @db.Text
+  target                      String         @db.Text
+  jadwalMulai                 DateTime
+  jadwalSelesai               DateTime
+  kebutuhanLogistikTerpenuhi  String         @db.Text
+  kebutuhanLogistikDibutuhkan String         @db.Text
+  linkDokumen                 String         @db.Text
+  keteranganTambahan          String         @default("") @db.Text
 
   user    User @relation(fields: [user_id], references: [id])
   user_id Int
@@ -157,7 +170,7 @@ model KabupatenKota {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  nama String     @db.VarChar(255)
+  nama String @db.VarChar(255)
 
   user User[]
 
