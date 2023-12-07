@@ -10,3 +10,8 @@ export interface IActivityReportQuery extends IPagination {
 
 type PropsLaporanKegiatanOmitted = "id" | "user_id" | "createdAt" | "updatedAt"
 export interface IActivityReportBody extends Omit<LaporanKegiatan, PropsLaporanKegiatanOmitted>{}
+
+export interface IActivitiesDTO {
+    data: LaporanKegiatan[],
+    countPages: number,
+}

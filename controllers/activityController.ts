@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { IActivityReportBody, IActivityReportQuery, ResponseBuilder } from "@types";
+import { IActivitiesDTO, IActivityReportBody, IActivityReportQuery, ResponseBuilder } from "@types";
 import { ActivityHandler } from "@handlers";
 import { IActivityReportData } from "@types";
 import {InternalServerErrorException } from "exceptions";
@@ -15,13 +15,13 @@ class ActivityController extends BaseController<ActivityHandler> {
             
             let { limit, page, ...query } = req.query
             
-            const activityReport : IActivityReportData[] = await this.handler.getReport(
+            const activityReport : IActivitiesDTO = await this.handler.getReport(
                 query,
                 { limit, page }
             )
 
             res.status(200).json(
-                ResponseBuilder.success<IActivityReportData[]>(
+                ResponseBuilder.success<IActivitiesDTO>(
                     activityReport,
                     "",
                     20

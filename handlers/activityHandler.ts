@@ -1,6 +1,6 @@
 import { LaporanKegiatan } from "@prisma/client";
 import { BaseHandler } from "@handlers";
-import { IActivityReportBody, IActivityReportQuery } from "@types";
+import { IActivitiesDTO, IActivityReportBody, IActivityReportQuery } from "@types";
 import { IPagination } from "@types";
 import { countSkipped } from "@utils";
 import { IActivityReportData } from "@types";
@@ -10,7 +10,7 @@ export class ActivityHandler extends BaseHandler{
     public async getReport(
         query : Omit<IActivityReportQuery, "limit" | "offset">,
         pagination : IPagination,
-    ): Promise<IActivityReportData[]>{
+    ): Promise<IActivitiesDTO>{
         const skipped = countSkipped(pagination.page!!, pagination.limit!!)
 
         const activityReport : LaporanKegiatan[] = await this.prisma.laporanKegiatan.findMany({
@@ -19,7 +19,12 @@ export class ActivityHandler extends BaseHandler{
             skip: skipped,
         })
 
-        return activityReport
+        const totalData : number = await this.prisma.laporanKegiatan.count()
+
+        return {
+            data: activityReport,
+            countPages: Math.ceil(totalData / pagination.limit!!),
+        }
     }
 
     public async createReport(
