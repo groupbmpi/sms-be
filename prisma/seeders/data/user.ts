@@ -1,6 +1,6 @@
 import { User } from "@prisma/client";
 
-export const userData : Omit<User, 'id'|'createdAt'|'updatedAt'>[] = [
+export const userData : Omit<User, 'id'|'createdAt'|'updatedAt' | 'lembagaOthers' | 'otp_token'>[] = [
     {
         namaLengkap : "Gerry",
         email: "gerry@email.com",
@@ -10,8 +10,13 @@ export const userData : Omit<User, 'id'|'createdAt'|'updatedAt'>[] = [
         lembaga_id: 1,
         role_id: 1,
         is_verified: true,
-        is_accepted: false,
+        is_accepted: true,
+        is_activated: true,
         kabupatenKota_id: 1,
+        kecamatan: "Coblong",
+        kelurahan: "Dago",
+        kodePos: "40135",
+        password: "password",
     },
     {
         namaLengkap : "Firizky",
@@ -22,8 +27,13 @@ export const userData : Omit<User, 'id'|'createdAt'|'updatedAt'>[] = [
         lembaga_id: 2,
         role_id: 1,
         is_verified: true,
-        is_accepted: false,
+        is_accepted: true,
+        is_activated: true,
         kabupatenKota_id: 11,
+        kecamatan: "Coblong",
+        kelurahan: "Dago",
+        kodePos: "40135",
+        password: "password",
     },
     {
         namaLengkap : "Prima",
@@ -34,8 +44,13 @@ export const userData : Omit<User, 'id'|'createdAt'|'updatedAt'>[] = [
         lembaga_id: 3,
         role_id: 1,
         is_verified: true,
-        is_accepted: false,
+        is_accepted: true,
+        is_activated: true,
         kabupatenKota_id: 111,
+        kecamatan: "Coblong",
+        kelurahan: "Dago",
+        kodePos: "40135",
+        password: "password",
     },
     {
         namaLengkap : "Dwi",
@@ -46,8 +61,13 @@ export const userData : Omit<User, 'id'|'createdAt'|'updatedAt'>[] = [
         lembaga_id: 4,
         role_id: 1,
         is_verified: true,
-        is_accepted: false,
+        is_accepted: true,
+        is_activated: true,
         kabupatenKota_id: 211,
+        kecamatan: "Coblong",
+        kelurahan: "Dago",
+        kodePos: "40135",
+        password: "password",
     },
     {
         namaLengkap : "Vincent",
@@ -58,7 +78,12 @@ export const userData : Omit<User, 'id'|'createdAt'|'updatedAt'>[] = [
         lembaga_id: 5,
         role_id: 1,
         is_verified: true,
-        is_accepted: false,
+        is_accepted: true,
+        is_activated: true,
         kabupatenKota_id: 311,
+        kecamatan: "Coblong",
+        kelurahan: "Dago",
+        kodePos: "40135",
+        password: "password",
     },
 ]

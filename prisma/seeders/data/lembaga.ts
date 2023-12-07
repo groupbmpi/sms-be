@@ -39,42 +39,42 @@ export const lembagaData : Omit<Lembaga, 'id'|'createdAt'|'updatedAt'>[] = [
     },
     {
         nama: "Dinas Kesehatan Provinsi",
-        kategori: Kategori.PEMERINTAHDAERAH,
+        kategori: Kategori.PEMERINTAH_DAERAH,
         alamat: ""
     },
     {
         nama: "Dinas Kesehatan Kabupaten/Kota",
-        kategori: Kategori.PEMERINTAHDAERAH,
+        kategori: Kategori.PEMERINTAH_DAERAH,
         alamat: ""
     },
     {
         nama: "Dinas Pendidikan Provinsi",
-        kategori: Kategori.PEMERINTAHDAERAH,
+        kategori: Kategori.PEMERINTAH_DAERAH,
         alamat: ""
     },
     {
         nama: "Dinas Pendidikan Kabupaten/Kota",
-        kategori: Kategori.PEMERINTAHDAERAH,
+        kategori: Kategori.PEMERINTAH_DAERAH,
         alamat: ""
     },
     {
         nama: "Dinas Komunikasi dan Informatika Provinsi",
-        kategori: Kategori.PEMERINTAHDAERAH,
+        kategori: Kategori.PEMERINTAH_DAERAH,
         alamat: ""
     },
     {
         nama: "Dinas Komunikasi dan Informatika Kabupaten/Kota",
-        kategori: Kategori.PEMERINTAHDAERAH,
+        kategori: Kategori.PEMERINTAH_DAERAH,
         alamat: ""
     },
     {
         nama: "Badan Perencanaan Daerah",
-        kategori: Kategori.PEMERINTAHDAERAH,
+        kategori: Kategori.PEMERINTAH_DAERAH,
         alamat: ""
     },
     {
         nama: "Humas/Protokoler Pemerintah Provinsi",
-        kategori: Kategori.PEMERINTAHDAERAH,
+        kategori: Kategori.PEMERINTAH_DAERAH,
         alamat: ""
     },
 ]
