@@ -87,9 +87,9 @@ class ProblemController extends BaseController<ProblemHandler> {
 
 	create = async (req: Request, res: Response) => {
         try {
-            const { description, category, creatorId } = req.body
+            const { description, category, creatorId, provinsiId } = req.body
 
-            const problem = await this.handler.create(description, category, creatorId)
+            const problem = await this.handler.create(description, category, creatorId, provinsiId)
 
             res.status(201).json(
                 ResponseBuilder.success(

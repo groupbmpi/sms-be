@@ -49,6 +49,9 @@ class UserController extends BaseController<UserHandler> {
                 linkFoto : req.body.linkFoto,
                 namaLengkap : req.body.namaLengkap,
                 noHandphone : req.body.noHandphone,
+                kecamatan: req.body.kecamatan,
+                kelurahan: req.body.kelurahan,
+                kodePos: req.body.kodePos,
                 is_accepted : false,
                 is_verified : false,
             }

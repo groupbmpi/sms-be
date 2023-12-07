@@ -88,7 +88,8 @@ export class ProblemHandler extends BaseHandler{
     public async create(
         problem: string,
         category: KategoriMasalah,
-        creatorId: number
+        creatorId: number,
+        provinsiId: number,
     ): Promise<LaporanMasalah> {
 
         if(creatorId === -1) {
@@ -96,6 +97,11 @@ export class ProblemHandler extends BaseHandler{
                 data: {
                     masalah: problem,
                     kategoriMasalah: category,
+                    provinsi : {
+                        connect: {
+                            id: provinsiId,
+                        }
+                    }
                 }
             });
         } else {
@@ -106,6 +112,11 @@ export class ProblemHandler extends BaseHandler{
                     user: {
                         connect: {
                             id: creatorId,
+                        }
+                    },
+                    provinsi : {
+                        connect: {
+                            id: provinsiId,
                         }
                     }
                 }
