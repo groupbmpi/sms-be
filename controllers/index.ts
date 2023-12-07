@@ -3,6 +3,7 @@ import ProblemController from "./problemController";
 import NewsController from "./newsController";
 import UserController from "./userController";
 import ActivityController from "./activityController";
+import DataController from "./dataController";
 
 export {
     BaseController,
@@ -10,4 +11,5 @@ export {
     NewsController,
     UserController,
     ActivityController,
+    DataController,
 }

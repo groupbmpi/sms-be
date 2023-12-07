@@ -112,3 +112,5 @@ class DataController extends BaseController<EnumHandler>{
         }
     }
 }
+
+export default new DataController();

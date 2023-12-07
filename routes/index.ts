@@ -3,6 +3,7 @@ import ProblemRoutes from "./problemRoutes";
 import NewsRoutes from './newsRoutes';
 import UserRoutes from './userRoutes';
 import ActivityRoutes from "./activityRoutes";
+import DataRoutes from "./dataRoutes";
 
 export {
     BaseRoutes,
@@ -10,4 +11,5 @@ export {
     NewsRoutes,
     UserRoutes,
     ActivityRoutes,
+    DataRoutes,
 }

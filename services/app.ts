@@ -3,7 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
-import { ActivityRoutes, NewsRoutes, ProblemRoutes, UserRoutes } from '@routes';
+import { ActivityRoutes, NewsRoutes, ProblemRoutes, UserRoutes, DataRoutes } from '@routes';
 
 export class ExpressInstance {
     private static expressInstance : ExpressInstance;
@@ -34,6 +34,7 @@ export class ExpressInstance {
         this._app.use('/api/v1/user', UserRoutes);
         this._app.use('/api/v1/news', NewsRoutes);
         this._app.use('/api/v1/activity', ActivityRoutes);
+        this._app.use('/api/v1/data', DataRoutes);
     }
 
     public static getInstance(): ExpressInstance {
