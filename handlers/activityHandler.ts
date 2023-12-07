@@ -3,7 +3,6 @@ import { BaseHandler } from "@handlers";
 import { IActivitiesDTO, IActivityReportBody, IActivityReportQuery } from "@types";
 import { IPagination } from "@types";
 import { countSkipped } from "@utils";
-import { IActivityReportData } from "@types";
 
 export class ActivityHandler extends BaseHandler{
 

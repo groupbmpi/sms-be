@@ -121,7 +121,9 @@ model LaporanKegiatan {
   kebutuhanLogistikTerpenuhi  String         @db.Text
   kebutuhanLogistikDibutuhkan String         @db.Text
   linkDokumen                 String         @db.Text
+  metodePelaksanaan           MetodePelaksanaan
   keteranganTambahan          String?        @default("") @db.Text
+
 
   user    User @relation(fields: [user_id], references: [id])
   user_id Int

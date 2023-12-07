@@ -1,4 +1,4 @@
-import { LaporanKegiatan, StatusKegiatan } from "@prisma/client";
+import { LaporanKegiatan, MetodePelaksanaan, StatusKegiatan } from "@prisma/client";
 
 export const laporanKegiatanData : Omit<LaporanKegiatan, 'id'|'createdAt'|'updatedAt' | 'keteranganTambahan'>[] = [
     {
@@ -13,7 +13,9 @@ export const laporanKegiatanData : Omit<LaporanKegiatan, 'id'|'createdAt'|'updat
         kebutuhanLogistikDibutuhkan: "Ini kebutuhan logistik kegiatan 1 dibutuhkan",
         kebutuhanLogistikTerpenuhi: "Ini kebutuhan logistik kegiatan 1 terpenuhi",
         linkDokumen: "",
+        metodePelaksanaan: MetodePelaksanaan.DARING,
         user_id: 1,
+
     },
     {
         namaKegiatan: "Laporan Kegiatan 2",
@@ -27,7 +29,8 @@ export const laporanKegiatanData : Omit<LaporanKegiatan, 'id'|'createdAt'|'updat
         kebutuhanLogistikDibutuhkan: "Ini kebutuhan logistik kegiatan 2 dibutuhkan",
         kebutuhanLogistikTerpenuhi: "Ini kebutuhan logistik kegiatan 2 terpenuhi",        
         linkDokumen: "",
-        user_id: 1,
+        metodePelaksanaan: MetodePelaksanaan.LURING,
+        user_id: 2,
         
     },
     {
@@ -42,8 +45,8 @@ export const laporanKegiatanData : Omit<LaporanKegiatan, 'id'|'createdAt'|'updat
         kebutuhanLogistikDibutuhkan: "Ini kebutuhan logistik kegiatan 3 dibutuhkan",
         kebutuhanLogistikTerpenuhi: "Ini kebutuhan logistik kegiatan 3 terpenuhi",        
         linkDokumen: "",
-        user_id: 1,
-        
+        metodePelaksanaan: MetodePelaksanaan.TALKSHOW,
+        user_id: 3,
     },
     {
         namaKegiatan: "Laporan Kegiatan 4",
@@ -57,7 +60,8 @@ export const laporanKegiatanData : Omit<LaporanKegiatan, 'id'|'createdAt'|'updat
         kebutuhanLogistikDibutuhkan: "Ini kebutuhan logistik kegiatan 4 dibutuhkan",
         kebutuhanLogistikTerpenuhi: "Ini kebutuhan logistik kegiatan 4 terpenuhi",        
         linkDokumen: "",
-        user_id: 1,
+        metodePelaksanaan: MetodePelaksanaan.FOCUS_GROUP_DISCUSSION,
+        user_id: 4,
         
     },
     {
@@ -72,7 +76,7 @@ export const laporanKegiatanData : Omit<LaporanKegiatan, 'id'|'createdAt'|'updat
         kebutuhanLogistikDibutuhkan: "Ini kebutuhan logistik kegiatan 5 dibutuhkan",
         kebutuhanLogistikTerpenuhi: "Ini kebutuhan logistik kegiatan 5 terpenuhi",        
         linkDokumen: "",
-        user_id: 1,
-        
+        metodePelaksanaan: MetodePelaksanaan.HYBRID,
+        user_id: 5,
     },
 ]
