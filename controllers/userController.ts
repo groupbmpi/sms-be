@@ -57,11 +57,12 @@ class UserController extends BaseController<UserHandler> {
             }
             const lembagaName : string = req.body.lembagaName;
             const lembagaOthers : string | null = req.body.lembagaOthers;
-            const kabupatenKotaID : number = req.body.kabupatenKotaID;
+            const kabupatenKota : string = req.body.kabupatenKota;
+            const provinsi : string = req.body.provinsi;
             const roleID : number = 1;
         
             // TODO: add role user to database
-            await this.handler.addUser(body,lembagaName,lembagaOthers,roleID,kabupatenKotaID);
+            await this.handler.addUser(body,lembagaName,lembagaOthers,roleID,kabupatenKota,provinsi);
 
 
             res.status(201).json(

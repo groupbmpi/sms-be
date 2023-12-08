@@ -15,10 +15,18 @@ export class UserHandler extends BaseHandler{
         lembagaName : string,
         lembagaOthers : string | null,
         roleID : number,
-        kabupatenKotaID : number
+        kabupatenKota : string,
+        provinsi : string
     ): Promise<User>{
+        const kabupatenKotaUser = await this.prisma.kabupatenKota.findFirstOrThrow({
+            where : {
+                nama : kabupatenKota,
+                provinsi : {
+                    nama : provinsi
+                }
+            }
+        })
         if(lembagaName == LEMBAGA_OTHERS){
-            const lembagaID = undefined;
 
             const newUser : User = await this.prisma.user.create({
                 data: {
@@ -31,7 +39,7 @@ export class UserHandler extends BaseHandler{
                     },
                     kabupatenKota : {
                         connect : {
-                            id : kabupatenKotaID
+                            id : kabupatenKotaUser.id
                         }
                     }
                 },
@@ -60,7 +68,7 @@ export class UserHandler extends BaseHandler{
                     },
                     kabupatenKota : {
                         connect : {
-                            id : kabupatenKotaID
+                            id : kabupatenKotaUser.id
                         }
                     }
                 },
