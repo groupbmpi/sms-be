@@ -32,6 +32,8 @@ export class UserHandler extends BaseHandler{
                 data: {
                     ...body,
                     lembagaOthers : lembagaOthers,
+                    password : "",
+                    otp_token : "",
                     role : {
                         connect : {
                             id : roleID,
@@ -56,6 +58,8 @@ export class UserHandler extends BaseHandler{
                 data: {
                     ...body,
                     lembagaOthers : lembagaOthers,
+                    password : "",
+                    otp_token : "",
                     lembaga: {
                         connect: {
                             id: lembagaID,
