@@ -112,6 +112,25 @@ export class UserHandler extends BaseHandler{
         if(body.statusAcc){
             const pass : string = generatePassword();
             const otp : string = generateRandomNumber(OTP_LENGTH);
+
+            const currentUser : User = await this.prisma.user.findFirstOrThrow({
+                where : {
+                    id : body.userID
+                }
+            });
+
+            // create new lembaga
+            if(currentUser.lembaga_id == null){
+                const newLembaga : Lembaga = await this.prisma.lembaga.create({
+                    data : {
+                        nama : currentUser.lembagaOthers as string,
+                        alamat : currentUser.alamat,
+                        kategori : body.kategoriLembaga
+                    }
+                })
+                currentUser.lembaga_id = newLembaga.id;
+            }
+
             newUser = await this.prisma.user.update({
                 where: {
                     id : body.userID
@@ -120,7 +139,12 @@ export class UserHandler extends BaseHandler{
                     is_verified: true,
                     is_accepted: body.statusAcc,
                     password : await bcrypt.hash(pass,SALT_ROUND),
-                    otp_token : await bcrypt.hash(otp, SALT_ROUND)
+                    otp_token : await bcrypt.hash(otp, SALT_ROUND),
+                    lembaga : {
+                        connect : {
+                            id : currentUser.lembaga_id
+                        }
+                    }
                 },
             });
         }else{

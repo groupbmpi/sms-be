@@ -1,4 +1,4 @@
-import { LaporanKegiatan, User } from "@prisma/client";
+import { Kategori, LaporanKegiatan, User } from "@prisma/client";
 import { IPagination } from "./pagination";
 
 
@@ -7,7 +7,8 @@ export interface IRegisterUserBody extends Omit<User,PropsRegisterUserOmitted>{}
 
 export interface IVerifyUserBody{
     userID: number,
-    statusAcc: boolean
+    statusAcc: boolean,
+    kategoriLembaga : Kategori
 }
 
 export interface IActivateUserBody{
