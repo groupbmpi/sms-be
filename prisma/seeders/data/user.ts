@@ -1,6 +1,6 @@
 import { User } from "@prisma/client";
 
-export const userData : Omit<User, 'id'|'createdAt'|'updatedAt' | 'lembagaOthers' | 'otp_token'>[] = [
+export const userData : Omit<User, 'id'|'createdAt'|'updatedAt' | 'lembagaOthers'>[] = [
     {
         namaLengkap : "Gerry",
         email: "gerry@email.com",
@@ -17,6 +17,7 @@ export const userData : Omit<User, 'id'|'createdAt'|'updatedAt' | 'lembagaOthers
         kelurahan: "Dago",
         kodePos: "40135",
         password: "password",
+        otp_token: "",
     },
     {
         namaLengkap : "Firizky",
@@ -34,6 +35,7 @@ export const userData : Omit<User, 'id'|'createdAt'|'updatedAt' | 'lembagaOthers
         kelurahan: "Dago",
         kodePos: "40135",
         password: "password",
+        otp_token: "",
     },
     {
         namaLengkap : "Prima",
@@ -51,6 +53,7 @@ export const userData : Omit<User, 'id'|'createdAt'|'updatedAt' | 'lembagaOthers
         kelurahan: "Dago",
         kodePos: "40135",
         password: "password",
+        otp_token: "",
     },
     {
         namaLengkap : "Dwi",
@@ -68,6 +71,7 @@ export const userData : Omit<User, 'id'|'createdAt'|'updatedAt' | 'lembagaOthers
         kelurahan: "Dago",
         kodePos: "40135",
         password: "password",
+        otp_token: "",
     },
     {
         namaLengkap : "Vincent",
@@ -85,5 +89,6 @@ export const userData : Omit<User, 'id'|'createdAt'|'updatedAt' | 'lembagaOthers
         kelurahan: "Dago",
         kodePos: "40135",
         password: "password",
+        otp_token: "",
     },
 ]

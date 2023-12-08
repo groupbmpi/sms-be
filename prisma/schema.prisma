@@ -63,8 +63,8 @@ model User {
   kecamatan     String  @db.VarChar(255)
   kelurahan     String  @db.VarChar(255)
   kodePos       String  @db.VarChar(255)
-  password      String  @default("") @db.Text
-  otp_token     String  @default("") @db.Text
+  password      String  @db.Text
+  otp_token     String  @db.Text
 
   kegiatan LaporanKegiatan[]
   berita   Berita[]
@@ -110,20 +110,19 @@ model LaporanKegiatan {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  namaKegiatan                String         @db.Text
-  tujuan                      String         @db.Text
-  deskripsi                   String         @db.Text
+  namaKegiatan                String            @db.Text
+  tujuan                      String            @db.Text
+  deskripsi                   String            @db.Text
   statusKegiatan              StatusKegiatan
-  indikatorKeberhasilan       String         @db.Text
-  target                      String         @db.Text
+  indikatorKeberhasilan       String            @db.Text
+  target                      String            @db.Text
   jadwalMulai                 DateTime
   jadwalSelesai               DateTime
-  kebutuhanLogistikTerpenuhi  String         @db.Text
-  kebutuhanLogistikDibutuhkan String         @db.Text
-  linkDokumen                 String         @db.Text
+  kebutuhanLogistikTerpenuhi  String            @db.Text
+  kebutuhanLogistikDibutuhkan String            @db.Text
+  linkDokumen                 String            @db.Text
   metodePelaksanaan           MetodePelaksanaan
-  keteranganTambahan          String?        @default("") @db.Text
-
+  keteranganTambahan          String?           @db.Text
 
   user    User @relation(fields: [user_id], references: [id])
   user_id Int
