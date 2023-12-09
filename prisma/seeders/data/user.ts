@@ -18,6 +18,7 @@ export const userData : Omit<User, 'id'|'createdAt'|'updatedAt' | 'lembagaOthers
         kodePos: "40135",
         password: "password",
         otp_token: "",
+        kategori : "MEDIA"
     },
     {
         namaLengkap : "Firizky",
@@ -36,6 +37,7 @@ export const userData : Omit<User, 'id'|'createdAt'|'updatedAt' | 'lembagaOthers
         kodePos: "40135",
         password: "password",
         otp_token: "",
+        kategori : "MEDIA"
     },
     {
         namaLengkap : "Prima",
@@ -54,6 +56,7 @@ export const userData : Omit<User, 'id'|'createdAt'|'updatedAt' | 'lembagaOthers
         kodePos: "40135",
         password: "password",
         otp_token: "",
+        kategori : "MEDIA"
     },
     {
         namaLengkap : "Dwi",
@@ -72,6 +75,7 @@ export const userData : Omit<User, 'id'|'createdAt'|'updatedAt' | 'lembagaOthers
         kodePos: "40135",
         password: "password",
         otp_token: "",
+        kategori : "MEDIA"
     },
     {
         namaLengkap : "Vincent",
@@ -90,5 +94,6 @@ export const userData : Omit<User, 'id'|'createdAt'|'updatedAt' | 'lembagaOthers
         kodePos: "40135",
         password: "password",
         otp_token: "",
+        kategori : "MEDIA"
     },
 ]

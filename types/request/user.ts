@@ -7,8 +7,7 @@ export interface IRegisterUserBody extends Omit<User,PropsRegisterUserOmitted>{}
 
 export interface IVerifyUserBody{
     userID: number,
-    statusAcc: boolean,
-    kategoriLembaga : Kategori
+    statusAcc: boolean
 }
 
 export interface IActivateUserBody{

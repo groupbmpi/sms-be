@@ -76,6 +76,8 @@ model User {
   role_id          Int
   kabupatenKota    KabupatenKota @relation(fields: [kabupatenKota_id], references: [id])
   kabupatenKota_id Int
+  
+  kategori Kategori
 
   is_verified  Boolean @default(false)
   is_accepted  Boolean @default(false)

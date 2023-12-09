@@ -54,6 +54,7 @@ class UserController extends BaseController<UserHandler> {
                 kodePos: req.body.kodePos,
                 is_accepted : false,
                 is_verified : false,
+                kategori : req.body.kategori,
             }
             const lembagaName : string = req.body.lembagaName;
             const lembagaOthers : string | null = req.body.lembagaOthers;
