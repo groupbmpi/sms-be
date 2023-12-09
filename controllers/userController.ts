@@ -46,7 +46,6 @@ class UserController extends BaseController<UserHandler> {
             const body : IRegisterUserBody = {
                 alamat : req.body.alamat,
                 email : req.body.email,
-                linkFoto : req.body.linkFoto,
                 namaLengkap : req.body.namaLengkap,
                 noHandphone : req.body.noHandphone,
                 kecamatan: req.body.kecamatan,

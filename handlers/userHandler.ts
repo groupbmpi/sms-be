@@ -34,6 +34,7 @@ export class UserHandler extends BaseHandler{
                     lembagaOthers : lembagaOthers,
                     password : "",
                     otp_token : "",
+                    linkFoto : "",
                     role : {
                         connect : {
                             id : roleID,
@@ -60,6 +61,7 @@ export class UserHandler extends BaseHandler{
                     lembagaOthers : lembagaOthers,
                     password : "",
                     otp_token : "",
+                    linkFoto : "",
                     lembaga: {
                         connect: {
                             id: lembagaID,
@@ -211,7 +213,7 @@ export class UserHandler extends BaseHandler{
                 kecamatan : user.kecamatan,
                 kelurahan : user.kelurahan,
                 kodePos : user.kodePos,
-                
+
             }
         })
 
