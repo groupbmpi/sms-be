@@ -3,7 +3,7 @@ import { DaerahHandler, EnumHandler, LembagaHandler } from "handlers";
 import BaseController from "./baseController";
 import { IDaerahDTO, IFormActivityReportData, IFormProblemReportData, IFormUserData, ResponseBuilder } from "@types";
 import { InternalServerErrorException } from "exceptions";
-import { Lembaga } from "@prisma/client";
+import { Kategori, KategoriMasalah, Lembaga, MetodePelaksanaan, StatusKegiatan } from "@prisma/client";
 
 class DataController extends BaseController<EnumHandler>{
     private lembagaHandler : LembagaHandler
@@ -15,13 +15,13 @@ class DataController extends BaseController<EnumHandler>{
         this.daerahHandler = new DaerahHandler()
     }
 
-    public getDataFormActivityReport = async (req: Request, res: Response)=>{
+    public getDataFormActivityReport = async (_: Request, res: Response)=>{
         try{
             const [kategori, kategoriMasalah, statusKegiatan, metodePelaksanaan] = await Promise.all([
-                this.handler.getKategoriEnum(),
-                this.handler.getKategoriMasalahEnum(),
-                this.handler.getStatusKegiatanEnum(),
-                this.handler.getMetodePelaksanaanEnum()
+                this.handler.getEnum(Kategori),
+                this.handler.getEnum(KategoriMasalah),
+                this.handler.getEnum(StatusKegiatan),
+                this.handler.getEnum(MetodePelaksanaan),
             ])
 
             const daerah : IDaerahDTO[] = await this.daerahHandler.getKabupatenKota()
@@ -52,9 +52,9 @@ class DataController extends BaseController<EnumHandler>{
         }
     }
 
-    public getDataFormProblemReport = async (req: Request, res: Response)=>{
+    public getDataFormProblemReport = async (_: Request, res: Response)=>{
         try{
-            const kategoriMasalah : string[] = await this.handler.getKategoriMasalahEnum()
+            const kategoriMasalah : string[] = this.handler.getEnum(KategoriMasalah)
 
             const provinsi : string[] = await this.daerahHandler.getProvinsi()
 
@@ -81,7 +81,7 @@ class DataController extends BaseController<EnumHandler>{
         }
     }
 
-    public getDataFormUser = async (req: Request, res: Response)=>{
+    public getDataFormUser = async (_: Request, res: Response)=>{
         try{
             const daerah : IDaerahDTO[] = await this.daerahHandler.getKabupatenKota()
 
@@ -89,7 +89,7 @@ class DataController extends BaseController<EnumHandler>{
 
             const lembagaParsed : string[] = lembaga.map((lembaga) => lembaga.nama)
 
-            const kategori : string[] = await this.handler.getKategoriEnum()
+            const kategori : string[] = this.handler.getEnum(Kategori)
 
             res.status(200).json(
                 ResponseBuilder.success<IFormUserData>(

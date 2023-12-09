@@ -38,8 +38,7 @@ export class DaerahHandler extends BaseHandler{
             const kabupatenKotaParsed : string[] = kabupatenKota.map((kab) => kab.nama)
 
             daerah.push({
-                provinsi: prov.nama,
-                kabupatenKota: kabupatenKotaParsed,
+                [prov.nama] : kabupatenKotaParsed 
             })
         }
     
