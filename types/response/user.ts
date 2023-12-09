@@ -6,14 +6,9 @@ export interface ILoginResponse{
     token : string
 }
 
-export interface IUserDTO{
-    id : number,
-    namaLengkap : string,
-    email : string,
-    noHandphone : string,
-    linkFoto : string,
-    lembagaOthers : string,
-    lembaga : string,
+type PropsUserDTOOmitted = "password" | "otp_token" | "is_activated" | "is_verified" | "is_accepted" | "createdAt" | "updatedAt" | "kabupatenKota_id" | "lembaga_id" | "role_id"
+
+export interface IUserDTO extends Omit<User,PropsUserDTOOmitted>{
     kabupatenKota : string,
     provinsi : string,
 }

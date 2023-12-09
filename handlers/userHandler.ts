@@ -206,6 +206,12 @@ export class UserHandler extends BaseHandler{
                 lembaga : user.lembaga ? user.lembaga.nama : "",
                 kabupatenKota : user.kabupatenKota.nama,
                 provinsi : user.kabupatenKota.provinsi.nama,
+                alamat : user.alamat,
+                kategori : user.kategori,
+                kecamatan : user.kecamatan,
+                kelurahan : user.kelurahan,
+                kodePos : user.kodePos,
+                
             }
         })
 
