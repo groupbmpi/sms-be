@@ -89,11 +89,14 @@ class DataController extends BaseController<EnumHandler>{
 
             const lembagaParsed : string[] = lembaga.map((lembaga) => lembaga.nama)
 
+            const kategori : string[] = await this.handler.getKategoriEnum()
+
             res.status(200).json(
                 ResponseBuilder.success<IFormUserData>(
                     {
                         daerah: daerah,
                         lembaga: lembagaParsed,
+                        kategori : kategori
                     },
                     "",
                     200

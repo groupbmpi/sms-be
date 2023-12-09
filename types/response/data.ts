@@ -16,4 +16,5 @@ export interface IFormProblemReportData {
 export interface IFormUserData{
     daerah : IDaerahDTO[],
     lembaga : string[],
+    kategori : string[],
 }
