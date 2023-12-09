@@ -1,3 +1,4 @@
 export interface IDaerahDTO {
-    [key : string] : string[]
+    provinsi: String,
+    kabupatenKota : String[],
 }
