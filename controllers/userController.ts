@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterUserBody, IUnverifiedUserData, IVerifyUserBody, ResponseBuilder } from "@types";
+import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterUserBody, IUnverifiedUserData, IUserDTO, IVerifyUserBody, ResponseBuilder } from "@types";
 import { InternalServerErrorException, HttpException, BadRequestException } from "@exceptions";
 import { UserHandler } from "@handlers";
 import { BaseController } from "@controllers";
@@ -90,14 +90,16 @@ class UserController extends BaseController<UserHandler> {
             const pagination : IPagination = req.query
         
             // TODO: add role user to database
-            const listUnverifiedUser : IUnverifiedUserData[] = await this.handler.getUnverifiedUser(pagination);
+            const listUnverifiedUser : IUserDTO[] = await this.handler.getUnverifiedUser(pagination);
 
 
-            res.status(201).json(
+            res.status(200).json(
                 ResponseBuilder.success(
-                    listUnverifiedUser,
-                    "Register user successfully",
-                    201
+                    {
+                        user:listUnverifiedUser
+                    },
+                    "Get list user successfully",
+                    200
                 )
             )
         }catch(error){

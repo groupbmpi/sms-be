@@ -1,5 +1,5 @@
 import { Lembaga, User } from "@prisma/client";
-import { ILoginUserBody, IRegisterUserBody,IVerifyUserBody, LEMBAGA_OTHERS } from "@types";
+import { ILoginUserBody, IRegisterUserBody,IUserDTO,IVerifyUserBody, LEMBAGA_OTHERS } from "@types";
 import { BaseHandler } from "@handlers";
 import { IPagination, IUnverifiedUserData } from "@types";
 import { countSkipped } from "@utils";
@@ -176,18 +176,40 @@ export class UserHandler extends BaseHandler{
 
     public async getUnverifiedUser(
         pagination : IPagination
-    ): Promise<IUnverifiedUserData[]>{
+    ): Promise<IUserDTO[]>{
         const skipped = countSkipped(pagination.page!!, pagination.limit!!)
 
-        const users : User[] = await this.prisma.user.findMany({
+        const users = await this.prisma.user.findMany({
             where : {
                 is_verified : false
+            },
+            include : {
+                lembaga : true,
+                kabupatenKota : {
+                    include : {
+                        provinsi : true
+                    }
+                }
             },
             take: pagination.limit,
             skip: skipped,
         })
 
-        return users;
+        const userDto : IUserDTO[] = users.map((user) => {
+            return {
+                id : user.id,
+                namaLengkap : user.namaLengkap,
+                email : user.email,
+                noHandphone : user.noHandphone,
+                linkFoto : user.linkFoto,
+                lembagaOthers : user.lembagaOthers as string,
+                lembaga : user.lembaga ? user.lembaga.nama : "",
+                kabupatenKota : user.kabupatenKota.nama,
+                provinsi : user.kabupatenKota.provinsi.nama,
+            }
+        })
+
+        return userDto;
     }
 
     public async getUser(
