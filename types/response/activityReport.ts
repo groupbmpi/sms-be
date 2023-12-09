@@ -1,5 +1,4 @@
-import { LaporanKegiatan } from "@prisma/client";
-import { IActivitiesDTO } from "types/request";
+import { IActivitiesDTO, IActivityDTO } from "types/request";
 
 export interface IActivitiesReportData extends IActivitiesDTO{}
-export interface IActivityReportData extends LaporanKegiatan{}
+export interface IActivityReportData extends IActivityDTO{}

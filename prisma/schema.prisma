@@ -76,7 +76,7 @@ model User {
   role_id          Int
   kabupatenKota    KabupatenKota @relation(fields: [kabupatenKota_id], references: [id])
   kabupatenKota_id Int
-  
+
   kategori Kategori
 
   is_verified  Boolean @default(false)
@@ -116,8 +116,8 @@ model LaporanKegiatan {
   tujuan                      String            @db.Text
   deskripsi                   String            @db.Text
   statusKegiatan              StatusKegiatan
+  bidangKegiatan              KategoriMasalah
   indikatorKeberhasilan       String            @db.Text
-  target                      String            @db.Text
   jadwalMulai                 DateTime
   jadwalSelesai               DateTime
   kebutuhanLogistikTerpenuhi  String            @db.Text
@@ -128,6 +128,9 @@ model LaporanKegiatan {
 
   user    User @relation(fields: [user_id], references: [id])
   user_id Int
+
+  kabupatenKota    KabupatenKota @relation(fields: [kabupatenKota_id], references: [id])
+  kabupatenKota_id Int
 }
 
 model Berita {
@@ -175,8 +178,10 @@ model KabupatenKota {
 
   nama String @db.VarChar(255)
 
-  user User[]
+  user            User[]
+  laporanKegiatan LaporanKegiatan[]
 
   provinsi    Provinsi @relation(fields: [provinsi_id], references: [id])
   provinsi_id Int
+
 }

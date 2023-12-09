@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { IActivitiesDTO, IActivityReportBody, IActivityReportQuery, ResponseBuilder } from "@types";
+import { IActivitiesDTO, IActivityDTO, IActivityReportBody, IActivityReportQuery, ResponseBuilder } from "@types";
 import { ActivityHandler } from "@handlers";
 import { IActivityReportData } from "@types";
 import {InternalServerErrorException } from "exceptions";
@@ -75,9 +75,12 @@ class ActivityController extends BaseController<ActivityHandler> {
         try{
             const id : number = req.query
             const body : IActivityReportBody = req.body
+            //TODO: Get user id from middleware
+            const user_id = 1
 
             const updatedLaporanKegiatan : IActivityReportData = await this.handler.updateReport(
                 body,
+                user_id,
                 id,
             )
 
