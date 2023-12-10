@@ -298,6 +298,11 @@ export class UserHandler extends BaseHandler{
             throw new BadRequestException(`No Handphone ${body.noHandphone} tidak valid`)
         }
 
+        let payload: any = {
+            namaLengkap : body.namaLengkap,
+            noHandphone : body.noHandphone,
+        }
+
         let pictureUploaded = false;
         let oldFilePath = "";
         let newFilePath = "";
@@ -319,6 +324,10 @@ export class UserHandler extends BaseHandler{
                 }
             })
             if (user?.linkFoto) oldFilePath = user.linkFoto;
+            payload = {
+                ...payload,
+                linkFoto: newFilePath
+            }
         }
 
 
@@ -327,16 +336,11 @@ export class UserHandler extends BaseHandler{
                 where: {
                     id: userId,
                 },
-                data: {
-                    namaLengkap: body.namaLengkap,
-                    noHandphone: body.noHandphone,
-                    linkFoto: newFilePath
-                }
+                data: payload
             });
-
-            user.linkFoto = await this.getSignedURL(newFilePath);
-
+            
             if(pictureUploaded && newFilePath !== ""){
+                user.linkFoto = await this.getSignedURL(newFilePath);
                 this.deletePictureFile(oldFilePath);
             }
 

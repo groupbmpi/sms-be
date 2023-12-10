@@ -192,7 +192,7 @@ class UserController extends BaseController<UserHandler> {
         }
     }
 
-    public getRoleUser = async (req: Request, res: Response) => {
+    public getRoleUser = async (req: Request<unknown>, res: Response) => {
         try{
             if(!req.isAuthenticated){
                 res.status(400).json(
@@ -328,14 +328,25 @@ class UserController extends BaseController<UserHandler> {
         }
     }
 
-    public getUser = async (req: Request, res: Response) => {
+    public getUser = async (req: Request<unknown>, res: Response) => {
         try{
             const userID : number = req.userID as number;
+
+
             const user : IUserDTO | null = await this.handler.getUser(userID);
+
 
             if(!user){
                 throw new UnauthorizedException("Anda tidak memiliki akses untuk melihat data ini");
             }
+
+            res.status(200).json(
+                ResponseBuilder.success<IUserDTO>(
+                    user,
+                    "Get user successfully",
+                    200
+                )
+            )
         }catch(error){
             console.error(error)
 
