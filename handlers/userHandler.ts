@@ -1,5 +1,5 @@
 import { Lembaga, User } from "@prisma/client";
-import { ILoginUserBody, IRegisterUserBody,IUserDTO,IVerifyUserBody, LEMBAGA_OTHERS } from "@types";
+import { ILoginUserBody, IRegisterUserBody,IUserBody,IUserDTO,IVerifyUserBody, LEMBAGA_OTHERS } from "@types";
 import { BaseHandler } from "@handlers";
 import { IPagination, IUnverifiedUserData } from "@types";
 import { countSkipped } from "@utils";
@@ -7,8 +7,30 @@ import { generatePassword, generateRandomNumber } from "utils/user";
 import { OTP_LENGTH, SALT_ROUND } from "constant";
 import bcrypt from "bcrypt";
 import * as jwt from "../utils/jwt";
+import { checkValidNoHandphone } from "utils/checker";
+import { BadRequestException, InternalServerErrorException } from "exceptions";
 
 export class UserHandler extends BaseHandler{
+
+    private dataToDTO(user : User, url: string, lembaga: string, kabupatenKota: string, provinsi: string) : IUserDTO{
+        return {
+            id : user.id,
+            namaLengkap : user.namaLengkap,
+            email : user.email,
+            noHandphone : user.noHandphone,
+            linkFoto : url,
+            lembagaOthers : user.lembagaOthers as string,
+            lembaga : lembaga,
+            kabupatenKota : kabupatenKota,
+            provinsi : provinsi,
+            alamat : user.alamat,
+            kategori : user.kategori,
+            kecamatan : user.kecamatan,
+            kelurahan : user.kelurahan,
+            kodePos : user.kodePos,
+        } as IUserDTO
+    }
+
 
     public async addUser(
         body: IRegisterUserBody,
@@ -197,38 +219,45 @@ export class UserHandler extends BaseHandler{
             skip: skipped,
         })
 
-        const userDto : IUserDTO[] = users.map((user) => {
-            return {
-                id : user.id,
-                namaLengkap : user.namaLengkap,
-                email : user.email,
-                noHandphone : user.noHandphone,
-                linkFoto : user.linkFoto,
-                lembagaOthers : user.lembagaOthers as string,
-                lembaga : user.lembaga ? user.lembaga.nama : "",
-                kabupatenKota : user.kabupatenKota.nama,
-                provinsi : user.kabupatenKota.provinsi.nama,
-                alamat : user.alamat,
-                kategori : user.kategori,
-                kecamatan : user.kecamatan,
-                kelurahan : user.kelurahan,
-                kodePos : user.kodePos,
-
+        const userDto : IUserDTO[] = []
+        for(const user of users){
+            let url = ""
+            if(user.linkFoto){
+                url = await this.getSignedURL(user.linkFoto);
             }
-        })
+            const lembaga = user.lembaga? user.lembaga.nama : "";
+            const kabupatenKota = user.kabupatenKota? user.kabupatenKota.nama : "";
+            const provinsi = user.kabupatenKota? user.kabupatenKota.provinsi.nama : "";
+            userDto.push(this.dataToDTO(user, url, lembaga, kabupatenKota, provinsi))
+        }
 
         return userDto;
     }
 
     public async getUser(
         userID : number
-    ) : Promise<User>{
-        const user : User = await this.prisma.user.findFirstOrThrow({
+    ) : Promise<IUserDTO>{
+        const user = await this.prisma.user.findFirstOrThrow({
             where : {
                 id : userID
+            },
+            include : {
+                lembaga : true,
+                kabupatenKota : {
+                    include : {
+                        provinsi : true
+                    }
+                }
             }
         });
-        return user;
+        let url = ""
+        if(user.linkFoto){
+            url = await this.getSignedURL(user.linkFoto);
+        }
+        const lembaga = user.lembaga? user.lembaga.nama : "";
+        const kabupatenKota = user.kabupatenKota? user.kabupatenKota.nama : "";
+        const provinsi = user.kabupatenKota? user.kabupatenKota.provinsi.nama : "";
+        return this.dataToDTO(user, url, lembaga, kabupatenKota, provinsi)
     }
 
     public async getUserByEmail(
@@ -256,29 +285,66 @@ export class UserHandler extends BaseHandler{
         })
     }
 
-    public async edit(userId: number, name?: string, address?:string, institutionId?:number): Promise<User> {
-        const payload: any = {}
-        if (name) {
-            payload.namaLengkap = name;
-        }
-        if (address) {
-            payload.alamat = address;
-        }
-        if (institutionId) {
-            payload.lembaga = {
-                connect: {
-                    id: institutionId,
-                }
-            }
+    public async updateUser(
+        body: IUserBody,
+        userId: number
+    ): Promise<User> {
+        if(!body.namaLengkap){
+            throw new BadRequestException(`Nama Lengkap ${body.namaLengkap} tidak valid`)
         }
 
-        return await this.prisma.user.update({
-            where: {
-                id: userId,
-            },
-            data: {
-                ...payload,
+        if(!body.noHandphone || !checkValidNoHandphone(body.noHandphone)){
+            throw new BadRequestException(`No Handphone ${body.noHandphone} tidak valid`)
+        }
+
+        let pictureUploaded = false;
+        let oldFilePath = "";
+        let newFilePath = "";
+        if (body.avatar) {
+            newFilePath = await this.uploadPictureFile(`profile/${userId}`, body.avatar);
+
+            if (newFilePath === "") {
+                throw new InternalServerErrorException("Gagal menyimpan foto");
             }
-        });
+
+            pictureUploaded = true;
+
+            const user = await this.prisma.user.findFirst({
+                select: {
+                    linkFoto: true
+                },
+                where: {
+                    id: userId
+                }
+            })
+            if (user?.linkFoto) oldFilePath = user.linkFoto;
+        }
+
+
+        try {
+            const user =  await this.prisma.user.update({
+                where: {
+                    id: userId,
+                },
+                data: {
+                    namaLengkap: body.namaLengkap,
+                    noHandphone: body.noHandphone,
+                    linkFoto: newFilePath
+                }
+            });
+
+            user.linkFoto = await this.getSignedURL(newFilePath);
+
+            if(pictureUploaded && newFilePath !== ""){
+                this.deletePictureFile(oldFilePath);
+            }
+
+            return user;
+        } catch(err: any) {
+            if (pictureUploaded) {
+                await this.deletePictureFile(newFilePath);
+            }
+            throw err;
+        }
     }
 }

@@ -12,7 +12,8 @@ class UserRoutes extends BaseRoutes {
 
       this.routes.put("/activate/",UserController.activateUser);
 
-      this.routes.put("/:id", UserController.edit);
+      this.routes.put("/", [AuthMiddleware], UserController.updateUser);
+      this.routes.get("/", [AuthMiddleware], UserController.getUser);
    }
 }
 
