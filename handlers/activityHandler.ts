@@ -66,7 +66,7 @@ export class ActivityHandler extends BaseHandler{
     }
 
     public async getReport(
-        query : Omit<IActivityReportQuery, "limit" | "offset">,
+        query : Omit<IActivityReportQuery, "limit" | "page">,
         pagination : IPagination,
     ): Promise<IActivitiesDTO>{
         const skipped = countSkipped(pagination.page!!, pagination.limit!!)

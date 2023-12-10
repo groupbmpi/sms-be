@@ -14,4 +14,4 @@ export const LEMBAGA = "lembaga";
 export const BERITA = "berita";
 export const LAPORAN_KEGIATAN = "laporankegiatan";
 export const LAPORAN_MASALAH = "laporanmasalah";
-
+    

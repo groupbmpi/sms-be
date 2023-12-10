@@ -1,11 +1,11 @@
 import { BaseRoutes } from "@routes";
 import { ProblemController } from "@controllers"
+import { AuthMiddleware } from "middlewares/auth/authMiddleware";
 
 class ProblemRoutes extends BaseRoutes {
    public setRoutes(): void {
-        this.routes.get("/", ProblemController.getAll);
-        this.routes.get("/:creatorId", ProblemController.getByCreatorId);
-        this.routes.post("/", ProblemController.create);
+        this.routes.get("/", ProblemController.getReport);
+        this.routes.post("/", [AuthMiddleware], ProblemController.createReport);
    }
 }
 

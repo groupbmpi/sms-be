@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterUserBody, IUnverifiedUserData, IUserBody, IUserDTO, IVerifyUserBody, ResponseBuilder } from "@types";
 import { InternalServerErrorException, HttpException, BadRequestException, UnauthorizedException, NotFoundException } from "@exceptions";
+import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterUserBody, IUnverifiedUserData, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, ResponseBuilder } from "@types";
 import { UserHandler } from "@handlers";
 import { BaseController } from "@controllers";
 import { User } from "@prisma/client";
@@ -94,9 +94,7 @@ class UserController extends BaseController<UserHandler> {
         try{
             const pagination : IPagination = req.query
         
-            // TODO: add role user to database
             const listUnverifiedUser : IUserDTO[] = await this.handler.getUnverifiedUser(pagination);
-
 
             res.status(200).json(
                 ResponseBuilder.success(
@@ -122,10 +120,20 @@ class UserController extends BaseController<UserHandler> {
 
     public verifyUser = async (req: Request, res: Response) => {
         try{
-            const body : IVerifyUserBody = req.body
+            const body : IVerifyUserBody = req.body;
         
-            await this.handler.verifyUser(body)
+            const newUser : User | null = await this.handler.verifyUser(body);
 
+            if(!newUser){
+                res.status(400).json(
+                    ResponseBuilder.error(
+                        null,
+                        "User not found",
+                        BadRequestException.STATUS_CODE
+                    )
+                );
+                return;
+            }
 
             res.status(200).json(
                 ResponseBuilder.success(
@@ -163,11 +171,8 @@ class UserController extends BaseController<UserHandler> {
                 );
                 return;
             }else{
-                const response : ILoginResponse = {
-                    token : token
-                }
                 res.status(200).json(
-                    ResponseBuilder.success(
+                    ResponseBuilder.success<string>(
                         token,
                         "Login successful",
                         200
@@ -184,6 +189,54 @@ class UserController extends BaseController<UserHandler> {
                     InternalServerErrorException.STATUS_CODE
                 )
             );
+        }
+    }
+
+    public getRoleUser = async (req: Request, res: Response) => {
+        try{
+            if(!req.isAuthenticated){
+                res.status(400).json(
+                    ResponseBuilder.error(
+                        null,
+                        "User not authenticated",
+                        BadRequestException.STATUS_CODE
+                    )
+                );
+                return;
+            }
+
+            const userID : number = req.userID as number;
+
+            const roleUser : IUserRoleDTO | null = await this.handler.getUserRole(userID);
+
+            if(!roleUser){
+                res.status(400).json(
+                    ResponseBuilder.error(
+                        null,
+                        "User not found",
+                        BadRequestException.STATUS_CODE
+                    )
+                );
+                return;
+            }
+
+            res.status(200).json(
+                ResponseBuilder.success<IUserRoleDTO>(
+                    roleUser,
+                    "Get role user successfully",
+                    200
+                )
+            )
+        }catch(error){
+            console.error(error)
+
+            res.status(500).json(
+                ResponseBuilder.error(
+                    null,
+                    InternalServerErrorException.MESSAGE,
+                    InternalServerErrorException.STATUS_CODE
+                )
+            )
         }
     }
 

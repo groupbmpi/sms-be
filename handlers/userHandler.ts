@@ -1,5 +1,5 @@
 import { Lembaga, User } from "@prisma/client";
-import { ILoginUserBody, IRegisterUserBody,IUserBody,IUserDTO,IVerifyUserBody, LEMBAGA_OTHERS } from "@types";
+import { ILoginUserBody, IRegisterUserBody, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, LEMBAGA_OTHERS } from "@types";
 import { BaseHandler } from "@handlers";
 import { IPagination, IUnverifiedUserData } from "@types";
 import { countSkipped } from "@utils";
@@ -141,7 +141,7 @@ export class UserHandler extends BaseHandler{
 
     public async verifyUser(
         body: IVerifyUserBody
-    ): Promise<User>{
+    ): Promise<User | null>{
 
         let newUser : User;
 
@@ -149,11 +149,15 @@ export class UserHandler extends BaseHandler{
             const pass : string = generatePassword();
             const otp : string = generateRandomNumber(OTP_LENGTH);
 
-            const currentUser : User = await this.prisma.user.findFirstOrThrow({
+            const currentUser : User | null = await this.prisma.user.findFirst({
                 where : {
                     id : body.userID
                 }
             });
+
+            if(!currentUser){
+                return null;
+            }
 
             // create new lembaga
             if(currentUser.lembaga_id == null){
@@ -234,30 +238,27 @@ export class UserHandler extends BaseHandler{
         return userDto;
     }
 
-    public async getUser(
+    public async getUserRole(
         userID : number
-    ) : Promise<IUserDTO>{
-        const user = await this.prisma.user.findFirstOrThrow({
+    ) : Promise<IUserRoleDTO | null>{
+        const user = await this.prisma.user.findFirst({
             where : {
                 id : userID
             },
             include : {
-                lembaga : true,
-                kabupatenKota : {
-                    include : {
-                        provinsi : true
-                    }
-                }
+                role : true
             }
         });
-        let url = ""
-        if(user.linkFoto){
-            url = await this.getSignedURL(user.linkFoto);
+        if(!user){
+            return null;
         }
-        const lembaga = user.lembaga? user.lembaga.nama : "";
-        const kabupatenKota = user.kabupatenKota? user.kabupatenKota.nama : "";
-        const provinsi = user.kabupatenKota? user.kabupatenKota.provinsi.nama : "";
-        return this.dataToDTO(user, url, lembaga, kabupatenKota, provinsi)
+        const res : IUserRoleDTO = {
+            id : user.id,
+            email : user.email,
+            role : user.role.role,
+            akses : user.role.akses
+        }
+        return res;
     }
 
     public async getUserByEmail(
@@ -347,4 +348,31 @@ export class UserHandler extends BaseHandler{
             throw err;
         }
     }
+  
+    public async getUser(
+        userID : number
+    ) : Promise<IUserDTO>{
+        const user = await this.prisma.user.findFirstOrThrow({
+            where : {
+                id : userID
+            },
+            include : {
+                lembaga : true,
+                kabupatenKota : {
+                    include : {
+                        provinsi : true
+                    }
+                }
+            }
+        });
+        let url = ""
+        if(user.linkFoto){
+            url = await this.getSignedURL(user.linkFoto);
+        }
+        const lembaga = user.lembaga? user.lembaga.nama : "";
+        const kabupatenKota = user.kabupatenKota? user.kabupatenKota.nama : "";
+        const provinsi = user.kabupatenKota? user.kabupatenKota.provinsi.nama : "";
+        return this.dataToDTO(user, url, lembaga, kabupatenKota, provinsi)
+    }
 }
+
