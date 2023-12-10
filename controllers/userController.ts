@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterUserBody, IUnverifiedUserData, IUserDTO, IUserRoleDTO, IVerifyUserBody, ResponseBuilder } from "@types";
-import { InternalServerErrorException, HttpException, BadRequestException } from "@exceptions";
+import { InternalServerErrorException, HttpException, BadRequestException, UnauthorizedException, NotFoundException } from "@exceptions";
+import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterUserBody, IUnverifiedUserData, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, ResponseBuilder } from "@types";
 import { UserHandler } from "@handlers";
 import { BaseController } from "@controllers";
 import { User } from "@prisma/client";
@@ -12,33 +12,38 @@ class UserController extends BaseController<UserHandler> {
         super(new UserHandler());
     }
 
-    edit = async (req: Request, res: Response) => {
+    public updateUser = async (req: Request<unknown, unknown, IUserBody, unknown>, res: Response) =>{
         try {
-            const { id, name, address, institutionId } = req.body
+            const body : IUserBody = req.body
 
-            const user = await this.handler.edit(id, name, address, institutionId)
+            if(!req.isAuthenticated){
+                throw new UnauthorizedException()
+            }
+
+            const user_id: number = req.userID as number
+
+            const updatedUser: User = await this.handler.updateUser(
+                body,
+                user_id
+            )
 
             res.status(200).json(
-                ResponseBuilder.success(
-                    user,
-                    "Edit user successfully",
+                ResponseBuilder.success<User>(
+                    updatedUser,
+                    "",
                     200
                 )
             )
         } catch (error: any) {
-            console.log(error)
+            console.error(error)
 
-            if(error instanceof HttpException) {
-                res.status(error.getStatusCode()).json(
-                    ResponseBuilder.error(
-                        null,
-                        error.getMessage(),
-                        error.getStatusCode()
-                    )
-                );
-
-                return;
-            }
+            res.status(InternalServerErrorException.STATUS_CODE).json(
+                ResponseBuilder.error<User>(
+                    null,
+                    InternalServerErrorException.MESSAGE,
+                    InternalServerErrorException.STATUS_CODE,    
+                )
+            )
         }
     }
     public registerUser = async (req: Request, res: Response) => {
@@ -310,6 +315,27 @@ class UserController extends BaseController<UserHandler> {
             }
 
 
+        }catch(error){
+            console.error(error)
+
+            res.status(500).json(
+                ResponseBuilder.error(
+                    null,
+                    InternalServerErrorException.MESSAGE,
+                    InternalServerErrorException.STATUS_CODE
+                )
+            )
+        }
+    }
+
+    public getUser = async (req: Request, res: Response) => {
+        try{
+            const userID : number = req.userID as number;
+            const user : IUserDTO | null = await this.handler.getUser(userID);
+
+            if(!user){
+                throw new UnauthorizedException("Anda tidak memiliki akses untuk melihat data ini");
+            }
         }catch(error){
             console.error(error)
 

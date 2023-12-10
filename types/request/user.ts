@@ -21,4 +21,11 @@ export interface ILoginUserBody{
     password : string
 }
 
+
+export interface IUserBody {
+    namaLengkap : string,
+    noHandphone : string,
+    avatar : string
+}
+
 export const LEMBAGA_OTHERS = "Others"
