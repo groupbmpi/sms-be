@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterUserBody, IUnverifiedUserData, IUserDTO, IVerifyUserBody, ResponseBuilder } from "@types";
+import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterUserBody, IUnverifiedUserData, IUserDTO, IUserRoleDTO, IVerifyUserBody, ResponseBuilder } from "@types";
 import { InternalServerErrorException, HttpException, BadRequestException } from "@exceptions";
 import { UserHandler } from "@handlers";
 import { BaseController } from "@controllers";
@@ -179,6 +179,43 @@ class UserController extends BaseController<UserHandler> {
                     InternalServerErrorException.STATUS_CODE
                 )
             );
+        }
+    }
+
+    public getRoleUser = async (req: Request, res: Response) => {
+        try{
+            if(!req.isAuthenticated){
+                res.status(400).json(
+                    ResponseBuilder.error(
+                        null,
+                        "User not authenticated",
+                        BadRequestException.STATUS_CODE
+                    )
+                );
+                return;
+            }
+
+            const userID : number = req.userID as number;
+
+            const roleUser : IUserRoleDTO = await this.handler.getUserRole(userID);
+
+            res.status(200).json(
+                ResponseBuilder.success(
+                    roleUser,
+                    "Get role user successfully",
+                    200
+                )
+            )
+        }catch(error){
+            console.error(error)
+
+            res.status(500).json(
+                ResponseBuilder.error(
+                    null,
+                    InternalServerErrorException.MESSAGE,
+                    InternalServerErrorException.STATUS_CODE
+                )
+            )
         }
     }
 

@@ -12,3 +12,10 @@ export interface IUserDTO extends Omit<User,PropsUserDTOOmitted>{
     kabupatenKota : string,
     provinsi : string,
 }
+
+export interface IUserRoleDTO{
+    id : number,
+    email : string,
+    role: string,
+    akses : string
+}
