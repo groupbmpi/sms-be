@@ -119,7 +119,7 @@ export class UserHandler extends BaseHandler{
 
     public async verifyUser(
         body: IVerifyUserBody
-    ): Promise<User>{
+    ): Promise<User | null>{
 
         let newUser : User;
 
@@ -127,11 +127,15 @@ export class UserHandler extends BaseHandler{
             const pass : string = generatePassword();
             const otp : string = generateRandomNumber(OTP_LENGTH);
 
-            const currentUser : User = await this.prisma.user.findFirstOrThrow({
+            const currentUser : User | null = await this.prisma.user.findFirst({
                 where : {
                     id : body.userID
                 }
             });
+
+            if(!currentUser){
+                return null;
+            }
 
             // create new lembaga
             if(currentUser.lembaga_id == null){
@@ -220,21 +224,10 @@ export class UserHandler extends BaseHandler{
         return userDto;
     }
 
-    public async getUser(
-        userID : number
-    ) : Promise<User>{
-        const user : User = await this.prisma.user.findFirstOrThrow({
-            where : {
-                id : userID
-            }
-        });
-        return user;
-    }
-
     public async getUserRole(
         userID : number
-    ) : Promise<IUserRoleDTO>{
-        const user = await this.prisma.user.findFirstOrThrow({
+    ) : Promise<IUserRoleDTO | null>{
+        const user = await this.prisma.user.findFirst({
             where : {
                 id : userID
             },
@@ -242,6 +235,9 @@ export class UserHandler extends BaseHandler{
                 role : true
             }
         });
+        if(!user){
+            return null;
+        }
         const res : IUserRoleDTO = {
             id : user.id,
             email : user.email,

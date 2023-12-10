@@ -89,9 +89,7 @@ class UserController extends BaseController<UserHandler> {
         try{
             const pagination : IPagination = req.query
         
-            // TODO: add role user to database
             const listUnverifiedUser : IUserDTO[] = await this.handler.getUnverifiedUser(pagination);
-
 
             res.status(200).json(
                 ResponseBuilder.success(
@@ -117,10 +115,20 @@ class UserController extends BaseController<UserHandler> {
 
     public verifyUser = async (req: Request, res: Response) => {
         try{
-            const body : IVerifyUserBody = req.body
+            const body : IVerifyUserBody = req.body;
         
-            await this.handler.verifyUser(body)
+            const newUser : User | null = await this.handler.verifyUser(body);
 
+            if(!newUser){
+                res.status(400).json(
+                    ResponseBuilder.error(
+                        null,
+                        "User not found",
+                        BadRequestException.STATUS_CODE
+                    )
+                );
+                return;
+            }
 
             res.status(200).json(
                 ResponseBuilder.success(
@@ -158,11 +166,8 @@ class UserController extends BaseController<UserHandler> {
                 );
                 return;
             }else{
-                const response : ILoginResponse = {
-                    token : token
-                }
                 res.status(200).json(
-                    ResponseBuilder.success(
+                    ResponseBuilder.success<string>(
                         token,
                         "Login successful",
                         200
@@ -197,10 +202,21 @@ class UserController extends BaseController<UserHandler> {
 
             const userID : number = req.userID as number;
 
-            const roleUser : IUserRoleDTO = await this.handler.getUserRole(userID);
+            const roleUser : IUserRoleDTO | null = await this.handler.getUserRole(userID);
+
+            if(!roleUser){
+                res.status(400).json(
+                    ResponseBuilder.error(
+                        null,
+                        "User not found",
+                        BadRequestException.STATUS_CODE
+                    )
+                );
+                return;
+            }
 
             res.status(200).json(
-                ResponseBuilder.success(
+                ResponseBuilder.success<IUserRoleDTO>(
                     roleUser,
                     "Get role user successfully",
                     200
