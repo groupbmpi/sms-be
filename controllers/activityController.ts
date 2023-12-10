@@ -2,8 +2,10 @@ import { Request, Response } from "express";
 import { IActivitiesDTO, IActivityDTO, IActivityReportBody, IActivityReportQuery, ResponseBuilder } from "@types";
 import { ActivityHandler } from "@handlers";
 import { IActivityReportData } from "@types";
-import {InternalServerErrorException } from "exceptions";
+import {InternalServerErrorException, UnauthorizedException } from "exceptions";
 import { BaseController } from "@controllers";
+import { checkAccess } from "utils";
+import { LAPORAN_KEGIATAN, WRITE } from "constant";
 
 class ActivityController extends BaseController<ActivityHandler> {
     constructor() {
@@ -24,7 +26,7 @@ class ActivityController extends BaseController<ActivityHandler> {
                 ResponseBuilder.success<IActivitiesDTO>(
                     activityReport,
                     "",
-                    20
+                    200
                 )
             )
         }catch(error: any){
@@ -42,8 +44,26 @@ class ActivityController extends BaseController<ActivityHandler> {
 
     public createReport = async (req: Request<unknown, unknown, IActivityReportBody>, res: Response) =>{
         try{
-            //TODO: Get user id from middleware
-            const id = 1
+
+            if(!req.isAuthenticated || req.role === undefined || req.userID === undefined){
+                res.status(UnauthorizedException.STATUS_CODE).json(
+                    ResponseBuilder.error<IActivityReportData>(
+                        null,
+                        UnauthorizedException.MESSAGE,
+                        UnauthorizedException.STATUS_CODE,    
+                    )
+                )
+
+                return
+            }
+
+            //TODO:Check access matrix
+
+            if(!checkAccess(req.role, LAPORAN_KEGIATAN, WRITE)){
+                
+            }
+
+            const id = req.userID
             const body : IActivityReportBody = req.body
 
             const newLaporanKegiatan : IActivityReportData = await this.handler.createReport(
