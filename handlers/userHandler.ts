@@ -1,5 +1,5 @@
 import { Lembaga, User } from "@prisma/client";
-import { ILoginUserBody, IRegisterUserBody,IUserDTO,IVerifyUserBody, LEMBAGA_OTHERS } from "@types";
+import { ILoginUserBody, IRegisterUserBody,IUserDTO,IUserRoleDTO,IVerifyUserBody, LEMBAGA_OTHERS } from "@types";
 import { BaseHandler } from "@handlers";
 import { IPagination, IUnverifiedUserData } from "@types";
 import { countSkipped } from "@utils";
@@ -229,6 +229,26 @@ export class UserHandler extends BaseHandler{
             }
         });
         return user;
+    }
+
+    public async getUserRole(
+        userID : number
+    ) : Promise<IUserRoleDTO>{
+        const user = await this.prisma.user.findFirstOrThrow({
+            where : {
+                id : userID
+            },
+            include : {
+                role : true
+            }
+        });
+        const res : IUserRoleDTO = {
+            id : user.id,
+            email : user.email,
+            role : user.role.role,
+            akses : user.role.akses
+        }
+        return res;
     }
 
     public async getUserByEmail(
