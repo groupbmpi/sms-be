@@ -59,7 +59,7 @@ class ActivityController extends BaseController<ActivityHandler> {
 
             //TODO:Check access matrix
 
-            if(!checkAccess(req.role, LAPORAN_KEGIATAN, WRITE)){
+            if(!checkAccess(req.role , LAPORAN_KEGIATAN, WRITE)){
                 
             }
 
@@ -91,9 +91,11 @@ class ActivityController extends BaseController<ActivityHandler> {
         }
     } 
 
-    public updateReport = async (req: Request<unknown, unknown, IActivityReportBody, number>, res: Response) =>{
+    public updateReport = async (req: Request<{
+        id: number,
+    }, unknown, IActivityReportBody, unknown>, res: Response) =>{
         try{
-            const id : number = req.query
+            const id : number = req.params.id
             const body : IActivityReportBody = req.body
             //TODO: Get user id from middleware
             const user_id = 1
@@ -124,10 +126,12 @@ class ActivityController extends BaseController<ActivityHandler> {
         }
     }
 
-    public deleteReport = async (req: Request<unknown, unknown, unknown, number>, res: Response) =>{
+    public deleteReport = async (req: Request<{
+        id: number,
+    }, unknown, unknown, unknown>, res: Response) =>{
         try{
-            const id : number = req.query
-
+            const id : number = req.params.id
+            
             const deletedLaporanKegiatan : boolean = await this.handler.deleteReport(
                 id,
             )

@@ -4,7 +4,7 @@ import { ResponseBuilder } from "types/response/builder";
 import * as jwt from "../../utils/jwt"
 import { convertAccessToMap } from "utils";
 
-export const AuthMiddleware = (req: Request, res: Response,next :  NextFunction) => {
+export const AuthMiddleware = (req: Request<{id: number}>, res: Response,next :  NextFunction) => {
     const token = req.headers.authorization;
     console.log(token);
 
