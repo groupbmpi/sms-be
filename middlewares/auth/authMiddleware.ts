@@ -11,11 +11,17 @@ export const AuthMiddleware = (req: Request, res: Response,next :  NextFunction)
         req.isAuthenticated = false;
     }else{
 
-        const { id,role } = jwt.verify(token) as { id: number,role : string };
+        try{
+            const { id,role } = jwt.verify(token) as { id: number,role : string };
     
-        req.userID = id;
-        req.role = convertAccessToMap(role);
-        req.isAuthenticated = true;
+            console.log(id);
+            req.userID = id;
+            req.role = convertAccessToMap(role);
+            req.isAuthenticated = true;
+        }catch(error){
+            console.log(error);
+            req.isAuthenticated = false;
+        }
     }
 
     next();
