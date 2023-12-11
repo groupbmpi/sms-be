@@ -46,7 +46,7 @@ export const userData : Omit<User, 'id'|'createdAt'|'updatedAt' | 'lembagaOthers
         noHandphone : "08111111111",
         linkFoto: "users/1/1.png",
         lembaga_id: 3,
-        role_id: 1,
+        role_id: 3,
         is_verified: true,
         is_accepted: true,
         is_activated: true,
