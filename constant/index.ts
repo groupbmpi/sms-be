@@ -1,6 +1,13 @@
 // user
 export const OTP_LENGTH = 6;
 export const SALT_ROUND = 10;
+export const ID_ROLE_SUPERADMIN = 1;
+export const ID_ROLE_ADMIN = 2;
+export const ID_ROLE_USER = 3;
+
+// bcf location
+export const BCF_CITY = "JAKARTA SELATAN"
+export const BCF_PROVINCE = "DKI JAKARTA"
 
 //Access control Action
 export const READ = "read";

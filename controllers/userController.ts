@@ -1,11 +1,13 @@
 import { Request, Response } from "express";
 import { InternalServerErrorException, HttpException, BadRequestException, UnauthorizedException, NotFoundException } from "@exceptions";
-import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterUserBody, IUnverifiedUserData, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, ResponseBuilder } from "@types";
+import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterAdminBody, IRegisterUserBody, IUnverifiedUserData, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, ResponseBuilder } from "@types";
 import { UserHandler } from "@handlers";
 import { BaseController } from "@controllers";
 import { User } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { ILoginResponse } from "@types";
+import { ID_ROLE_USER } from "constant";
+import { checkSuffixBcfEmail } from "utils";
 
 class UserController extends BaseController<UserHandler> {
     constructor() {
@@ -64,7 +66,7 @@ class UserController extends BaseController<UserHandler> {
             const lembagaOthers : string | null = req.body.lembagaOthers;
             const kabupatenKota : string = req.body.kabupatenKota;
             const provinsi : string = req.body.provinsi;
-            const roleID : number = 1;
+            const roleID : number = ID_ROLE_USER;
         
             // TODO: add role user to database
             await this.handler.addUser(body,lembagaName,lembagaOthers,roleID,kabupatenKota,provinsi);
@@ -428,13 +430,65 @@ class UserController extends BaseController<UserHandler> {
         }catch(error : any){
             console.error(error)
 
-            res.status(error.getStatusCode()).json(
-                ResponseBuilder.error(
-                    null,
-                    error.getMessage(),
-                    error.getStatusCode()
+            if(error instanceof HttpException){
+                res.status(error.getStatusCode()).json(
+                    ResponseBuilder.error(
+                        null,
+                        error.getMessage(),
+                        error.getStatusCode()
+                    )
+                )
+            }else{
+                res.status(500).json(
+                    ResponseBuilder.error(
+                        null,
+                        InternalServerErrorException.MESSAGE,
+                        InternalServerErrorException.STATUS_CODE
+                    )
+                )
+            }
+        }
+    }
+
+    public registerAdmin = async (req: Request<unknown>, res: Response) =>{
+        try{
+            const body : IRegisterAdminBody = req.body;
+
+            if (!checkSuffixBcfEmail(body.email)) {
+                throw new BadRequestException("Email harus menggunakan domain bcf.or.id");
+            }
+
+            const admin = await this.handler.addAdmin(body.email);
+
+            res.status(201).json(
+                ResponseBuilder.success<IUserDTO>(
+                    admin,
+                    "Admin successfully created",
+                    201
                 )
             )
+        }catch(error : any){
+            console.error(error)
+
+            if(error instanceof HttpException){
+                res.status(error.getStatusCode()).json(
+                    ResponseBuilder.error(
+                        null,
+                        error.getMessage(),
+                        error.getStatusCode()
+                    )
+                )
+            }else{
+                res.status(500).json(
+                    ResponseBuilder.error(
+                        null,
+                        InternalServerErrorException.MESSAGE,
+                        InternalServerErrorException.STATUS_CODE
+                    )
+                )
+            }
+
+            
         }
     }
 }

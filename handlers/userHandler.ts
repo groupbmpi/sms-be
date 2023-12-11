@@ -1,10 +1,10 @@
-import { Lembaga, User } from "@prisma/client";
+import { Kategori, Lembaga, User } from "@prisma/client";
 import { ILoginUserBody, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, LEMBAGA_OTHERS } from "@types";
 import { BaseHandler } from "@handlers";
 import { IPagination, IUnverifiedUserData } from "@types";
 import { countSkipped } from "@utils";
 import { generatePassword, generateRandomNumber } from "utils/user";
-import { OTP_LENGTH, SALT_ROUND } from "constant";
+import { BCF_CITY, BCF_PROVINCE, ID_ROLE_ADMIN, OTP_LENGTH, SALT_ROUND } from "constant";
 import bcrypt from "bcrypt";
 import * as jwt from "../utils/jwt";
 import { checkValidNoHandphone } from "utils/checker";
@@ -433,6 +433,50 @@ export class UserHandler extends BaseHandler{
         const kabupatenKota = user.kabupatenKota? user.kabupatenKota.nama : "";
         const provinsi = user.kabupatenKota? user.kabupatenKota.provinsi.nama : "";
         return this.dataToDTO(user, url, lembaga, kabupatenKota, provinsi)
+    }
+
+    public async addAdmin(
+        email : string
+    ) : Promise<IUserDTO>{
+        const kabupatenKotaUser = await this.prisma.kabupatenKota.findFirst({
+            where : {
+                nama : BCF_CITY,
+                provinsi : {
+                    nama : BCF_PROVINCE
+                }
+            }
+        })
+        const pass : string = generatePassword();
+        const admin : User =  await this.prisma.user.create({
+            data : {
+                email : email,
+                is_activated : true,
+                is_accepted : true,
+                is_verified : true,
+                password : await bcrypt.hash(pass,SALT_ROUND),
+                otp_token : "",
+                linkFoto : "",
+                alamat : "",
+                kategori : Kategori.DUNIA_USAHA,
+                kecamatan : "",
+                kelurahan : "",
+                kodePos : "",
+                namaLengkap : "",
+                noHandphone : "",
+                kabupatenKota : {
+                    connect : {
+                        id : kabupatenKotaUser?.id
+                    }
+                },
+                role : {
+                    connect : {
+                        id : ID_ROLE_ADMIN
+                    }
+                }
+            }
+        })
+
+        return this.dataToDTO(admin, "", "", "", "");
     }
 }
 

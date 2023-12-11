@@ -35,3 +35,7 @@ type PropsUpdateUserOmitted = "id" | "lembaga_id" | "role_id" | "kabupatenKota_i
 export interface IUpdateUserBody extends Omit<User,PropsUpdateUserOmitted>{}
 
 export const LEMBAGA_OTHERS = "Others"
+
+export interface IRegisterAdminBody{
+    email : string,
+}

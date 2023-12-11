@@ -57,7 +57,7 @@ model User {
   namaLengkap   String  @db.VarChar(255)
   alamat        String  @db.VarChar(255)
   email         String  @unique @db.VarChar(255)
-  noHandphone   String  @unique @db.VarChar(255)
+  noHandphone   String  @db.VarChar(255)
   linkFoto      String  @db.Text
   lembagaOthers String? @db.Text
   kecamatan     String  @db.VarChar(255)

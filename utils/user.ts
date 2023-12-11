@@ -21,3 +21,7 @@ export function generatePassword() : string{
 
     return newPass;
 }
+
+export function checkSuffixBcfEmail(email : string) : boolean{
+    return email.endsWith("@bcf.or.id");
+}
