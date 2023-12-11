@@ -1,6 +1,6 @@
-import { KabupatenKota, LaporanKegiatan, Provinsi } from "@prisma/client";
+import { KabupatenKota, LaporanKegiatan, Lembaga, Provinsi } from "@prisma/client";
 import { BaseHandler } from "@handlers";
-import { IActivitiesDTO, IActivityDTO, IActivityReportBody, IActivityReportQuery, IIndikatorKeberhasilanDTO } from "@types";
+import { IActivitiesDTO, IActivitiesReportData, IActivityDTO, IActivityReportBody, IActivityReportQuery, IIndikatorKeberhasilanDTO } from "@types";
 import { IPagination } from "@types";
 import { countSkipped, getDateFromString } from "@utils";
 import { checkValidKategoriMasalah, checkValidMetodePelaksanaan, checkValidStatusKegiatan } from "utils/checker";
@@ -68,14 +68,46 @@ export class ActivityHandler extends BaseHandler{
     public async getReport(
         query : Omit<IActivityReportQuery, "limit" | "page">,
         pagination : IPagination,
+        userId: number,
     ): Promise<IActivitiesDTO>{
-        const skipped = countSkipped(pagination.page!!, pagination.limit!!)
+        let { limit, page } = pagination
+
+        if(limit === undefined){
+            limit = 0;
+        }
+        
+        if(page === undefined){
+            page = 1;
+        }
+        
+        const skipped = countSkipped(page, limit)
+        
+        const totalData : number = await this.prisma.laporanKegiatan.count()
 
         const activityReport : LaporanKegiatan[] = await this.prisma.laporanKegiatan.findMany({
             where: query,
-            take: pagination.limit,
+            take: (limit == 0 ? totalData : limit),
             skip: skipped,
         })
+
+        let lembagaId = -1
+
+        if(userId != -1){
+            const lembaga : Pick<Lembaga, 'id'> | null = await this.prisma.lembaga.findFirst({
+                where: {
+                    id: userId,
+                },
+                select: {
+                    id: true,
+                }
+            })
+
+            if(lembaga === null){
+                throw new BadRequestException(`Lembaga dengan id ${userId} tidak ditemukan`)
+            }
+
+            lembagaId = lembaga.id
+        }
 
         const activityReportParsed : IActivityDTO[] = []
 
@@ -107,14 +139,28 @@ export class ActivityHandler extends BaseHandler{
                 throw new BadRequestException(`Provinsi dengan id ${kabupatenKota.provinsi_id} tidak ditemukan`)
             }
 
-            activityReportParsed.push(this.dataToDTO(data, kabupatenKota.nama, provinsi.nama))
+            const lembaga : Pick<Lembaga, 'id'> | null = await this.prisma.lembaga.findFirst({
+                where: {
+                    id: data.user_id,
+                },
+                select: {
+                    id: true,
+                }
+            })
+
+            if(lembaga === null){
+                throw new BadRequestException(`Lembaga dengan id ${data.user_id} tidak ditemukan`)
+            }
+            activityReportParsed.push({
+                ...this.dataToDTO(data, kabupatenKota.nama, provinsi.nama),
+                isEditable: (lembagaId === lembaga.id)
+            })
         }
 
-        const totalData : number = await this.prisma.laporanKegiatan.count()
 
         return {
             data: activityReportParsed,
-            countPages: Math.ceil(totalData / pagination.limit!!),
+            countPages: (limit === 0 ? 1 : Math.ceil(totalData / limit)),
         }
     }
 

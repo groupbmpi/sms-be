@@ -21,6 +21,7 @@ export interface IActivityDTO extends Omit<LaporanKegiatan, PropsLaporanKegiatan
     provinsi: string,
     kabupatenKota : string,
     indikatorKeberhasilan : IIndikatorKeberhasilanDTO[],
+    isEditable? : boolean,
 }
 
 export interface IActivitiesDTO {

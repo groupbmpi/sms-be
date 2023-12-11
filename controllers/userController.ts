@@ -187,7 +187,7 @@ class UserController extends BaseController<UserHandler> {
         }
     }
 
-    public getRoleUser = async (req: Request, res: Response) => {
+    public getRoleUser = async (req: Request<unknown>, res: Response) => {
         try{
             if(!req.isAuthenticated){
                 res.status(400).json(

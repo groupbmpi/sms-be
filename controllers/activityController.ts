@@ -17,9 +17,16 @@ class ActivityController extends BaseController<ActivityHandler> {
             
             let { limit, page, ...query } = req.query
             
+            let userId = req.userID
+
+            if(!req.isAuthenticated){
+                userId = -1
+            }
+
             const activityReport : IActivitiesDTO = await this.handler.getReport(
                 query,
-                { limit, page }
+                { limit, page },
+                userId as number,
             )
 
             res.status(200).json(
@@ -131,7 +138,7 @@ class ActivityController extends BaseController<ActivityHandler> {
     }, unknown, unknown, unknown>, res: Response) =>{
         try{
             const id : number = req.params.id
-            
+
             const deletedLaporanKegiatan : boolean = await this.handler.deleteReport(
                 id,
             )
