@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
-import { ResponseBuilder } from "../types/response";
-import { BadRequestException, HttpException, InternalServerErrorException } from "../exceptions";
-import { NewsHandler } from "../handlers";
+import { IAllNewsRetDto, ICreateNewsArgDto, ICreateNewsRequest, ICreateNewsValidatedBody, IDeleteNewsRequest, INewsByIdRetDto, INewsIdArgDto, INewsOptionsArgDto, INewsOwnedByUserArgDto, INewsParams, INewsValidatedParams, IUpdateNewsArgDto, IUpdateNewsRequest, IUpdateNewsValidatedBody, IValidatedTargetUserId, ResponseBuilder } from "@types";
+import { BadRequestException, HttpException, InternalServerErrorException, NotFoundException } from "@exceptions";
+import { NewsHandler } from "@handlers";
+import { BaseController } from "@controllers";
+import { countSkipped, getDateFromString, getNumberFromString } from "@utils";
 
-class NewsController {
-    private newsHandler: NewsHandler;
-
+class NewsController extends BaseController<NewsHandler> {
     constructor() {
-        this.newsHandler = new NewsHandler();
+        super(new NewsHandler());
     }
 
     /**
@@ -16,10 +16,23 @@ class NewsController {
      */
     public getAllNews = async (req: Request, res: Response): Promise<void> => {
         try {
-            const news = await this.newsHandler.getAllNews();
+            const { creatorId, page, limit, startDateAt, endDateAt } = req.query;
 
-            res.status(200).json(ResponseBuilder.success(news));
-        } catch (error) {
+            const newsArgDto: INewsOptionsArgDto = {
+                creatorId: getNumberFromString(creatorId),
+                startDateAt: getDateFromString(startDateAt),
+                endDateAt: getDateFromString(endDateAt),
+                take: getNumberFromString(limit),
+                skip: countSkipped(
+                    getNumberFromString(page),
+                    getNumberFromString(limit)
+                ),
+            };
+
+            const newsRetDto: IAllNewsRetDto = await this.handler.getAllNews(newsArgDto);
+
+            res.status(200).json(ResponseBuilder.success<IAllNewsRetDto>(newsRetDto));
+        } catch (error: any) {
             console.error(error);
 
             res.status(InternalServerErrorException.STATUS_CODE).json(
@@ -34,17 +47,38 @@ class NewsController {
 
     /**
      * @Method ('GET')
-     * @Route ('/api/v1/users/:creatorId/news')
+     * @Route ('/api/v1/news/:newsId')
+     * @Middleware ([paramNewsRequestMiddleware])
      */
-    public getUserNews = async (req: Request, res: Response): Promise<void> => {
+    public getNewsById = async (req: Request<INewsParams>, res: Response): Promise<void> => {
         try {
-            const creatorId: number = parseInt(req.params.creatorId);
+            const { newsId } = req.params as INewsValidatedParams;
 
-            const news = await this.newsHandler.getNewsByUserId(creatorId);
+            const newsArgDto: INewsIdArgDto = {
+                id: parseInt(newsId),
+            };
 
-            res.status(200).json(ResponseBuilder.success(news));
-        } catch (error) {
+            const newsRetDto: INewsByIdRetDto | null = await this.handler.getNewsById(newsArgDto);
+
+            if (newsRetDto === null) {
+                throw new BadRequestException('News was not found');
+            }
+
+            res.status(200).json(ResponseBuilder.success<INewsByIdRetDto>(newsRetDto));
+        } catch (error: any) {
             console.error(error);
+
+            if (error instanceof HttpException) {
+                res.status(error.getStatusCode()).json(
+                    ResponseBuilder.error(
+                        null, 
+                        error.getMessage(), 
+                        error.getStatusCode()
+                    )
+                );
+
+                return;
+            }
 
             res.status(InternalServerErrorException.STATUS_CODE).json(
                 ResponseBuilder.error(
@@ -58,25 +92,26 @@ class NewsController {
 
     /**
      * @Method ('POST')
-     * @Route ('/api/v1/users/:creatorId/news')
+     * @Route ('/api/v1/news')
+     * @Middleware ([createNewsRequestMiddleware])
      */
-    public storeNews = async(req: Request, res: Response): Promise<void> => {
+    public createNews = async(req: ICreateNewsRequest, res: Response): Promise<void> => {
         try {
-            const creatorId: number = parseInt(req.params.creatorId);
+            const { title, detail, photoLink } = req.body as ICreateNewsValidatedBody;
+            
+            const { targetUserId } = req as IValidatedTargetUserId;
 
-            const title: string = req.body.title;
-            const detail: string = req.body.detail; 
-            const photoLink: string = req.body.photoLink;
-
-            await this.newsHandler.storeNews(
+            const newsArgDto: ICreateNewsArgDto = {
                 title,
                 detail,
                 photoLink,
-                creatorId
-            );
+                creatorId: targetUserId,
+            };
+
+            await this.handler.createNews(newsArgDto);
 
             res.status(200).json(ResponseBuilder.success());
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
 
             res.status(InternalServerErrorException.STATUS_CODE).json(
@@ -91,36 +126,42 @@ class NewsController {
 
     /**
      * @Method ('PUT')
-     * @Route ('/api/v1/users/:creatorId/news/:newsId')
+     * @Route ('/api/v1/news/:newsId')
+     * @Middleware ([updateNewsRequestMiddleware])
      */
-    public updateNews = async (req: Request, res: Response): Promise<void> => {
+    public updateNews = async (req: IUpdateNewsRequest, res: Response): Promise<void> => {
         try {
-            const newsId: number = parseInt(req.params.newsId);
+            const { newsId } = req.params as INewsValidatedParams;
+            
+            const { title, detail, photoLink } = req.body as IUpdateNewsValidatedBody;
 
-            const creatorId: number = parseInt(req.params.creatorId);
+            const { targetUserId } = req as IValidatedTargetUserId;
 
-            const title: string = req.body.title;
-            const detail: string = req.body.detail; 
-            const photoLink: string = req.body.photoLink;
+            const newsOwnArgDto: INewsOwnedByUserArgDto = {
+                newsId: parseInt(newsId),
+                userId: targetUserId
+            };
 
-            const isNewsExist = await this.newsHandler.isNewsExistById(newsId);
+            const isNewsOwnedByUser: boolean = await this.handler.isNewsOwnedByUser(newsOwnArgDto);
 
-            if (isNewsExist === false) {
+            if (isNewsOwnedByUser === false) {
                 throw new BadRequestException('News was not found');
             }
 
-            await this.newsHandler.updateNews(
-                newsId,
-                {
+            const newsUpdateArgDto: IUpdateNewsArgDto = {
+                id: newsOwnArgDto.newsId,
+                data: {
                     title,
                     detail,
                     photoLink,
-                    creatorId
+                    creatorId: targetUserId
                 }
-            );
+            };
+
+            await this.handler.updateNews(newsUpdateArgDto);
 
             res.status(200).json(ResponseBuilder.success());
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
 
             if (error instanceof HttpException) {
@@ -147,22 +188,34 @@ class NewsController {
 
     /**
      * @Method ('DELETE')
-     * @Route ('/api/v1/users/:creatorId/news/:newsId')
+     * @Route ('/api/v1/news/:newsId')
+     * @Middleware ([deleteNewsRequestMiddleware])
      */
-    public deleteNews = async (req: Request, res: Response): Promise<void> => {
+    public deleteNews = async (req: IDeleteNewsRequest, res: Response): Promise<void> => {
         try {
-            const newsId: number = parseInt(req.params.newsId);
+            const { newsId } = req.params as INewsValidatedParams;
 
-            const isNewsExist = await this.newsHandler.isNewsExistById(newsId);
+            const { targetUserId } = req as IValidatedTargetUserId;
 
-            if (isNewsExist === false) {
+            const newsOwnArgDto: INewsOwnedByUserArgDto = {
+                newsId: parseInt(newsId),
+                userId: targetUserId
+            };
+
+            const isNewsOwnedByUser: boolean = await this.handler.isNewsOwnedByUser(newsOwnArgDto);
+
+            if (isNewsOwnedByUser === false) {
                 throw new BadRequestException('News was not found');
             }
 
-            await this.newsHandler.deleteNews(newsId);
+            const newsIdArgDto: INewsIdArgDto = {
+                id: newsOwnArgDto.newsId,
+            };
+
+            await this.handler.deleteNews(newsIdArgDto);
 
             res.status(200).json(ResponseBuilder.success());
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
 
             if (error instanceof HttpException) {

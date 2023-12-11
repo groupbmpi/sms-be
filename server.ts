@@ -1,5 +1,7 @@
 import express from 'express'
-import { ExpressInstance } from './services/app';
+import { ExpressInstance } from '@services';
+
+import 'module-alias/register';
 
 require('dotenv').config();
 

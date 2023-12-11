@@ -3,7 +3,8 @@ import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
-import { NewsRoutes, ProblemRoutes, UserRoutes } from '../routes';
+import { ActivityRoutes, NewsRoutes, ProblemRoutes, UserRoutes, DataRoutes } from '@routes';
+import { queryParser } from 'express-query-parser';
 
 export class ExpressInstance {
     private static expressInstance : ExpressInstance;
@@ -27,12 +28,20 @@ export class ExpressInstance {
         this._app.use(cors({ origin: '*', credentials: true }));
         this._app.use(helmet({ crossOriginResourcePolicy: false }));
         this._app.use(cookieParser());
+        this._app.use(queryParser({
+            parseBoolean: true,
+            parseNumber: true,
+            parseUndefined: true,
+            parseNull: true,
+        }))
     }
 
     private setupRoutes(): void {
         this._app.use('/api/v1/problems', ProblemRoutes);
         this._app.use('/api/v1/user', UserRoutes);
-        this._app.use('/api/v1', NewsRoutes);
+        this._app.use('/api/v1/news', NewsRoutes);
+        this._app.use('/api/v1/activity', ActivityRoutes);
+        this._app.use('/api/v1/data', DataRoutes);
     }
 
     public static getInstance(): ExpressInstance {

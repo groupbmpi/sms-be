@@ -1,82 +1,77 @@
 import { Request, Response } from "express";
-import { ResponseBuilder } from "../types/response";
-import { HttpException, InternalServerErrorException } from "../exceptions";
-import { ProblemHandler } from "../handlers";
+import { IProblemReportBody, IProblemReportQuery, IProblemsDTO, ResponseBuilder } from "@types";
+import { HttpException, InternalServerErrorException } from "@exceptions";
+import { ProblemHandler } from "@handlers";
+import { BaseController } from "@controllers";
+import { IProblemReportData, IProblemsReportData } from "types/response/problemReport";
 
-class ProblemController {
-    private problemHandler: ProblemHandler
-
+class ProblemController extends BaseController<ProblemHandler> {
     constructor() {
-        this.problemHandler = new ProblemHandler()
+        super(new ProblemHandler());
     }
 
-    getProblems = async (req: Request, res: Response) => {
+    getReport = async (req: Request<unknown, unknown, unknown, IProblemReportQuery>, res: Response) => {
         try {
 
-            const problems = await this.problemHandler.getAllProblems();
+            let { limit, page, ...query } = req.query
+
+            const problemReport: IProblemsDTO = await this.handler.getReport(
+                query,
+                { limit, page }
+            )
 
             res.status(200).json(
-                ResponseBuilder.success(
-                    problems,
-                    "Get problems successfully"
+                ResponseBuilder.success<IProblemsDTO>(
+                    problemReport,
+                    "",
+                    200
                 )
             )
 
         } catch (error: any) {
-            console.log(error)
+            console.error(error)
 
-            if(error instanceof HttpException) {
-                res.status(error.getStatusCode()).json(
-                    ResponseBuilder.error(
-                        null,
-                        error.getMessage(),
-                        error.getStatusCode()
-                    )
-                )
-            }
-
-            res.status(500).json(
-                ResponseBuilder.error(
-                    null,
+            res.status(InternalServerErrorException.STATUS_CODE).json(
+                ResponseBuilder.error<IProblemsReportData[]>(
+                    [],
                     InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE
+                    InternalServerErrorException.STATUS_CODE,    
                 )
             )
         }
     }
+    
 
-	createProblem = async (req: Request, res: Response) => {
-        try {
-            const { description, category, creatorId } = req.body
+	public createReport = async (req: Request<unknown, unknown, IProblemReportBody>, res: Response) =>{
+        try{
+            let id = -1
+            if(req.isAuthenticated !== false){
+                id = req.userID as number
+            }
+                
+            const body : IProblemReportBody = req.body
 
-            const problem = await this.problemHandler.createProblem(description, category, creatorId)
+            const newLaporanMasalah : IProblemReportData = await this.handler.createReport(
+                body,
+                id,
+            )
 
             res.status(201).json(
                 ResponseBuilder.success(
-                    problem,
+                    newLaporanMasalah,
                     "Create report successfully",
                     201
                 )
             )
 
         } catch (error: any) {
-            console.log(error)
+            console.error(error)
 
-            if(error instanceof HttpException) {
-                res.status(error.getStatusCode()).json(
-                    ResponseBuilder.error(
-                        null,
-                        error.getMessage(),
-                        error.getStatusCode()
-                    )
-                )
-            }
-
-            res.status(500).json(
-                ResponseBuilder.error(
+            res.status(InternalServerErrorException.STATUS_CODE).json(
+                ResponseBuilder.error<IProblemReportData>(
                     null,
                     InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE
+                    InternalServerErrorException.STATUS_CODE,    
                 )
             )
         }

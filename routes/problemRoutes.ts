@@ -1,10 +1,11 @@
-import BaseRoutes from "./baseRoutes";
-import { ProblemController } from "../controllers"
+import { BaseRoutes } from "@routes";
+import { ProblemController } from "@controllers"
+import { AuthMiddleware } from "middlewares/auth/authMiddleware";
 
-class ProblemRoutes extends BaseRoutes{
+class ProblemRoutes extends BaseRoutes {
    public setRoutes(): void {
-        this.routes.get("/", ProblemController.getProblems);
-        this.routes.post("/", ProblemController.createProblem);
+        this.routes.get("/", ProblemController.getReport);
+        this.routes.post("/", [AuthMiddleware], ProblemController.createReport);
    }
 }
 
