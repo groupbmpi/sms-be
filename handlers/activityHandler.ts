@@ -6,6 +6,8 @@ import { countSkipped, getDateFromString } from "@utils";
 import { checkValidKategoriMasalah, checkValidMetodePelaksanaan, checkValidStatusKegiatan } from "utils/checker";
 import { BadRequestException } from "exceptions";
 
+const ALL_LEMBAGA = "Semua Lembaga"
+
 export class ActivityHandler extends BaseHandler{
 
     private indikatorKeberhasilanToString(rawData: IIndikatorKeberhasilanDTO[]) : string {
@@ -71,13 +73,22 @@ export class ActivityHandler extends BaseHandler{
         userId: number,
     ): Promise<IActivitiesDTO>{
         let { limit, page } = pagination
-
-        if(limit === undefined){
+        let { lembaga, ...parsedQuery } = query
+    
+        if(typeof limit === 'undefined'){
             limit = 0;
         }
         
-        if(page === undefined){
+        if(typeof page === 'undefined'){
             page = 1;
+        }
+
+        if(typeof lembaga !== 'undefined'){
+            lembaga = decodeURIComponent(lembaga)
+        }
+
+        if(lembaga === ALL_LEMBAGA){
+            lembaga = undefined
         }
         
         const skipped = countSkipped(page, limit)
@@ -85,7 +96,16 @@ export class ActivityHandler extends BaseHandler{
         const totalData : number = await this.prisma.laporanKegiatan.count()
 
         const activityReport : LaporanKegiatan[] = await this.prisma.laporanKegiatan.findMany({
-            where: query,
+            where: {
+                ...parsedQuery,
+                user: {
+                    lembaga:{
+                        nama: {
+                            contains: lembaga,
+                        }
+                    }
+                }
+            },
             take: (limit == 0 ? totalData : limit),
             skip: skipped,
         })
