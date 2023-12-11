@@ -7,6 +7,8 @@ import { convertAccessToMap } from "utils";
 export const AuthMiddleware = (req: Request<{id: number}>, res: Response,next :  NextFunction) => {
     const token = req.headers.authorization;
 
+    req.params.id = Number(req.params.id);
+
     if(token == undefined){
         req.isAuthenticated = false;
     }else{
