@@ -6,7 +6,6 @@ import { convertAccessToMap } from "utils";
 
 export const AuthMiddleware = (req: Request<{id: number}>, res: Response,next :  NextFunction) => {
     const token = req.headers.authorization;
-    console.log(token);
 
     if(token == undefined){
         req.isAuthenticated = false;
@@ -14,8 +13,7 @@ export const AuthMiddleware = (req: Request<{id: number}>, res: Response,next : 
 
         try{
             const { id,role } = jwt.verify(token) as { id: number,role : string };
-    
-            console.log(id);
+
             req.userID = id;
             req.role = convertAccessToMap(role);
             req.isAuthenticated = true;

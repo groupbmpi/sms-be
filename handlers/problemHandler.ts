@@ -39,6 +39,14 @@ export class ProblemHandler extends BaseHandler{
     ): Promise<IProblemsDTO> {
         const skipped = countSkipped(pagination.page!!, pagination.limit!!)
 
+        if(!query.user_id){
+            delete query.user_id
+        }
+
+        if(pagination.limit){
+            pagination.limit = parseInt(pagination.limit.toString())
+        }
+
         const problemReports = await this.prisma.laporanMasalah.findMany({
             select: {
                 id: true,
@@ -81,9 +89,14 @@ export class ProblemHandler extends BaseHandler{
             })
         }
 
+        const count = await this.prisma.laporanMasalah.count({
+            where: query,
+        })
+
+
         return {
             data: problemReportParsed,
-            countPages: Math.ceil(problemReportParsed.length / pagination.limit!!),
+            countPages: Math.ceil(count / pagination.limit!!),
         }
     }
 
