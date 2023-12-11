@@ -1,8 +1,5 @@
-import { BadRequestException } from "exceptions";
 import { NextFunction, Request, Response } from "express";
-import { ResponseBuilder } from "types/response/builder";
-import * as jwt from "../../utils/jwt"
-import { convertAccessToMap } from "utils";
+import { convertAccessToMap, verify } from "@utils";
 
 export const AuthMiddleware = (req: Request<{id: number}>, res: Response,next :  NextFunction) => {
     const token = req.headers.authorization;
@@ -14,7 +11,7 @@ export const AuthMiddleware = (req: Request<{id: number}>, res: Response,next : 
     }else{
 
         try{
-            const { id,role } = jwt.verify(token) as { id: number,role : string };
+            const { id,role } = verify(token) as { id: number,role : string };
 
             req.userID = id;
             req.role = convertAccessToMap(role);

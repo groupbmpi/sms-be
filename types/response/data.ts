@@ -1,4 +1,4 @@
-import { IDaerahDTO } from "types/request";
+import { IDaerahDTO } from "../request";
 
 export interface IFormActivityReportData {
     kategori: string[],

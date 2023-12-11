@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
-import { DaerahHandler, EnumHandler, LembagaHandler } from "handlers";
-import BaseController from "./baseController";
-import { IDaerahDTO, IFormActivityReportData, IFormProblemReportData, IFormUserData, ResponseBuilder } from "@types";
-import { InternalServerErrorException } from "exceptions";
+import { InternalServerErrorException } from "@exceptions";
+import { DaerahHandler, EnumHandler, LembagaHandler } from "@handlers";
 import { Kategori, KategoriMasalah, Lembaga, MetodePelaksanaan, StatusKegiatan } from "@prisma/client";
+import { IDaerahDTO, IFormActivityReportData, IFormProblemReportData, IFormUserData, ResponseBuilder } from "@types";
+import { Request, Response } from "express";
+import BaseController from "./baseController";
 
 class DataController extends BaseController<EnumHandler>{
     private lembagaHandler : LembagaHandler

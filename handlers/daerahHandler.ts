@@ -1,6 +1,6 @@
-import { Provinsi, KabupatenKota } from "@prisma/client";
+import { KabupatenKota, Provinsi } from "@prisma/client";
+import { IDaerahDTO } from "@types";
 import { BaseHandler } from "./baseHandler";
-import { IDaerahDTO } from "types";
 
 export class DaerahHandler extends BaseHandler{
     public async getProvinsi() : Promise<string[]>{

@@ -1,7 +1,6 @@
 import { Bucket } from "@google-cloud/storage";
 import { PrismaClient } from "@prisma/client";
-import { PrismaInstance } from "@services"
-import { StorageInstance } from "services/storage";
+import { PrismaInstance, StorageInstance } from "@services";
 import { randomUUID } from "crypto";
 import { MailInstance } from "services/mail";
 // import sharp from "sharp";

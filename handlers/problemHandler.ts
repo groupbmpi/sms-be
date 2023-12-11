@@ -1,9 +1,8 @@
-import { KategoriMasalah, LaporanMasalah, Provinsi, User } from "@prisma/client";
-import { BaseHandler } from "@handlers";
-import { IPagination, IProblemDTO, IProblemReportBody, IProblemReportQuery, IProblemsDTO } from "types";
-import { countSkipped } from "@utils";
-import { BadRequestException } from "exceptions";
-import { checkValidKategoriMasalah } from "utils/checker";
+import { BadRequestException } from "@exceptions";
+import { BaseHandler } from "./baseHandler";
+import { LaporanMasalah, Provinsi, User } from "@prisma/client";
+import { IPagination, IProblemDTO, IProblemReportBody, IProblemReportQuery, IProblemsDTO } from "@types";
+import { countSkipped, checkValidKategoriMasalah } from "@utils";
 
 export class ProblemHandler extends BaseHandler{
     private dtoToData(dto : IProblemDTO, userId: number, provinsiId: number) : Omit<LaporanMasalah, 'id' | 'createdAt' | 'updatedAt'> | string{

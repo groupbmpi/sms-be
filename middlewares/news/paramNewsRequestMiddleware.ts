@@ -1,6 +1,6 @@
-import { NextFunction, Request, Response } from "express";
-import { ResponseBuilder } from "@types";
 import { HttpException, InternalServerErrorException, NotFoundException } from "@exceptions";
+import { ResponseBuilder } from "@types";
+import { NextFunction, Request, Response } from "express";
 
 export function paramNewsRequestMiddleware(req: Request, res: Response, next: NextFunction) {
     try {

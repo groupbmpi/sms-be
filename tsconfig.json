@@ -10,6 +10,7 @@
       "@services" :  ["services/"],
       "@types" : ["types/"],
       "@utils" : ["utils/"],
+      "@constant": ["constant/"],
     },
     "target": "esnext",
     "lib": ["esnext"],

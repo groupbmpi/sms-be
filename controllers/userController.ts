@@ -1,13 +1,12 @@
-import { Request, Response } from "express";
-import { InternalServerErrorException, HttpException, BadRequestException, UnauthorizedException, NotFoundException } from "@exceptions";
-import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterAdminBody, IRegisterUserBody, IUnverifiedUserData, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, ResponseBuilder } from "@types";
+import BaseController from "./baseController";
+import { BadRequestException, HttpException, InternalServerErrorException, UnauthorizedException } from "@exceptions";
 import { UserHandler } from "@handlers";
-import { BaseController } from "@controllers";
 import { User } from "@prisma/client";
+import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterAdminBody, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, ResponseBuilder } from "@types";
 import bcrypt from "bcrypt";
-import { ILoginResponse } from "@types";
-import { ID_ROLE_USER } from "constant";
-import { checkSuffixBcfEmail } from "utils";
+import { ID_ROLE_USER } from "@constant";
+import { Request, Response } from "express";
+import { checkSuffixBcfEmail } from "@utils";
 
 class UserController extends BaseController<UserHandler> {
     constructor() {
