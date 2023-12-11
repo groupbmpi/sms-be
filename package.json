@@ -17,7 +17,8 @@
     "dev": "nodemon -L server.ts",
     "dev:db": "npm run db && npm run dev",
     "dev:migrate": "npm run db:migrate && npm run dev",
-    "dev:init": "npm run db:init && npm run dev"
+    "dev:init": "npm run db:init && npm run dev",
+    "start": "npm run prisma:generate && node dist/server.js"
   },
   "_moduleAliases": {
     "@controllers": "dist/controllers/",
