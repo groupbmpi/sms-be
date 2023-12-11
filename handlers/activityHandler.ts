@@ -17,8 +17,8 @@ export class ActivityHandler extends BaseHandler{
             console.log(data.indicator)
             result = result.concat(`${data.indicator} : ${data.target}\n`)
         }
-        console.log(result)
-        return result
+        // console.log(result)
+        return result.substring(0, result.length - 1)   
     }
 
     private stringToIndikatorKeberhasilan(rawData: string) : IIndikatorKeberhasilanDTO[] {
