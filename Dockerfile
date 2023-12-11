@@ -20,4 +20,4 @@ COPY --chown=node:node --from=builder /usr/src/app/prisma/ prisma/
 RUN npm install --only=production
 COPY --chown=node:node --from=builder /usr/src/app/dist/ dist/
 EXPOSE 3002
-ENTRYPOINT [ "/sbin/tini","--", "node", "dist/server.js" ]%
+ENTRYPOINT [ "npm", "run", "start" ]%
