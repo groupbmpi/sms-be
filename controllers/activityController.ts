@@ -104,8 +104,25 @@ class ActivityController extends BaseController<ActivityHandler> {
         try{
             const id : number = req.params.id
             const body : IActivityReportBody = req.body
-            //TODO: Get user id from middleware
-            const user_id = 1
+            if(!req.isAuthenticated || req.role === undefined || req.userID === undefined){
+                res.status(UnauthorizedException.STATUS_CODE).json(
+                    ResponseBuilder.error<IActivityReportData>(
+                        null,
+                        UnauthorizedException.MESSAGE,
+                        UnauthorizedException.STATUS_CODE,    
+                    )
+                )
+
+                return
+            }
+
+            //TODO:Check access matrix
+
+            if(!checkAccess(req.role , LAPORAN_KEGIATAN, WRITE)){
+                
+            }
+
+            const user_id = req.userID
 
             const updatedLaporanKegiatan : IActivityReportData = await this.handler.updateReport(
                 body,
