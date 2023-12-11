@@ -4,6 +4,7 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { ActivityRoutes, NewsRoutes, ProblemRoutes, UserRoutes, DataRoutes } from '@routes';
+import { queryParser } from 'express-query-parser';
 
 export class ExpressInstance {
     private static expressInstance : ExpressInstance;
@@ -27,6 +28,12 @@ export class ExpressInstance {
         this._app.use(cors({ origin: '*', credentials: true }));
         this._app.use(helmet({ crossOriginResourcePolicy: false }));
         this._app.use(cookieParser());
+        this._app.use(queryParser({
+            parseBoolean: true,
+            parseNumber: true,
+            parseUndefined: true,
+            parseNull: true,
+        }))
     }
 
     private setupRoutes(): void {
