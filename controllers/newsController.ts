@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
-import { IAllNewsRetDto, ICreateNewsArgDto, ICreateNewsRequest, ICreateNewsValidatedBody, IDeleteNewsRequest, INewsByIdRetDto, INewsIdArgDto, INewsOptionsArgDto, INewsOwnedByUserArgDto, INewsParams, INewsValidatedParams, IUpdateNewsArgDto, IUpdateNewsRequest, IUpdateNewsValidatedBody, IValidatedTargetUserId, ResponseBuilder } from "@types";
-import { BadRequestException, HttpException, InternalServerErrorException, NotFoundException } from "@exceptions";
+import BaseController from "./baseController";
+import { BadRequestException, HttpException, InternalServerErrorException } from "@exceptions";
 import { NewsHandler } from "@handlers";
-import { BaseController } from "@controllers";
+import { IAllNewsRetDto, ICreateNewsArgDto, ICreateNewsRequest, ICreateNewsValidatedBody, IDeleteNewsRequest, INewsByIdRetDto, INewsIdArgDto, INewsOptionsArgDto, INewsOwnedByUserArgDto, INewsParams, INewsValidatedParams, IUpdateNewsArgDto, IUpdateNewsRequest, IUpdateNewsValidatedBody, IValidatedTargetUserId, ResponseBuilder } from "@types";
 import { countSkipped, getDateFromString, getNumberFromString } from "@utils";
+import { Request, Response } from "express";
 
 class NewsController extends BaseController<NewsHandler> {
     constructor() {

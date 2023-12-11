@@ -1,6 +1,6 @@
-import { NextFunction, Request, Response } from "express";
-import { IUpdateNewsRequest, ResponseBuilder } from "@types";
 import { BadRequestException, HttpException, InternalServerErrorException, NotFoundException } from "@exceptions";
+import { IUpdateNewsRequest, ResponseBuilder } from "@types";
+import { NextFunction, Response } from "express";
 
 export function updateNewsRequestMiddleware(req: IUpdateNewsRequest, res: Response, next: NextFunction) {
     try {

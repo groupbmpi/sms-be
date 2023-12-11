@@ -1,4 +1,3 @@
-import { Kategori, KategoriMasalah, StatusKegiatan, MetodePelaksanaan, Provinsi, KabupatenKota } from "@prisma/client";
 import { BaseHandler } from "./baseHandler";
 
 export class EnumHandler extends BaseHandler{

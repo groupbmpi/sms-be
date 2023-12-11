@@ -1,14 +1,10 @@
+import { BCF_CITY, BCF_PROVINCE, ID_ROLE_ADMIN, OTP_LENGTH, SALT_ROUND } from "@constant";
+import { BadRequestException, InternalServerErrorException } from "@exceptions";
+import { BaseHandler } from "./baseHandler";
 import { Kategori, Lembaga, User } from "@prisma/client";
-import { ILoginUserBody, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, LEMBAGA_OTHERS } from "@types";
-import { BaseHandler } from "@handlers";
-import { IPagination, IUnverifiedUserData } from "@types";
-import { countSkipped } from "@utils";
-import { generatePassword, generateRandomNumber } from "utils/user";
-import { BCF_CITY, BCF_PROVINCE, ID_ROLE_ADMIN, OTP_LENGTH, SALT_ROUND } from "constant";
+import { ILoginUserBody, IPagination, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, LEMBAGA_OTHERS } from "@types";
+import { countSkipped, generatePassword, generateRandomNumber, sign, checkValidNoHandphone } from "@utils";
 import bcrypt from "bcrypt";
-import * as jwt from "../utils/jwt";
-import { checkValidNoHandphone } from "utils/checker";
-import { BadRequestException, InternalServerErrorException } from "exceptions";
 
 export class UserHandler extends BaseHandler{
 
@@ -182,7 +178,7 @@ export class UserHandler extends BaseHandler{
         const isPassCorrect : boolean = await bcrypt.compare(body.password,user.password as string);
 
         if(isPassCorrect){
-            const token = jwt.sign({
+            const token = sign({
                 id : user.id,
                 role : user.role.akses
             });

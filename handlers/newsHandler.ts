@@ -1,4 +1,4 @@
-import { BaseHandler } from "@handlers";
+import { BaseHandler } from "./baseHandler";
 import { IAllNewsRetDto, ICreateNewsArgDto, INewsByIdRetDto, INewsIdArgDto, INewsOptionsArgDto, INewsOwnedByUserArgDto, IUpdateNewsArgDto } from "@types";
 
 export class NewsHandler extends BaseHandler {

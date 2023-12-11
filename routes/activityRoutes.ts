@@ -1,6 +1,6 @@
-import { BaseRoutes } from "@routes";
 import { ActivityController } from "@controllers";
-import { AuthMiddleware } from "middlewares/auth/authMiddleware";
+import { BaseRoutes } from "@routes";
+import { AuthMiddleware } from "@middlewares";
 
 class ActivityRoutes extends BaseRoutes {
     public setRoutes(): void {

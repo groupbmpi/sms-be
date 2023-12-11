@@ -1,6 +1,5 @@
-import { Kategori, KategoriMasalah, StatusKegiatan, MetodePelaksanaan, Provinsi, KabupatenKota, Lembaga } from "@prisma/client";
+import { Lembaga } from "@prisma/client";
 import { BaseHandler } from "./baseHandler";
-import { IDaerahDTO } from "types";
 
 export class LembagaHandler extends BaseHandler{
 

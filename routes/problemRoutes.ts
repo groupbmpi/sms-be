@@ -1,6 +1,6 @@
 import { BaseRoutes } from "@routes";
 import { ProblemController } from "@controllers"
-import { AuthMiddleware } from "middlewares/auth/authMiddleware";
+import { AuthMiddleware } from "@middlewares";
 
 class ProblemRoutes extends BaseRoutes {
    public setRoutes(): void {

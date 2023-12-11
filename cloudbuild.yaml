@@ -53,6 +53,10 @@ steps:
         --set-secrets=MYSQL_PORT=MYSQL_PORT:latest \
         --set-secrets=MYSQL_DATABASE=MYSQL_DATABASE:latest \
         --set-secrets=DATABASE_URL=DATABASE_URL:latest \
+        --set-secrets=GOOGLE_STORAGE_PROJECT_ID:latest \
+        --set-secrets=GOOGLE_STORAGE_BUCKET_NAME:latest \
+        --set-secrets=GOOGLE_STORAGE_EMAIL:latest \
+        --set-secrets=GOOGLE_STORAGE_PRIVATE_KEY:latest \
         --set-env-vars=NODE_ENV=production \
         --port 3002 \
         --image ${_IMAGE_NAME} \
@@ -89,5 +93,4 @@ availableSecrets:
     env: 'MYSQL_HOST'
 
 options:
-  logging: CLOUD_LOGGING_ONLY
   dynamicSubstitutions: true

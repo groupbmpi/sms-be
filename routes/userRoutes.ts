@@ -1,4 +1,4 @@
-import { AuthMiddleware } from "middlewares/auth/authMiddleware";
+import { AuthMiddleware } from "@middlewares";
 import BaseRoutes from "./baseRoutes";
 import { UserController } from "@controllers"
 

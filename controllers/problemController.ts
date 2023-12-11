@@ -1,9 +1,8 @@
-import { Request, Response } from "express";
-import { IProblemReportBody, IProblemReportQuery, IProblemsDTO, ResponseBuilder } from "@types";
-import { HttpException, InternalServerErrorException } from "@exceptions";
+import BaseController from "./baseController";
+import { InternalServerErrorException } from "@exceptions";
 import { ProblemHandler } from "@handlers";
-import { BaseController } from "@controllers";
-import { IProblemReportData, IProblemsReportData } from "types/response/problemReport";
+import { IProblemReportBody, IProblemReportQuery, IProblemsDTO, ResponseBuilder, IProblemReportData, IProblemsReportData } from "@types";
+import { Request, Response } from "express";
 
 class ProblemController extends BaseController<ProblemHandler> {
     constructor() {
