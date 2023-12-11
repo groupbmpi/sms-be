@@ -1,5 +1,5 @@
 import { Lembaga, User } from "@prisma/client";
-import { ILoginUserBody, IRegisterUserBody, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, LEMBAGA_OTHERS } from "@types";
+import { ILoginUserBody, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, LEMBAGA_OTHERS } from "@types";
 import { BaseHandler } from "@handlers";
 import { IPagination, IUnverifiedUserData } from "@types";
 import { countSkipped } from "@utils";
@@ -104,6 +104,59 @@ export class UserHandler extends BaseHandler{
             return newUser;
         }
 
+    }
+
+    public async updateUserById(
+        body: IUpdateUnverifiedUserBody,
+        lembagaName : string,
+        lembagaOthers : string | null,
+        kabupatenKota : string,
+        provinsi : string,
+        id : number
+    ) : Promise<User | null>{
+        const kabupatenKotaUser = await this.prisma.kabupatenKota.findFirst({
+            where : {
+                nama : kabupatenKota,
+                provinsi : {
+                    nama : provinsi
+                }
+            }
+        })
+        if(!kabupatenKotaUser){
+            return null;
+        }
+        if(lembagaName == LEMBAGA_OTHERS){
+            const user : User = await this.prisma.user.update({
+                where : {
+                    id : id
+                },
+                data : {
+                    ...body,
+                    lembagaOthers : lembagaOthers,
+                    lembaga_id : null,
+                    kabupatenKota_id : kabupatenKotaUser.id
+                }
+            })
+            return user;
+        }else{
+            const lembagaUser : Lembaga | null = await this.prisma.lembaga.findFirst({
+                where : {
+                    nama : lembagaName
+                }
+            })
+            const user : User = await this.prisma.user.update({
+                where : {
+                    id : id
+                },
+                data : {
+                    ...body,
+                    lembagaOthers : lembagaOthers,
+                    lembaga_id : lembagaUser?.id,
+                    kabupatenKota_id : kabupatenKotaUser.id
+                }
+            })
+            return user;
+        }
     }
 
     public async login(

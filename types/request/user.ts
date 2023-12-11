@@ -4,6 +4,9 @@ import { IPagination } from "./pagination";
 
 type PropsRegisterUserOmitted = "id" | "lembaga_id" | "role_id" | "kabupatenKota_id" | "lembagaOthers" | "password" | "otp_token" | "is_activated" | "createdAt" | "updatedAt" | "linkFoto" ;
 export interface IRegisterUserBody extends Omit<User,PropsRegisterUserOmitted>{}
+type PropsUpdateUnverifiedUserOmitted = "email" | "is_verified" | "is_accepted";
+export interface IUpdateUnverifiedUserBody extends Omit<IRegisterUserBody,PropsUpdateUnverifiedUserOmitted>{}
+
 
 export interface IVerifyUserBody{
     userID: number,
@@ -27,5 +30,8 @@ export interface IUserBody {
     noHandphone : string,
     avatar : string
 }
+
+type PropsUpdateUserOmitted = "id" | "lembaga_id" | "role_id" | "kabupatenKota_id" | "lembagaOthers" | "password" | "otp_token" | "is_activated" | "createdAt" | "updatedAt" | "linkFoto" ;
+export interface IUpdateUserBody extends Omit<User,PropsUpdateUserOmitted>{}
 
 export const LEMBAGA_OTHERS = "Others"

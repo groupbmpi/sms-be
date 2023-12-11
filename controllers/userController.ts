@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { InternalServerErrorException, HttpException, BadRequestException, UnauthorizedException, NotFoundException } from "@exceptions";
-import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterUserBody, IUnverifiedUserData, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, ResponseBuilder } from "@types";
+import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterUserBody, IUnverifiedUserData, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, ResponseBuilder } from "@types";
 import { UserHandler } from "@handlers";
 import { BaseController } from "@controllers";
 import { User } from "@prisma/client";
@@ -113,6 +113,50 @@ class UserController extends BaseController<UserHandler> {
                     null,
                     InternalServerErrorException.MESSAGE,
                     InternalServerErrorException.STATUS_CODE
+                )
+            )
+        }
+    }
+
+    public updateUnverifiedUser = async (req: Request<{
+        id: number,
+    },unknown>, res: Response) => {
+        try{
+            const body : IUpdateUnverifiedUserBody = {
+                alamat : req.body.alamat,
+                namaLengkap : req.body.namaLengkap,
+                noHandphone : req.body.noHandphone,
+                kecamatan: req.body.kecamatan,
+                kelurahan: req.body.kelurahan,
+                kodePos: req.body.kodePos,
+                kategori : req.body.kategori,
+            }
+            const lembagaName : string = req.body.lembagaName;
+            const lembagaOthers : string | null = req.body.lembagaOthers;
+            const kabupatenKota : string = req.body.kabupatenKota;
+            const provinsi : string = req.body.provinsi;
+        
+            const newUser : User | null = await this.handler.updateUserById(body,lembagaName,lembagaOthers,kabupatenKota,provinsi,req.params.id);
+
+            if(!newUser){
+                throw new BadRequestException("User not found");
+            }
+
+            res.status(200).json(
+                ResponseBuilder.success(
+                    null,
+                    "Update user successfully",
+                    200
+                )
+            )
+        }catch(error : any){
+            console.error(error)
+
+            res.status(error.getStatusCode()).json(
+                ResponseBuilder.error(
+                    null,
+                    error.getMessage(),
+                    error.getStatusCode()
                 )
             )
         }
