@@ -347,7 +347,7 @@ class UserController extends BaseController<UserHandler> {
                     200
                 )
             )
-        }catch(error){
+        }catch(error : any){
             console.error(error)
 
             res.status(500).json(
@@ -355,6 +355,40 @@ class UserController extends BaseController<UserHandler> {
                     null,
                     InternalServerErrorException.MESSAGE,
                     InternalServerErrorException.STATUS_CODE
+                )
+            )
+        }
+    }
+
+    public getUserById = async (req: Request<{
+        id: number,
+    },unknown,unknown, unknown>, res: Response) => {
+        try{
+            const userID : number = req.params.id;
+
+
+            const user : IUserDTO | null = await this.handler.getUser(userID);
+
+
+            if(!user){
+                throw new BadRequestException("User tidak ditemukan");
+            }
+
+            res.status(200).json(
+                ResponseBuilder.success<IUserDTO>(
+                    user,
+                    "Get user successfully",
+                    200
+                )
+            )
+        }catch(error : any){
+            console.error(error)
+
+            res.status(error.getStatusCode()).json(
+                ResponseBuilder.error(
+                    null,
+                    error.getMessage(),
+                    error.getStatusCode()
                 )
             )
         }

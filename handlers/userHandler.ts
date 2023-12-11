@@ -355,8 +355,8 @@ export class UserHandler extends BaseHandler{
   
     public async getUser(
         userID : number
-    ) : Promise<IUserDTO>{
-        const user = await this.prisma.user.findFirstOrThrow({
+    ) : Promise<IUserDTO | null>{
+        const user = await this.prisma.user.findFirst({
             where : {
                 id : userID
             },
@@ -369,6 +369,9 @@ export class UserHandler extends BaseHandler{
                 }
             }
         });
+        if(!user){
+            return null;
+        }
         let url = ""
         if(user.linkFoto){
             url = await this.getSignedURL(user.linkFoto);
