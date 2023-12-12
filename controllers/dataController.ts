@@ -1,4 +1,3 @@
-import { InternalServerErrorException } from "@exceptions";
 import { DaerahHandler, EnumHandler, LembagaHandler } from "@handlers";
 import { Kategori, KategoriMasalah, Lembaga, MetodePelaksanaan, StatusKegiatan } from "@prisma/client";
 import { IDaerahDTO, IFormActivityReportData, IFormProblemReportData, IFormUserData, ResponseBuilder } from "@types";
@@ -40,15 +39,7 @@ class DataController extends BaseController<EnumHandler>{
                 )
             )
         }catch(error: any){
-            console.error(error)
-
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error(
-                    [],
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE,    
-                )
-            )
+            this.handleError(res,error);
         }
     }
 
@@ -69,15 +60,7 @@ class DataController extends BaseController<EnumHandler>{
                 )
             )
         }catch(error: any){
-            console.error(error)
-
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error(
-                    [],
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE,    
-                )
-            )
+            this.handleError(res,error);
         }
     }
 
@@ -103,15 +86,7 @@ class DataController extends BaseController<EnumHandler>{
                 )
             )
         }catch(error: any){
-            console.error(error)
-
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error(
-                    [],
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE,    
-                )
-            )
+            this.handleError(res,error);
         }
     }
 }

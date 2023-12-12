@@ -1,5 +1,5 @@
 import BaseController from "./baseController";
-import { BadRequestException, HttpException, InternalServerErrorException, UnauthorizedException } from "@exceptions";
+import { BadRequestException, UnauthorizedException } from "@exceptions";
 import { UserHandler } from "@handlers";
 import { User } from "@prisma/client";
 import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterAdminBody, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, ResponseBuilder } from "@types";
@@ -36,15 +36,7 @@ class UserController extends BaseController<UserHandler> {
                 )
             )
         } catch (error: any) {
-            console.error(error)
-
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error<User>(
-                    null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE,    
-                )
-            )
+            this.handleError(res, error)
         }
     }
     public registerUser = async (req: Request, res: Response) => {
@@ -79,15 +71,8 @@ class UserController extends BaseController<UserHandler> {
                 )
             )
         }catch(error){
-            console.error(error)
+            this.handleError(res,error);
 
-            res.status(500).json(
-                ResponseBuilder.error(
-                    null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE
-                )
-            )
         }
     }
 
@@ -107,15 +92,8 @@ class UserController extends BaseController<UserHandler> {
                 )
             )
         }catch(error){
-            console.error(error)
+            this.handleError(res,error);
 
-            res.status(500).json(
-                ResponseBuilder.error(
-                    null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE
-                )
-            )
         }
     }
 
@@ -151,15 +129,8 @@ class UserController extends BaseController<UserHandler> {
                 )
             )
         }catch(error : any){
-            console.error(error)
+            this.handleError(res,error);
 
-            res.status(error.getStatusCode()).json(
-                ResponseBuilder.error(
-                    null,
-                    error.getMessage(),
-                    error.getStatusCode()
-                )
-            )
         }
     }
 
@@ -170,14 +141,7 @@ class UserController extends BaseController<UserHandler> {
             const newUser : User | null = await this.handler.verifyUser(body);
 
             if(!newUser){
-                res.status(400).json(
-                    ResponseBuilder.error(
-                        null,
-                        "User not found",
-                        BadRequestException.STATUS_CODE
-                    )
-                );
-                return;
+                throw new BadRequestException("User not found");
             }
 
             res.status(200).json(
@@ -188,15 +152,8 @@ class UserController extends BaseController<UserHandler> {
                 )
             )
         }catch(error){
-            console.error(error)
+            this.handleError(res,error);
 
-            res.status(500).json(
-                ResponseBuilder.error(
-                    null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE
-                )
-            )
         }
     }
 
@@ -207,14 +164,7 @@ class UserController extends BaseController<UserHandler> {
             const token = await this.handler.login(body);
 
             if(token == ""){
-                res.status(400).json(
-                    ResponseBuilder.error(
-                        null,
-                        "Login fail",
-                        BadRequestException.STATUS_CODE
-                    )
-                );
-                return;
+                throw new BadRequestException("Login fail");
             }else{
                 res.status(200).json(
                     ResponseBuilder.success<string>(
@@ -225,29 +175,15 @@ class UserController extends BaseController<UserHandler> {
                 )
             }
         }catch(error){
-            console.log(error);
+            this.handleError(res,error);
 
-            res.status(500).json(
-                ResponseBuilder.error(
-                    null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE
-                )
-            );
         }
     }
 
     public getRoleUser = async (req: Request<unknown>, res: Response) => {
         try{
             if(!req.isAuthenticated){
-                res.status(400).json(
-                    ResponseBuilder.error(
-                        null,
-                        "User not authenticated",
-                        BadRequestException.STATUS_CODE
-                    )
-                );
-                return;
+                throw new BadRequestException("User not authenticated")
             }
 
             const userID : number = req.userID as number;
@@ -255,14 +191,7 @@ class UserController extends BaseController<UserHandler> {
             const roleUser : IUserRoleDTO | null = await this.handler.getUserRole(userID);
 
             if(!roleUser){
-                res.status(400).json(
-                    ResponseBuilder.error(
-                        null,
-                        "User not found",
-                        BadRequestException.STATUS_CODE
-                    )
-                );
-                return;
+                throw new BadRequestException("User not found")
             }
 
             res.status(200).json(
@@ -273,15 +202,8 @@ class UserController extends BaseController<UserHandler> {
                 )
             )
         }catch(error){
-            console.error(error)
+            this.handleError(res,error);
 
-            res.status(500).json(
-                ResponseBuilder.error(
-                    null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE
-                )
-            )
         }
     }
 
@@ -291,55 +213,26 @@ class UserController extends BaseController<UserHandler> {
             const user : User | null = await this.handler.getUserByEmail(body.email);
 
             if(!user){
-                res.status(400).json(
-                    ResponseBuilder.error(
-                        null,
-                        "User not found",
-                        BadRequestException.STATUS_CODE
-                    )
-                );
-                return;
+                throw new BadRequestException("User not found")
             }
 
             
             if(!user.is_verified){
-                res.status(400).json(
-                    ResponseBuilder.error(
-                        null,
-                        "User is not verified yet",
-                        BadRequestException.STATUS_CODE
-                    )
-                );
-                return;
+                throw new BadRequestException("User is not verified yet")
             }
 
             if(!user.is_accepted){
-                res.status(400).json(
-                    ResponseBuilder.error(
-                        null,
-                        "User is not accepted",
-                        BadRequestException.STATUS_CODE
-                    )
-                );
-                return;
+                throw new BadRequestException("User is not accepted")
             }
 
             if(user.is_activated){
-                res.status(400).json(
-                    ResponseBuilder.error(
-                        null,
-                        "User already activated",
-                        BadRequestException.STATUS_CODE
-                    )
-                );
-                return;
+                throw new BadRequestException("User already activated")
             }
 
             const isPassCorrect : boolean = await bcrypt.compare(body.password,user.password as string);
             const isOtpCorrect : boolean = await bcrypt.compare(body.otp, user.otp_token as string);
 
             if(isPassCorrect && isOtpCorrect){
-
                 await this.handler.activateUser(user.id);
     
                 res.status(200).json(
@@ -350,26 +243,12 @@ class UserController extends BaseController<UserHandler> {
                     )
                 )
             }else{
-                res.status(400).json(
-                    ResponseBuilder.success(
-                        null,
-                        "Password or otp is incorrect",
-                        BadRequestException.STATUS_CODE
-                    )
-                )
+                throw new BadRequestException("Password or otp is incorrect")
             }
 
 
         }catch(error){
-            console.error(error)
-
-            res.status(500).json(
-                ResponseBuilder.error(
-                    null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE
-                )
-            )
+            this.handleError(res,error);
         }
     }
 
@@ -377,9 +256,7 @@ class UserController extends BaseController<UserHandler> {
         try{
             const userID : number = req.userID as number;
 
-
             const user : IUserDTO | null = await this.handler.getUser(userID);
-
 
             if(!user){
                 throw new UnauthorizedException("Anda tidak memiliki akses untuk melihat data ini");
@@ -393,15 +270,7 @@ class UserController extends BaseController<UserHandler> {
                 )
             )
         }catch(error : any){
-            console.error(error)
-
-            res.status(500).json(
-                ResponseBuilder.error(
-                    null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE
-                )
-            )
+            this.handleError(res,error);
         }
     }
 
@@ -413,7 +282,6 @@ class UserController extends BaseController<UserHandler> {
 
 
             const user : IUserDTO | null = await this.handler.getUser(userID);
-
 
             if(!user){
                 throw new BadRequestException("User tidak ditemukan");
@@ -427,25 +295,7 @@ class UserController extends BaseController<UserHandler> {
                 )
             )
         }catch(error : any){
-            console.error(error)
-
-            if(error instanceof HttpException){
-                res.status(error.getStatusCode()).json(
-                    ResponseBuilder.error(
-                        null,
-                        error.getMessage(),
-                        error.getStatusCode()
-                    )
-                )
-            }else{
-                res.status(500).json(
-                    ResponseBuilder.error(
-                        null,
-                        InternalServerErrorException.MESSAGE,
-                        InternalServerErrorException.STATUS_CODE
-                    )
-                )
-            }
+            this.handleError(res,error);
         }
     }
 
@@ -467,27 +317,7 @@ class UserController extends BaseController<UserHandler> {
                 )
             )
         }catch(error : any){
-            console.error(error)
-
-            if(error instanceof HttpException){
-                res.status(error.getStatusCode()).json(
-                    ResponseBuilder.error(
-                        null,
-                        error.getMessage(),
-                        error.getStatusCode()
-                    )
-                )
-            }else{
-                res.status(500).json(
-                    ResponseBuilder.error(
-                        null,
-                        InternalServerErrorException.MESSAGE,
-                        InternalServerErrorException.STATUS_CODE
-                    )
-                )
-            }
-
-            
+            this.handleError(res,error);
         }
     }
 }

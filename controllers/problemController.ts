@@ -1,7 +1,6 @@
 import BaseController from "./baseController";
-import { InternalServerErrorException } from "@exceptions";
 import { ProblemHandler } from "@handlers";
-import { IProblemReportBody, IProblemReportQuery, IProblemsDTO, ResponseBuilder, IProblemReportData, IProblemsReportData } from "@types";
+import { IProblemReportBody, IProblemReportQuery, IProblemsDTO, ResponseBuilder, IProblemReportData} from "@types";
 import { Request, Response } from "express";
 
 class ProblemController extends BaseController<ProblemHandler> {
@@ -28,15 +27,7 @@ class ProblemController extends BaseController<ProblemHandler> {
             )
 
         } catch (error: any) {
-            console.error(error)
-
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error<IProblemsReportData[]>(
-                    [],
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE,    
-                )
-            )
+            this.handleError(res,error);
         }
     }
     
@@ -64,15 +55,7 @@ class ProblemController extends BaseController<ProblemHandler> {
             )
 
         } catch (error: any) {
-            console.error(error)
-
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error<IProblemReportData>(
-                    null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE,    
-                )
-            )
+            this.handleError(res,error);
         }
     }
 }

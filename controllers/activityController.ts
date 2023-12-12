@@ -1,6 +1,6 @@
 import { LAPORAN_KEGIATAN, WRITE } from "@constant";
 import BaseController from "./baseController";
-import { InternalServerErrorException, UnauthorizedException } from "@exceptions";
+import {UnauthorizedException } from "@exceptions";
 import { ActivityHandler } from "@handlers";
 import { IActivitiesDTO, IActivityReportBody, IActivityReportData, IActivityReportQuery, ResponseBuilder } from "@types";
 import { checkAccess } from "@utils";
@@ -36,15 +36,8 @@ class ActivityController extends BaseController<ActivityHandler> {
                 )
             )
         }catch(error: any){
-            console.error(error)
+            this.handleError(res,error);
 
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error<IActivityReportData[]>(
-                    [],
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE,    
-                )
-            )
         }
     }
 
@@ -52,15 +45,7 @@ class ActivityController extends BaseController<ActivityHandler> {
         try{
 
             if(!req.isAuthenticated || req.role === undefined || req.userID === undefined){
-                res.status(UnauthorizedException.STATUS_CODE).json(
-                    ResponseBuilder.error<IActivityReportData>(
-                        null,
-                        UnauthorizedException.MESSAGE,
-                        UnauthorizedException.STATUS_CODE,    
-                    )
-                )
-
-                return
+                throw new UnauthorizedException()
             }
 
             //TODO:Check access matrix
@@ -85,15 +70,8 @@ class ActivityController extends BaseController<ActivityHandler> {
                 )
             )
         }catch(error: any){
-            console.error(error)
+            this.handleError(res,error);
 
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error<IActivityReportData>(
-                    null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE,    
-                )
-            )
         }
     } 
 
@@ -104,15 +82,7 @@ class ActivityController extends BaseController<ActivityHandler> {
             const id : number = req.params.id
             const body : IActivityReportBody = req.body
             if(!req.isAuthenticated || req.role === undefined || req.userID === undefined){
-                res.status(UnauthorizedException.STATUS_CODE).json(
-                    ResponseBuilder.error<IActivityReportData>(
-                        null,
-                        UnauthorizedException.MESSAGE,
-                        UnauthorizedException.STATUS_CODE,    
-                    )
-                )
-
-                return
+                throw new UnauthorizedException();
             }
 
             //TODO:Check access matrix
@@ -137,15 +107,8 @@ class ActivityController extends BaseController<ActivityHandler> {
                 )
             )
         }catch(error: any){
-            console.error(error)
+            this.handleError(res,error);
 
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error<IActivityReportData>(
-                    null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE,    
-                )
-            )
         }
     }
 
@@ -167,15 +130,7 @@ class ActivityController extends BaseController<ActivityHandler> {
                 )
             )
         }catch(error: any){
-            console.error(error)
-
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error<boolean>(
-                    null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE,    
-                )
-            )
+            this.handleError(res,error);
         }
     }
 }
