@@ -213,7 +213,6 @@ export class UserHandler extends BaseHandler{
                 const newLembaga : Lembaga = await this.prisma.lembaga.create({
                     data : {
                         nama : currentUser.lembagaOthers as string,
-                        alamat : currentUser.alamat,
                         kategori : currentUser.kategori
                     }
                 })

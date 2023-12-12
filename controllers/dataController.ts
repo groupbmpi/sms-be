@@ -14,7 +14,7 @@ class DataController extends BaseController<EnumHandler>{
         this.daerahHandler = new DaerahHandler()
     }
 
-    public getDataFormActivityReport = async (_: Request, res: Response)=>{
+    public getDataFormActivityReport = async (_: Request<unknown>, res: Response)=>{
         try{
             const [kategori, kategoriMasalah, statusKegiatan, metodePelaksanaan] = await Promise.all([
                 this.handler.getEnum(Kategori),
@@ -43,7 +43,7 @@ class DataController extends BaseController<EnumHandler>{
         }
     }
 
-    public getDataFormProblemReport = async (_: Request, res: Response)=>{
+    public getDataFormProblemReport = async (_: Request<unknown>, res: Response)=>{
         try{
             const kategoriMasalah : string[] = this.handler.getEnum(KategoriMasalah)
 
@@ -64,7 +64,7 @@ class DataController extends BaseController<EnumHandler>{
         }
     }
 
-    public getDataFormUser = async (_: Request, res: Response)=>{
+    public getDataFormUser = async (_: Request<unknown>, res: Response)=>{
         try{
             const daerah : IDaerahDTO[] = await this.daerahHandler.getKabupatenKota()
 
@@ -88,7 +88,7 @@ class DataController extends BaseController<EnumHandler>{
         }
     }
 
-    public getDataFormLembaga = async (_: Request, res: Response)=>{
+    public getDataFormLembaga = async (_: Request<unknown>, res: Response)=>{
         try{
             const lembaga : ILembagaByKategoriDTO[] = await this.lembagaHandler.getLembagaByKategory()
 
