@@ -1,6 +1,6 @@
 import { DaerahHandler, EnumHandler, LembagaHandler } from "@handlers";
 import { Kategori, KategoriMasalah, Lembaga, MetodePelaksanaan, StatusKegiatan } from "@prisma/client";
-import { IDaerahDTO, IFormActivityReportData, IFormProblemReportData, IFormUserData, ResponseBuilder } from "@types";
+import { IDaerahDTO, IFormActivityReportData, IFormLembagaData, IFormProblemReportData, IFormUserData, ILembagaByKategoriDTO, ILembagasDTO, ResponseBuilder } from "@types";
 import { Request, Response } from "express";
 import BaseController from "./baseController";
 
@@ -68,9 +68,7 @@ class DataController extends BaseController<EnumHandler>{
         try{
             const daerah : IDaerahDTO[] = await this.daerahHandler.getKabupatenKota()
 
-            const lembaga : Lembaga[] = await this.lembagaHandler.getLembaga()
-
-            const lembagaParsed : string[] = lembaga.map((lembaga) => lembaga.nama)
+            const lembaga : ILembagaByKategoriDTO[] = await this.lembagaHandler.getLembagaByKategory()
 
             const kategori : string[] = this.handler.getEnum(Kategori)
 
@@ -78,8 +76,26 @@ class DataController extends BaseController<EnumHandler>{
                 ResponseBuilder.success<IFormUserData>(
                     {
                         daerah: daerah,
-                        lembaga: lembagaParsed,
+                        lembaga: lembaga,
                         kategori : kategori
+                    },
+                    "",
+                    200
+                )
+            )
+        }catch(error: any){
+            this.handleError(res,error);
+        }
+    }
+
+    public getDataFormLembaga = async (_: Request, res: Response)=>{
+        try{
+            const lembaga : ILembagaByKategoriDTO[] = await this.lembagaHandler.getLembagaByKategory()
+
+            res.status(200).json(
+                ResponseBuilder.success<IFormLembagaData>(
+                    {
+                        lembaga: lembaga,
                     },
                     "",
                     200

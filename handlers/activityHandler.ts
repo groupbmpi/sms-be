@@ -91,7 +91,18 @@ export class ActivityHandler extends BaseHandler{
         
         const skipped = countSkipped(page, limit)
         
-        const totalData : number = await this.prisma.laporanKegiatan.count()
+        const totalData : number = await this.prisma.laporanKegiatan.count({
+            where: {
+                ...parsedQuery,
+                user: {
+                    lembaga:{
+                        nama: {
+                            contains: lembaga,
+                        }
+                    }
+                }
+            },
+        })
 
         const activityReport : LaporanKegiatan[] = await this.prisma.laporanKegiatan.findMany({
             where: {
@@ -266,8 +277,6 @@ export class ActivityHandler extends BaseHandler{
         if(typeof data === 'string'){
             throw new BadRequestException(data)
         }
-
-        console.log(body.indikatorKeberhasilan)
 
         const updatedLaporanKegiatan : LaporanKegiatan = await this.prisma.laporanKegiatan.update({
             where: {

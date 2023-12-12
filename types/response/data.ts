@@ -1,3 +1,4 @@
+import { ILembagaByKategoriDTO } from "types/request/lembaga";
 import { IDaerahDTO } from "../request";
 
 export interface IFormActivityReportData {
@@ -15,6 +16,10 @@ export interface IFormProblemReportData {
 
 export interface IFormUserData{
     daerah : IDaerahDTO[],
-    lembaga : string[],
+    lembaga : ILembagaByKategoriDTO[],
     kategori : string[],
+}
+
+export interface IFormLembagaData{
+    lembaga: ILembagaByKategoriDTO[],
 }
