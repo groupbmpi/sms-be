@@ -3,15 +3,18 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaInstance } from "@services"
 import { StorageInstance } from "services/storage";
 import { randomUUID } from "crypto";
+import { MailInstance } from "services/mail";
 // import sharp from "sharp";
 
 export abstract class BaseHandler {
     protected prisma: PrismaClient;
     protected bucket: Bucket;
+    protected email : MailInstance;
 
     constructor() {
         this.prisma = PrismaInstance.getInstance().getClient();
         this.bucket = StorageInstance.getInstance().getBucket();
+        this.email = MailInstance.getInstance();
     }
 
      protected uploadPictureFile = async (folder: string, pictureData: string) => {
