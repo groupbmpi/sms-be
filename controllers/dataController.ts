@@ -47,13 +47,13 @@ class DataController extends BaseController<EnumHandler>{
         try{
             const kategoriMasalah : string[] = this.handler.getEnum(KategoriMasalah)
 
-            const provinsi : string[] = await this.daerahHandler.getProvinsi()
+            const kabupatenKota : IDaerahDTO[] = await this.daerahHandler.getKabupatenKota()
 
             res.status(200).json(
                 ResponseBuilder.success<IFormProblemReportData>(
                     {
-                        kategoriMasalah,
-                        provinsi,
+                        kategoriMasalah: kategoriMasalah,
+                        daerah: kabupatenKota,
                     },
                     "",
                     200
@@ -90,12 +90,12 @@ class DataController extends BaseController<EnumHandler>{
 
     public getDataFormLembaga = async (_: Request<unknown>, res: Response)=>{
         try{
-            const lembaga : ILembagaByKategoriDTO[] = await this.lembagaHandler.getLembagaByKategory()
+            const kategori : string[] = this.handler.getEnum(Kategori)
 
             res.status(200).json(
                 ResponseBuilder.success<IFormLembagaData>(
                     {
-                        lembaga: lembaga,
+                        kategori: kategori,
                     },
                     "",
                     200

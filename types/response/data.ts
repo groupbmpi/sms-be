@@ -11,7 +11,7 @@ export interface IFormActivityReportData {
 
 export interface IFormProblemReportData {
     kategoriMasalah : string[],
-    provinsi : string[],
+    daerah : IDaerahDTO[],
 }
 
 export interface IFormUserData{
@@ -21,5 +21,5 @@ export interface IFormUserData{
 }
 
 export interface IFormLembagaData{
-    lembaga: ILembagaByKategoriDTO[],
+    kategori: string[],
 }

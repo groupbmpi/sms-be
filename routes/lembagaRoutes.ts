@@ -6,7 +6,7 @@ class LembagaRoutes extends BaseRoutes{
     public setRoutes(): void {
         this.routes.get("/",  AuthMiddleware,LembagaController.getLembaga)
         this.routes.post("/", AuthMiddleware, LembagaController.createLembaga)
-        this.routes.put("/",  AuthMiddleware, LembagaController.updateLembaga)
+        this.routes.put("/:id",  AuthMiddleware, LembagaController.updateLembaga)
     }
 }
 
