@@ -3,7 +3,7 @@ export function getNumberFromString(arg: unknown): number | undefined {
         return undefined;
     }
 
-    if (Number.isNaN(arg)) {
+    if (Number.isNaN(parseInt(arg))) {
         return undefined;
     }
 
