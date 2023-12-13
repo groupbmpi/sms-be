@@ -42,8 +42,8 @@ export interface IRegisterAdminBody{
 }
 
 export interface IVerifyUserDTO extends User{
-    passsword: string
-    otp: string
+    realPassword: string
+    realOtp?: string
 }
 
 export interface IQueryUserRequest extends IPagination{

@@ -247,8 +247,8 @@ export class UserHandler extends BaseHandler{
         }
         const response : IVerifyUserDTO = {
             ...newUser,
-            passsword : pass,
-            otp :otp
+            realPassword : pass,
+            realOtp :otp
         }
         return response;
     }
@@ -483,7 +483,7 @@ export class UserHandler extends BaseHandler{
 
     public async addAdmin(
         email : string
-    ) : Promise<IUserDTO>{
+    ) : Promise<IVerifyUserDTO>{
         const kabupatenKotaUser = await this.prisma.kabupatenKota.findFirst({
             where : {
                 nama : BCF_CITY,
@@ -521,8 +521,11 @@ export class UserHandler extends BaseHandler{
                 }
             }
         })
-
-        return this.dataToDTO(admin, "", "", "", "");
+        const response : IVerifyUserDTO = {
+            ...admin,
+            realPassword : pass,
+        }
+        return response;
     }
 }
 
