@@ -9,12 +9,12 @@ class UserRoutes extends BaseRoutes {
       this.routes.post("/login/",UserController.loginUser)
 
       this.routes.put("/verify/", UserController.verifyUser);
-      this.routes.get("/verify/", UserController.getUnverifiedUser);
+      this.routes.get("/verify/", UserController.getUserBasedOnVerif);
 
       this.routes.put("/activate/",UserController.activateUser);
 
       this.routes.get("/:id", [AuthMiddleware], UserController.getUserById);
-      this.routes.put("/:id", [AuthMiddleware], UserController.updateUnverifiedUser);
+      this.routes.put("/:id", [AuthMiddleware], UserController.updateUserByID);
 
       this.routes.put("/", [AuthMiddleware], UserController.updateUser);
       this.routes.get("/", [AuthMiddleware], UserController.getUser);

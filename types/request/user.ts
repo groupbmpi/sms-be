@@ -45,3 +45,7 @@ export interface IVerifyUserDTO extends User{
     passsword: string
     otp: string
 }
+
+export interface IQueryUserRequest extends IPagination{
+    filterVerif?: string
+}

@@ -4,6 +4,9 @@ export const SALT_ROUND = 10;
 export const ID_ROLE_SUPERADMIN = 1;
 export const ID_ROLE_ADMIN = 2;
 export const ID_ROLE_USER = 3;
+export const ALL_VERIF = "all";
+export const VERIF = "verif";
+export const UNVERIF = "unverif";
 
 // bcf location
 export const BCF_CITY = "JAKARTA SELATAN"

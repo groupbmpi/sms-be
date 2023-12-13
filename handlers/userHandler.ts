@@ -1,8 +1,8 @@
-import { BCF_CITY, BCF_PROVINCE, ID_ROLE_ADMIN, OTP_LENGTH, SALT_ROUND } from "@constant";
+import { BCF_CITY, BCF_PROVINCE, ID_ROLE_ADMIN, ID_ROLE_USER, OTP_LENGTH, SALT_ROUND } from "@constant";
 import { BadRequestException, InternalServerErrorException } from "@exceptions";
 import { BaseHandler } from "./baseHandler";
 import { Kategori, Lembaga, User } from "@prisma/client";
-import { ILoginUserBody, IPagination, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IUserWithPaginationDTO, IVerifyUserBody, IVerifyUserDTO, LEMBAGA_OTHERS } from "@types";
+import { ILoginUserBody, IPagination, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IUserWithPaginationDTO, IUserWithVerifDTO, IVerifyUserBody, IVerifyUserDTO, LEMBAGA_OTHERS } from "@types";
 import { countSkipped, generatePassword, generateRandomNumber, sign, checkValidNoHandphone } from "@utils";
 import bcrypt from "bcrypt";
 
@@ -253,8 +253,9 @@ export class UserHandler extends BaseHandler{
         return response;
     }
 
-    public async getUnverifiedUser(
-        pagination : IPagination
+    public async getUserBasedOnVerifStatus(
+        pagination : IPagination,
+        isVerified? : boolean
     ): Promise<IUserWithPaginationDTO>{
         let { limit, page } = pagination
         if(!limit){
@@ -264,28 +265,56 @@ export class UserHandler extends BaseHandler{
             page = 1;
         }
         const skipped = countSkipped(page, limit)
-        const totalData : number = await this.prisma.user.count({
-            where : {
-                is_verified : false
-            }
-        })
-        const users = await this.prisma.user.findMany({
-            where : {
-                is_verified : false
-            },
-            include : {
-                lembaga : true,
-                kabupatenKota : {
-                    include : {
-                        provinsi : true
-                    }
+        let totalData : number;
+        let users : any[];
+        if(isVerified == undefined){
+            totalData = await this.prisma.user.count({
+                where : {
+                    role_id : ID_ROLE_USER
                 }
-            },
-            take: pagination.limit,
-            skip: skipped,
-        })
+            });
+            users = await this.prisma.user.findMany({
+                where : {
+                    role_id : ID_ROLE_USER
+                },
+                include : {
+                    lembaga : true,
+                    kabupatenKota : {
+                        include : {
+                            provinsi : true
+                        }
+                    }
+                },
+                take: pagination.limit,
+                skip: skipped,
+            })
+        }else{
+            totalData = await this.prisma.user.count({
+                where : {
+                    role_id : ID_ROLE_USER,
+                    is_verified : isVerified
+                }
+            })
+            users = await this.prisma.user.findMany({
+                where : {
+                    role_id : ID_ROLE_USER,
+                    is_verified : isVerified
+                },
+                include : {
+                    lembaga : true,
+                    kabupatenKota : {
+                        include : {
+                            provinsi : true
+                        }
+                    }
+                },
+                take: pagination.limit,
+                skip: skipped,
+            })
+        }
+        
 
-        const userDto : IUserDTO[] = []
+        const userDto : IUserWithVerifDTO[] = []
         for(const user of users){
             let url = ""
             if(user.linkFoto){
@@ -294,7 +323,12 @@ export class UserHandler extends BaseHandler{
             const lembaga = user.lembaga? user.lembaga.nama : "";
             const kabupatenKota = user.kabupatenKota? user.kabupatenKota.nama : "";
             const provinsi = user.kabupatenKota? user.kabupatenKota.provinsi.nama : "";
-            userDto.push(this.dataToDTO(user, url, lembaga, kabupatenKota, provinsi))
+            const data : IUserDTO = this.dataToDTO(user, url, lembaga, kabupatenKota, provinsi)
+            const dataDTO : IUserWithVerifDTO = {
+                ...data,
+                is_verified : user.is_verified
+            }
+            userDto.push(dataDTO);
         }
         const response : IUserWithPaginationDTO = {
             listUser : userDto,

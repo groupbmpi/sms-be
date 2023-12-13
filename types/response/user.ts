@@ -13,6 +13,10 @@ export interface IUserDTO extends Omit<User,PropsUserDTOOmitted>{
     provinsi : string,
 }
 
+export interface IUserWithVerifDTO extends IUserDTO{
+    is_verified : boolean
+}
+
 export interface IUserRoleDTO{
     id : number,
     email : string,
@@ -21,6 +25,6 @@ export interface IUserRoleDTO{
 }
 
 export interface IUserWithPaginationDTO{
-    listUser : IUserDTO[],
+    listUser : IUserWithVerifDTO[],
     countPages : number
 }

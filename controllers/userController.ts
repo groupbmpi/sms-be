@@ -2,9 +2,9 @@ import BaseController from "./baseController";
 import { BadRequestException, UnauthorizedException } from "@exceptions";
 import { UserHandler } from "@handlers";
 import { User } from "@prisma/client";
-import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterAdminBody, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IUserWithPaginationDTO, IVerifyUserBody, IVerifyUserDTO, ResponseBuilder } from "@types";
+import { IActivateUserBody, ILoginUserBody, IPagination, IQueryUserRequest, IRegisterAdminBody, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IUserWithPaginationDTO, IVerifyUserBody, IVerifyUserDTO, ResponseBuilder } from "@types";
 import bcrypt from "bcrypt";
-import { EMAIL_KEY, ID_ROLE_USER, OTP_KEY, PASSWORD_KEY, REGISTER_MESSAGE, REGISTER_SUBJECT, VERIFY_MESSAGE_FAIL, VERIFY_MESSAGE_SUCCESS, VERIFY_SUBJECT } from "@constant";
+import { ALL_VERIF, EMAIL_KEY, ID_ROLE_USER, OTP_KEY, PASSWORD_KEY, REGISTER_MESSAGE, REGISTER_SUBJECT, VERIF, VERIFY_MESSAGE_FAIL, VERIFY_MESSAGE_SUCCESS, VERIFY_SUBJECT } from "@constant";
 import { Request, Response } from "express";
 import { checkSuffixBcfEmail } from "@utils";
 import { MailInstance } from "@services";
@@ -134,11 +134,19 @@ class UserController extends BaseController<UserHandler> {
         }
     }
 
-    public getUnverifiedUser = async (req: Request, res: Response) => {
+    public getUserBasedOnVerif = async (req: Request, res: Response) => {
         try{
-            const pagination : IPagination = req.query
+            const queryUser : IQueryUserRequest = req.query;
+
+            const pagination : IPagination = queryUser;
         
-            const listUnverifiedUser : IUserWithPaginationDTO = await this.handler.getUnverifiedUser(pagination);
+            let listUnverifiedUser : IUserWithPaginationDTO;
+
+            if(queryUser.filterVerif == ALL_VERIF || !queryUser.filterVerif){
+                listUnverifiedUser = await this.handler.getUserBasedOnVerifStatus(pagination);
+            }else{
+                listUnverifiedUser = await this.handler.getUserBasedOnVerifStatus(pagination,queryUser.filterVerif == VERIF? true:false);
+            }
 
             res.status(200).json(
                 ResponseBuilder.success(
@@ -153,7 +161,7 @@ class UserController extends BaseController<UserHandler> {
         }
     }
 
-    public updateUnverifiedUser = async (req: Request<{
+    public updateUserByID = async (req: Request<{
         id: number,
     },unknown>, res: Response) => {
         try{
