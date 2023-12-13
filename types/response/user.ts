@@ -19,3 +19,8 @@ export interface IUserRoleDTO{
     role: string,
     akses : string
 }
+
+export interface IUserWithPaginationDTO{
+    listUser : IUserDTO[],
+    countPages : number
+}

@@ -2,7 +2,7 @@ import BaseController from "./baseController";
 import { BadRequestException, UnauthorizedException } from "@exceptions";
 import { UserHandler } from "@handlers";
 import { User } from "@prisma/client";
-import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterAdminBody, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, IVerifyUserDTO, ResponseBuilder } from "@types";
+import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterAdminBody, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IUserWithPaginationDTO, IVerifyUserBody, IVerifyUserDTO, ResponseBuilder } from "@types";
 import bcrypt from "bcrypt";
 import { EMAIL_KEY, ID_ROLE_USER, OTP_KEY, PASSWORD_KEY, REGISTER_MESSAGE, REGISTER_SUBJECT, VERIFY_MESSAGE_FAIL, VERIFY_MESSAGE_SUCCESS, VERIFY_SUBJECT } from "@constant";
 import { Request, Response } from "express";
@@ -138,13 +138,11 @@ class UserController extends BaseController<UserHandler> {
         try{
             const pagination : IPagination = req.query
         
-            const listUnverifiedUser : IUserDTO[] = await this.handler.getUnverifiedUser(pagination);
+            const listUnverifiedUser : IUserWithPaginationDTO = await this.handler.getUnverifiedUser(pagination);
 
             res.status(200).json(
                 ResponseBuilder.success(
-                    {
-                        user:listUnverifiedUser
-                    },
+                    listUnverifiedUser,
                     "Get list user successfully",
                     200
                 )

@@ -2,7 +2,7 @@ import { BCF_CITY, BCF_PROVINCE, ID_ROLE_ADMIN, OTP_LENGTH, SALT_ROUND } from "@
 import { BadRequestException, InternalServerErrorException } from "@exceptions";
 import { BaseHandler } from "./baseHandler";
 import { Kategori, Lembaga, User } from "@prisma/client";
-import { ILoginUserBody, IPagination, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, IVerifyUserDTO, LEMBAGA_OTHERS } from "@types";
+import { ILoginUserBody, IPagination, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IUserWithPaginationDTO, IVerifyUserBody, IVerifyUserDTO, LEMBAGA_OTHERS } from "@types";
 import { countSkipped, generatePassword, generateRandomNumber, sign, checkValidNoHandphone } from "@utils";
 import bcrypt from "bcrypt";
 
@@ -255,9 +255,20 @@ export class UserHandler extends BaseHandler{
 
     public async getUnverifiedUser(
         pagination : IPagination
-    ): Promise<IUserDTO[]>{
-        const skipped = countSkipped(pagination.page!!, pagination.limit!!)
-
+    ): Promise<IUserWithPaginationDTO>{
+        let { limit, page } = pagination
+        if(!limit){
+            limit = 100;
+        }
+        if(!page){
+            page = 1;
+        }
+        const skipped = countSkipped(page, limit)
+        const totalData : number = await this.prisma.user.count({
+            where : {
+                is_verified : false
+            }
+        })
         const users = await this.prisma.user.findMany({
             where : {
                 is_verified : false
@@ -285,8 +296,11 @@ export class UserHandler extends BaseHandler{
             const provinsi = user.kabupatenKota? user.kabupatenKota.provinsi.nama : "";
             userDto.push(this.dataToDTO(user, url, lembaga, kabupatenKota, provinsi))
         }
-
-        return userDto;
+        const response : IUserWithPaginationDTO = {
+            listUser : userDto,
+            countPages : Math.ceil(totalData/limit)
+        }
+        return response;
     }
 
     public async getUserRole(
