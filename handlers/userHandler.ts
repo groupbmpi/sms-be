@@ -213,7 +213,6 @@ export class UserHandler extends BaseHandler{
                     data : {
                         nama : currentUser.lembagaOthers as string,
                         kategori : currentUser.kategori,
-                        alamat : currentUser.alamat,
                     }
                 })
                 currentUser.lembaga_id = newLembaga.id;
