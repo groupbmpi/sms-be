@@ -76,6 +76,43 @@ class UserController extends BaseController<UserHandler> {
         }
     }
 
+    public registerUserAutoAccepted = async (req: Request, res: Response) => {
+        try{
+            const body : IRegisterUserBody = {
+                alamat : req.body.alamat,
+                email : req.body.email,
+                namaLengkap : req.body.namaLengkap,
+                noHandphone : req.body.noHandphone,
+                kecamatan: req.body.kecamatan,
+                kelurahan: req.body.kelurahan,
+                kodePos: req.body.kodePos,
+                is_accepted : true,
+                is_verified : true,
+                kategori : req.body.kategori,
+            }
+            const lembagaName : string = req.body.lembagaName;
+            const lembagaOthers : string | null = req.body.lembagaOthers;
+            const kabupatenKota : string = req.body.kabupatenKota;
+            const provinsi : string = req.body.provinsi;
+            const roleID : number = ID_ROLE_USER;
+        
+            // TODO: add role user to database
+            await this.handler.addUser(body,lembagaName,lembagaOthers,roleID,kabupatenKota,provinsi,true);
+
+
+            res.status(201).json(
+                ResponseBuilder.success(
+                    null,
+                    "Register user successfully",
+                    201
+                )
+            )
+        }catch(error){
+            this.handleError(res,error);
+
+        }
+    }
+
     public getUnverifiedUser = async (req: Request, res: Response) => {
         try{
             const pagination : IPagination = req.query
