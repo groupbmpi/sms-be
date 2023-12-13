@@ -1,7 +1,6 @@
-import { InternalServerErrorException } from "@exceptions";
 import { DaerahHandler, EnumHandler, LembagaHandler } from "@handlers";
 import { Kategori, KategoriMasalah, Lembaga, MetodePelaksanaan, StatusKegiatan } from "@prisma/client";
-import { IDaerahDTO, IFormActivityReportData, IFormProblemReportData, IFormUserData, ResponseBuilder } from "@types";
+import { IDaerahDTO, IFormActivityReportData, IFormLembagaData, IFormProblemReportData, IFormUserData, ILembagaByKategoriDTO, ILembagasDTO, ResponseBuilder } from "@types";
 import { Request, Response } from "express";
 import BaseController from "./baseController";
 
@@ -15,7 +14,7 @@ class DataController extends BaseController<EnumHandler>{
         this.daerahHandler = new DaerahHandler()
     }
 
-    public getDataFormActivityReport = async (_: Request, res: Response)=>{
+    public getDataFormActivityReport = async (_: Request<unknown>, res: Response)=>{
         try{
             const [kategori, kategoriMasalah, statusKegiatan, metodePelaksanaan] = await Promise.all([
                 this.handler.getEnum(Kategori),
@@ -40,54 +39,36 @@ class DataController extends BaseController<EnumHandler>{
                 )
             )
         }catch(error: any){
-            console.error(error)
-
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error(
-                    [],
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE,    
-                )
-            )
+            this.handleError(res,error);
         }
     }
 
-    public getDataFormProblemReport = async (_: Request, res: Response)=>{
+    public getDataFormProblemReport = async (_: Request<unknown>, res: Response)=>{
         try{
             const kategoriMasalah : string[] = this.handler.getEnum(KategoriMasalah)
 
-            const provinsi : string[] = await this.daerahHandler.getProvinsi()
+            const kabupatenKota : IDaerahDTO[] = await this.daerahHandler.getKabupatenKota()
 
             res.status(200).json(
                 ResponseBuilder.success<IFormProblemReportData>(
                     {
-                        kategoriMasalah,
-                        provinsi,
+                        kategoriMasalah: kategoriMasalah,
+                        daerah: kabupatenKota,
                     },
                     "",
                     200
                 )
             )
         }catch(error: any){
-            console.error(error)
-
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error(
-                    [],
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE,    
-                )
-            )
+            this.handleError(res,error);
         }
     }
 
-    public getDataFormUser = async (_: Request, res: Response)=>{
+    public getDataFormUser = async (_: Request<unknown>, res: Response)=>{
         try{
             const daerah : IDaerahDTO[] = await this.daerahHandler.getKabupatenKota()
 
-            const lembaga : Lembaga[] = await this.lembagaHandler.getLembaga()
-
-            const lembagaParsed : string[] = lembaga.map((lembaga) => lembaga.nama)
+            const lembaga : ILembagaByKategoriDTO[] = await this.lembagaHandler.getLembagaByKategory()
 
             const kategori : string[] = this.handler.getEnum(Kategori)
 
@@ -95,7 +76,7 @@ class DataController extends BaseController<EnumHandler>{
                 ResponseBuilder.success<IFormUserData>(
                     {
                         daerah: daerah,
-                        lembaga: lembagaParsed,
+                        lembaga: lembaga,
                         kategori : kategori
                     },
                     "",
@@ -103,15 +84,25 @@ class DataController extends BaseController<EnumHandler>{
                 )
             )
         }catch(error: any){
-            console.error(error)
+            this.handleError(res,error);
+        }
+    }
 
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error(
-                    [],
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE,    
+    public getDataFormLembaga = async (_: Request<unknown>, res: Response)=>{
+        try{
+            const kategori : string[] = this.handler.getEnum(Kategori)
+
+            res.status(200).json(
+                ResponseBuilder.success<IFormLembagaData>(
+                    {
+                        kategori: kategori,
+                    },
+                    "",
+                    200
                 )
             )
+        }catch(error: any){
+            this.handleError(res,error);
         }
     }
 }

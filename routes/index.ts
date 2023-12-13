@@ -4,6 +4,7 @@ import NewsRoutes from './newsRoutes';
 import UserRoutes from './userRoutes';
 import ActivityRoutes from "./activityRoutes";
 import DataRoutes from "./dataRoutes";
+import LembagaRoutes from "./lembagaRoutes"
 
 export {
     BaseRoutes,
@@ -12,4 +13,5 @@ export {
     UserRoutes,
     ActivityRoutes,
     DataRoutes,
+    LembagaRoutes,
 }

@@ -4,6 +4,7 @@ import { UserController } from "@controllers"
 
 class UserRoutes extends BaseRoutes {
    public setRoutes(): void {
+      this.routes.post("/register/accepted", UserController.registerUserAutoAccepted);
       this.routes.post("/register/", UserController.registerUser);
       this.routes.post("/login/",UserController.loginUser)
 

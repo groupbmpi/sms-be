@@ -1,4 +1,5 @@
 export interface INewsOptionsArgDto {
+    institutionId?: number,
     creatorId?: number,
     startDateAt?: Date,
     endDateAt?: Date,

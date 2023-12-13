@@ -1,12 +1,13 @@
 import BaseController from "./baseController";
-import { BadRequestException, HttpException, InternalServerErrorException, UnauthorizedException } from "@exceptions";
+import { BadRequestException, UnauthorizedException } from "@exceptions";
 import { UserHandler } from "@handlers";
 import { User } from "@prisma/client";
-import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterAdminBody, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, ResponseBuilder } from "@types";
+import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterAdminBody, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, IVerifyUserDTO, ResponseBuilder } from "@types";
 import bcrypt from "bcrypt";
-import { ID_ROLE_USER } from "@constant";
+import { EMAIL_KEY, ID_ROLE_USER, OTP_KEY, PASSWORD_KEY, REGISTER_MESSAGE, REGISTER_SUBJECT, VERIFY_MESSAGE_FAIL, VERIFY_MESSAGE_SUCCESS, VERIFY_SUBJECT } from "@constant";
 import { Request, Response } from "express";
 import { checkSuffixBcfEmail } from "@utils";
+import { MailInstance } from "services/mail";
 
 class UserController extends BaseController<UserHandler> {
     constructor() {
@@ -36,15 +37,7 @@ class UserController extends BaseController<UserHandler> {
                 )
             )
         } catch (error: any) {
-            console.error(error)
-
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error<User>(
-                    null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE,    
-                )
-            )
+            this.handleError(res, error)
         }
     }
     public registerUser = async (req: Request, res: Response) => {
@@ -67,9 +60,13 @@ class UserController extends BaseController<UserHandler> {
             const provinsi : string = req.body.provinsi;
             const roleID : number = ID_ROLE_USER;
         
-            // TODO: add role user to database
             await this.handler.addUser(body,lembagaName,lembagaOthers,roleID,kabupatenKota,provinsi);
-
+            MailInstance.getInstance().sendEmail({
+                to: body.email,
+                subject: REGISTER_SUBJECT,
+                text: "",
+                html: `${REGISTER_MESSAGE}`,
+            })
 
             res.status(201).json(
                 ResponseBuilder.success(
@@ -79,15 +76,61 @@ class UserController extends BaseController<UserHandler> {
                 )
             )
         }catch(error){
-            console.error(error)
+            this.handleError(res,error);
 
-            res.status(500).json(
-                ResponseBuilder.error(
+        }
+    }
+
+    public registerUserAutoAccepted = async (req: Request, res: Response) => {
+        try{
+            const body : IRegisterUserBody = {
+                alamat : req.body.alamat,
+                email : req.body.email,
+                namaLengkap : req.body.namaLengkap,
+                noHandphone : req.body.noHandphone,
+                kecamatan: req.body.kecamatan,
+                kelurahan: req.body.kelurahan,
+                kodePos: req.body.kodePos,
+                is_accepted : true,
+                is_verified : true,
+                kategori : req.body.kategori,
+            }
+            const lembagaName : string = req.body.lembagaName;
+            const lembagaOthers : string | null = req.body.lembagaOthers;
+            const kabupatenKota : string = req.body.kabupatenKota;
+            const provinsi : string = req.body.provinsi;
+            const roleID : number = ID_ROLE_USER;
+        
+            const newUser : User = await this.handler.addUser(body,lembagaName,lembagaOthers,roleID,kabupatenKota,provinsi);
+
+            const verifiedUser : IVerifyUserDTO | null = await this.handler.verifyUser({
+                userID : newUser.id,
+                statusAcc : true
+            })
+
+            if(!verifiedUser){
+                throw new BadRequestException("User not found");
+            }
+
+            let emailMessage : string = VERIFY_MESSAGE_SUCCESS;
+            emailMessage = emailMessage.replace(PASSWORD_KEY,verifiedUser.passsword).replace(OTP_KEY,verifiedUser.otp).replace(EMAIL_KEY,verifiedUser.email);
+            MailInstance.getInstance().sendEmail({
+                to: verifiedUser.email,
+                subject: VERIFY_SUBJECT,
+                text: "",
+                html: `${emailMessage}`,
+            })
+
+            res.status(201).json(
+                ResponseBuilder.success(
                     null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE
+                    "Register user successfully",
+                    201
                 )
             )
+        }catch(error){
+            this.handleError(res,error);
+
         }
     }
 
@@ -107,15 +150,8 @@ class UserController extends BaseController<UserHandler> {
                 )
             )
         }catch(error){
-            console.error(error)
+            this.handleError(res,error);
 
-            res.status(500).json(
-                ResponseBuilder.error(
-                    null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE
-                )
-            )
         }
     }
 
@@ -151,15 +187,8 @@ class UserController extends BaseController<UserHandler> {
                 )
             )
         }catch(error : any){
-            console.error(error)
+            this.handleError(res,error);
 
-            res.status(error.getStatusCode()).json(
-                ResponseBuilder.error(
-                    null,
-                    error.getMessage(),
-                    error.getStatusCode()
-                )
-            )
         }
     }
 
@@ -167,17 +196,28 @@ class UserController extends BaseController<UserHandler> {
         try{
             const body : IVerifyUserBody = req.body;
         
-            const newUser : User | null = await this.handler.verifyUser(body);
+            const newUser : IVerifyUserDTO | null = await this.handler.verifyUser(body);
 
             if(!newUser){
-                res.status(400).json(
-                    ResponseBuilder.error(
-                        null,
-                        "User not found",
-                        BadRequestException.STATUS_CODE
-                    )
-                );
-                return;
+                throw new BadRequestException("User not found");
+            }
+
+            if(body.statusAcc){
+                let emailMessage : string = VERIFY_MESSAGE_SUCCESS;
+                emailMessage = emailMessage.replace(PASSWORD_KEY,newUser.passsword).replace(OTP_KEY,newUser.otp).replace(EMAIL_KEY,newUser.email);
+                MailInstance.getInstance().sendEmail({
+                    to: newUser.email,
+                    subject: VERIFY_SUBJECT,
+                    text: "",
+                    html: `${emailMessage}`,
+                })
+            }else{
+                MailInstance.getInstance().sendEmail({
+                    to: newUser.email,
+                    subject: VERIFY_SUBJECT,
+                    text: "",
+                    html: `${VERIFY_MESSAGE_FAIL}`,
+                })
             }
 
             res.status(200).json(
@@ -188,15 +228,8 @@ class UserController extends BaseController<UserHandler> {
                 )
             )
         }catch(error){
-            console.error(error)
+            this.handleError(res,error);
 
-            res.status(500).json(
-                ResponseBuilder.error(
-                    null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE
-                )
-            )
         }
     }
 
@@ -207,14 +240,7 @@ class UserController extends BaseController<UserHandler> {
             const token = await this.handler.login(body);
 
             if(token == ""){
-                res.status(400).json(
-                    ResponseBuilder.error(
-                        null,
-                        "Login fail",
-                        BadRequestException.STATUS_CODE
-                    )
-                );
-                return;
+                throw new BadRequestException("Login fail");
             }else{
                 res.status(200).json(
                     ResponseBuilder.success<string>(
@@ -225,29 +251,15 @@ class UserController extends BaseController<UserHandler> {
                 )
             }
         }catch(error){
-            console.log(error);
+            this.handleError(res,error);
 
-            res.status(500).json(
-                ResponseBuilder.error(
-                    null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE
-                )
-            );
         }
     }
 
     public getRoleUser = async (req: Request<unknown>, res: Response) => {
         try{
             if(!req.isAuthenticated){
-                res.status(400).json(
-                    ResponseBuilder.error(
-                        null,
-                        "User not authenticated",
-                        BadRequestException.STATUS_CODE
-                    )
-                );
-                return;
+                throw new BadRequestException("User not authenticated")
             }
 
             const userID : number = req.userID as number;
@@ -255,14 +267,7 @@ class UserController extends BaseController<UserHandler> {
             const roleUser : IUserRoleDTO | null = await this.handler.getUserRole(userID);
 
             if(!roleUser){
-                res.status(400).json(
-                    ResponseBuilder.error(
-                        null,
-                        "User not found",
-                        BadRequestException.STATUS_CODE
-                    )
-                );
-                return;
+                throw new BadRequestException("User not found")
             }
 
             res.status(200).json(
@@ -273,15 +278,8 @@ class UserController extends BaseController<UserHandler> {
                 )
             )
         }catch(error){
-            console.error(error)
+            this.handleError(res,error);
 
-            res.status(500).json(
-                ResponseBuilder.error(
-                    null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE
-                )
-            )
         }
     }
 
@@ -291,55 +289,26 @@ class UserController extends BaseController<UserHandler> {
             const user : User | null = await this.handler.getUserByEmail(body.email);
 
             if(!user){
-                res.status(400).json(
-                    ResponseBuilder.error(
-                        null,
-                        "User not found",
-                        BadRequestException.STATUS_CODE
-                    )
-                );
-                return;
+                throw new BadRequestException("User not found")
             }
 
             
             if(!user.is_verified){
-                res.status(400).json(
-                    ResponseBuilder.error(
-                        null,
-                        "User is not verified yet",
-                        BadRequestException.STATUS_CODE
-                    )
-                );
-                return;
+                throw new BadRequestException("User is not verified yet")
             }
 
             if(!user.is_accepted){
-                res.status(400).json(
-                    ResponseBuilder.error(
-                        null,
-                        "User is not accepted",
-                        BadRequestException.STATUS_CODE
-                    )
-                );
-                return;
+                throw new BadRequestException("User is not accepted")
             }
 
             if(user.is_activated){
-                res.status(400).json(
-                    ResponseBuilder.error(
-                        null,
-                        "User already activated",
-                        BadRequestException.STATUS_CODE
-                    )
-                );
-                return;
+                throw new BadRequestException("User already activated")
             }
 
             const isPassCorrect : boolean = await bcrypt.compare(body.password,user.password as string);
             const isOtpCorrect : boolean = await bcrypt.compare(body.otp, user.otp_token as string);
 
             if(isPassCorrect && isOtpCorrect){
-
                 await this.handler.activateUser(user.id);
     
                 res.status(200).json(
@@ -350,26 +319,12 @@ class UserController extends BaseController<UserHandler> {
                     )
                 )
             }else{
-                res.status(400).json(
-                    ResponseBuilder.success(
-                        null,
-                        "Password or otp is incorrect",
-                        BadRequestException.STATUS_CODE
-                    )
-                )
+                throw new BadRequestException("Password or otp is incorrect")
             }
 
 
         }catch(error){
-            console.error(error)
-
-            res.status(500).json(
-                ResponseBuilder.error(
-                    null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE
-                )
-            )
+            this.handleError(res,error);
         }
     }
 
@@ -377,9 +332,7 @@ class UserController extends BaseController<UserHandler> {
         try{
             const userID : number = req.userID as number;
 
-
             const user : IUserDTO | null = await this.handler.getUser(userID);
-
 
             if(!user){
                 throw new UnauthorizedException("Anda tidak memiliki akses untuk melihat data ini");
@@ -393,15 +346,7 @@ class UserController extends BaseController<UserHandler> {
                 )
             )
         }catch(error : any){
-            console.error(error)
-
-            res.status(500).json(
-                ResponseBuilder.error(
-                    null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE
-                )
-            )
+            this.handleError(res,error);
         }
     }
 
@@ -413,7 +358,6 @@ class UserController extends BaseController<UserHandler> {
 
 
             const user : IUserDTO | null = await this.handler.getUser(userID);
-
 
             if(!user){
                 throw new BadRequestException("User tidak ditemukan");
@@ -427,25 +371,7 @@ class UserController extends BaseController<UserHandler> {
                 )
             )
         }catch(error : any){
-            console.error(error)
-
-            if(error instanceof HttpException){
-                res.status(error.getStatusCode()).json(
-                    ResponseBuilder.error(
-                        null,
-                        error.getMessage(),
-                        error.getStatusCode()
-                    )
-                )
-            }else{
-                res.status(500).json(
-                    ResponseBuilder.error(
-                        null,
-                        InternalServerErrorException.MESSAGE,
-                        InternalServerErrorException.STATUS_CODE
-                    )
-                )
-            }
+            this.handleError(res,error);
         }
     }
 
@@ -467,27 +393,7 @@ class UserController extends BaseController<UserHandler> {
                 )
             )
         }catch(error : any){
-            console.error(error)
-
-            if(error instanceof HttpException){
-                res.status(error.getStatusCode()).json(
-                    ResponseBuilder.error(
-                        null,
-                        error.getMessage(),
-                        error.getStatusCode()
-                    )
-                )
-            }else{
-                res.status(500).json(
-                    ResponseBuilder.error(
-                        null,
-                        InternalServerErrorException.MESSAGE,
-                        InternalServerErrorException.STATUS_CODE
-                    )
-                )
-            }
-
-            
+            this.handleError(res,error);
         }
     }
 }

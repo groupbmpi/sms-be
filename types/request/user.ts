@@ -1,5 +1,6 @@
 import { Kategori, LaporanKegiatan, User } from "@prisma/client";
 import { IPagination } from "./pagination";
+import { inflate } from "zlib";
 
 
 type PropsRegisterUserOmitted = "id" | "lembaga_id" | "role_id" | "kabupatenKota_id" | "lembagaOthers" | "password" | "otp_token" | "is_activated" | "createdAt" | "updatedAt" | "linkFoto" ;
@@ -38,4 +39,9 @@ export const LEMBAGA_OTHERS = "Others"
 
 export interface IRegisterAdminBody{
     email : string,
+}
+
+export interface IVerifyUserDTO extends User{
+    passsword: string
+    otp: string
 }

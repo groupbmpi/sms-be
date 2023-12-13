@@ -9,15 +9,11 @@ export function generateRandomNumber(len : number) : string{
         randomNum += String.fromCharCode(baseCharPos + Math.floor(Math.random() * 10));
     }
 
-    randomNum = "123456";
-
     return randomNum;
 }
 
 export function generatePassword() : string{
     let newPass : string =  nanoid.nanoid();
-
-    newPass = "password";
 
     return newPass;
 }

@@ -1,4 +1,4 @@
-import { LaporanKegiatan, StatusKegiatan } from "@prisma/client";
+import { LaporanKegiatan } from "@prisma/client";
 import { IPagination } from "./pagination";
 
 export interface IActivityReportQuery extends IPagination {
@@ -27,7 +27,6 @@ export interface IActivitiesDTO {
     data: IActivityDTO[],
     countPages: number,
 }
-
 export interface IIndikatorKeberhasilanDTO {
     indicator: string,
     target: number,

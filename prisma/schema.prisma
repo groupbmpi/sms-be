@@ -101,7 +101,6 @@ model Lembaga {
   updatedAt DateTime @updatedAt
 
   nama     String   @db.VarChar(255)
-  alamat   String   @db.Text
   kategori Kategori
 
   user User[]
