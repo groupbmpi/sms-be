@@ -96,9 +96,12 @@ class UserController extends BaseController<UserHandler> {
             const provinsi : string = req.body.provinsi;
             const roleID : number = ID_ROLE_USER;
         
-            // TODO: add role user to database
-            await this.handler.addUser(body,lembagaName,lembagaOthers,roleID,kabupatenKota,provinsi,true);
+            const newUser : User = await this.handler.addUser(body,lembagaName,lembagaOthers,roleID,kabupatenKota,provinsi);
 
+            await this.handler.verifyUser({
+                userID : newUser.id,
+                statusAcc : true
+            })
 
             res.status(201).json(
                 ResponseBuilder.success(

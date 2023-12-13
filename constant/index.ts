@@ -22,3 +22,11 @@ export const BERITA = "berita";
 export const LAPORAN_KEGIATAN = "laporankegiatan";
 export const LAPORAN_MASALAH = "laporanmasalah";
     
+
+// Email template
+export const EMAIL_KEY = "[[EMAIL]]"
+export const OTP_KEY = "[[OTP]]"
+export const PASSWORD_KEY = "[[PASSWORD]]"
+export const REGISTER_MESSAGE = "Terima kasih telah mendaftar di BCF. Silahkan tunggu proses verifikasi akun anda paling lambat 1x24 jam.\n\nTerima kasih,\nBCF"
+export const VERIFY_MESSAGE_SUCCESS = "Akun Anda telah berhasil diverifikasi. Berikut adalah kode OTP dan Password Anda\nOTP : [[OTP]]\nPassword : [[PASSWORD]]\n\nJangan berikan kode OTP dan password Anda kepada siapapun termasuk pihak BCF. BCF tidak akan pernah meminta kode OTP dan password Anda.\n\nTerima kasih,\nBCF"
+export const VERIFY_MESSAGE_FAIL = "Mohon maaf akun Anda gagal diverifikasi.\n\nTerima kasih,\nBCF"

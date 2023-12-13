@@ -34,8 +34,7 @@ export class UserHandler extends BaseHandler{
         lembagaOthers : string | null,
         roleID : number,
         kabupatenKota : string,
-        provinsi : string,
-        isGeneratePasswordOtp? : boolean
+        provinsi : string
     ): Promise<User>{
         const kabupatenKotaUser = await this.prisma.kabupatenKota.findFirstOrThrow({
             where : {
@@ -45,17 +44,13 @@ export class UserHandler extends BaseHandler{
                 }
             }
         })
-        const pass : string = generatePassword();
-        const otp : string = generateRandomNumber(OTP_LENGTH);
-        const hashedPass : string = await bcrypt.hash(pass,SALT_ROUND)
-        const hashedOtp : string = await bcrypt.hash(otp,SALT_ROUND)
         if(lembagaName == LEMBAGA_OTHERS){
             const newUser : User = await this.prisma.user.create({
                 data: {
                     ...body,
                     lembagaOthers : lembagaOthers,
-                    password : isGeneratePasswordOtp? hashedPass : "",
-                    otp_token : isGeneratePasswordOtp? hashedOtp : "",
+                    password : "",
+                    otp_token : "",
                     linkFoto : "",
                     role : {
                         connect : {
@@ -81,8 +76,8 @@ export class UserHandler extends BaseHandler{
                 data: {
                     ...body,
                     lembagaOthers : lembagaOthers,
-                    password : isGeneratePasswordOtp? hashedPass : "",
-                    otp_token : isGeneratePasswordOtp? hashedOtp : "",
+                    password : "",
+                    otp_token : "",
                     linkFoto : "",
                     lembaga: {
                         connect: {
