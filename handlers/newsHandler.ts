@@ -3,7 +3,7 @@ import { IAllNewsRetDto, ICreateNewsArgDto, INewsByIdRetDto, INewsIdArgDto, INew
 
 export class NewsHandler extends BaseHandler {
     public async getAllNews(dto: INewsOptionsArgDto): Promise<IAllNewsRetDto> {
-        const { creatorId, startDateAt, endDateAt, take, skip } = dto;
+        const {  institutionId, creatorId, startDateAt, endDateAt, take, skip } = dto;
 
         const news = await this.prisma.berita.findMany({
             select: {
@@ -15,7 +15,10 @@ export class NewsHandler extends BaseHandler {
                 updatedAt: true,
             },
             where: {
-                user_id: creatorId,
+                user: {
+                    id: creatorId,
+                    lembaga_id: institutionId,
+                },
                 createdAt: {
                     gte: startDateAt,
                     lte: endDateAt,

@@ -16,9 +16,10 @@ class NewsController extends BaseController<NewsHandler> {
      */
     public getAllNews = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { creatorId, page, limit, startDateAt, endDateAt } = req.query;
+            const { institutionId, creatorId, startDateAt, endDateAt, page, limit } = req.query;
 
             const newsArgDto: INewsOptionsArgDto = {
+                institutionId: getNumberFromString(institutionId),
                 creatorId: getNumberFromString(creatorId),
                 startDateAt: getDateFromString(startDateAt),
                 endDateAt: getDateFromString(endDateAt),
