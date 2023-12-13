@@ -2,7 +2,7 @@ import { Kategori, Lembaga } from "@prisma/client";
 import { BaseHandler } from "./baseHandler";
 import { ILembagaBody, ILembagaByKategoriDTO, ILembagaDTO, ILembagaQuery, ILembagasDTO, IPagination } from "@types";
 import { checkValidKategori, countSkipped } from "@utils";
-import { BadRequestException } from "exceptions";
+import { BadRequestException } from "@exceptions";
 
 export class LembagaHandler extends BaseHandler{
 

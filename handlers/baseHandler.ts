@@ -2,7 +2,7 @@ import { Bucket } from "@google-cloud/storage";
 import { PrismaClient } from "@prisma/client";
 import { PrismaInstance, StorageInstance } from "@services";
 import { randomUUID } from "crypto";
-import { MailInstance } from "services/mail";
+import { MailInstance } from "@services";
 // import sharp from "sharp";
 
 export abstract class BaseHandler {
