@@ -1,17 +1,33 @@
-import { LaporanKegiatan, StatusKegiatan } from "@prisma/client";
+import { LaporanKegiatan } from "@prisma/client";
 import { IPagination } from "./pagination";
 
 export interface IActivityReportQuery extends IPagination {
-    id? : number,
+    id?     : number,
     user_id? : number
-    status? : StatusKegiatan,
-    jadwal? : Date
+    lembaga? : string, 
 }
 
-type PropsLaporanKegiatanOmitted = "id" | "user_id" | "createdAt" | "updatedAt"
-export interface IActivityReportBody extends Omit<LaporanKegiatan, PropsLaporanKegiatanOmitted>{}
+
+type PropsLaporanKegiatanOmitted = "id" | "user_id" | "kabupatenKota_id" | "createdAt" | "updatedAt" | "indikatorKeberhasilan"
+export interface IActivityReportBody extends IActivityDTO{}
+
+export interface IActivityDTO extends Omit<LaporanKegiatan, PropsLaporanKegiatanOmitted>{
+    id? : number,
+    user_id? : number,
+    createdAt? : Date,
+    updatedAt? : Date,
+    kabupatenKota_id? : number,
+    provinsi: string,
+    kabupatenKota : string,
+    indikatorKeberhasilan : IIndikatorKeberhasilanDTO[],
+    isEditable? : boolean,
+}
 
 export interface IActivitiesDTO {
-    data: LaporanKegiatan[],
+    data: IActivityDTO[],
     countPages: number,
+}
+export interface IIndikatorKeberhasilanDTO {
+    indicator: string,
+    target: number,
 }

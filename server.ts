@@ -1,12 +1,15 @@
-import express from 'express'
-import { ExpressInstance } from '@services';
-
-import 'module-alias/register';
-
 require('dotenv').config();
 
 const port = process.env.PORT || 3002;
 const env = process.env.NODE_ENV || 'development';
+
+if(env !== 'development'){
+    require('module-alias/register')
+}
+
+import { ExpressInstance } from '@services';
+import express from 'express'
+
 const app : express.Application = ExpressInstance.getInstance().getApp();
 
 app.listen(port, () =>{

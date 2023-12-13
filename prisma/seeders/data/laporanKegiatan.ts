@@ -1,13 +1,12 @@
-import { LaporanKegiatan, MetodePelaksanaan, StatusKegiatan } from "@prisma/client";
+import { KategoriMasalah, LaporanKegiatan, MetodePelaksanaan, StatusKegiatan } from "@prisma/client";
 
-export const laporanKegiatanData : Omit<LaporanKegiatan, 'id'|'createdAt'|'updatedAt' | 'keteranganTambahan'>[] = [
+export const laporanKegiatanData : Omit<LaporanKegiatan, 'id'|'createdAt'|'updatedAt'>[] = [
     {
         namaKegiatan: "Laporan Kegiatan 1",
         tujuan: "Ini tujuan kegiatan 1",
         deskripsi: "Ini deskripsi kegiatan 1",
         statusKegiatan: StatusKegiatan.BELUM_TERLAKSANA,
-        indikatorKeberhasilan: "Ini indikator keberhasilan kegiatan 1",
-        target: "Ini target kegiatan 1",
+        indikatorKeberhasilan: "Ini indikator keberhasilan kegiatan : 1",
         jadwalMulai: new Date(),
         jadwalSelesai: new Date(),
         kebutuhanLogistikDibutuhkan: "Ini kebutuhan logistik kegiatan 1 dibutuhkan",
@@ -15,15 +14,16 @@ export const laporanKegiatanData : Omit<LaporanKegiatan, 'id'|'createdAt'|'updat
         linkDokumen: "",
         metodePelaksanaan: MetodePelaksanaan.DARING,
         user_id: 1,
-
+        kabupatenKota_id: 1,
+        bidangKegiatan: KategoriMasalah.ADVOKASI,
+        keteranganTambahan: "",
     },
     {
         namaKegiatan: "Laporan Kegiatan 2",
         tujuan: "Ini tujuan kegiatan 2",
         deskripsi: "Ini deskripsi kegiatan 2",
         statusKegiatan: StatusKegiatan.TAHAP_KOORDINASI,
-        indikatorKeberhasilan: "Ini indikator keberhasilan kegiatan 2",
-        target: "Ini target kegiatan 2",
+        indikatorKeberhasilan: "Ini indikator keberhasilan kegiatan : 2",
         jadwalMulai: new Date(),
         jadwalSelesai: new Date(),
         kebutuhanLogistikDibutuhkan: "Ini kebutuhan logistik kegiatan 2 dibutuhkan",
@@ -31,15 +31,16 @@ export const laporanKegiatanData : Omit<LaporanKegiatan, 'id'|'createdAt'|'updat
         linkDokumen: "",
         metodePelaksanaan: MetodePelaksanaan.LURING,
         user_id: 2,
-        
+        kabupatenKota_id: 1,
+        bidangKegiatan: KategoriMasalah.ADVOKASI,
+        keteranganTambahan: "",
     },
     {
         namaKegiatan: "Laporan Kegiatan 3",
         tujuan: "Ini tujuan kegiatan 3",
         deskripsi: "Ini deskripsi kegiatan 3",
         statusKegiatan: StatusKegiatan.SEDANG_BERJALAN,
-        indikatorKeberhasilan: "Ini indikator keberhasilan kegiatan 3",
-        target: "Ini target kegiatan 3",
+        indikatorKeberhasilan: "Ini indikator keberhasilan kegiatan : 3",
         jadwalMulai: new Date(),
         jadwalSelesai: new Date(),
         kebutuhanLogistikDibutuhkan: "Ini kebutuhan logistik kegiatan 3 dibutuhkan",
@@ -47,14 +48,16 @@ export const laporanKegiatanData : Omit<LaporanKegiatan, 'id'|'createdAt'|'updat
         linkDokumen: "",
         metodePelaksanaan: MetodePelaksanaan.TALKSHOW,
         user_id: 3,
+        kabupatenKota_id: 1,
+        bidangKegiatan: KategoriMasalah.ADVOKASI,
+        keteranganTambahan: ""
     },
     {
         namaKegiatan: "Laporan Kegiatan 4",
         tujuan: "Ini tujuan kegiatan 4",
         deskripsi: "Ini deskripsi kegiatan 4",
         statusKegiatan: StatusKegiatan.SEDANG_TERKENDALA,
-        indikatorKeberhasilan: "Ini indikator keberhasilan kegiatan 4",
-        target: "Ini target kegiatan 4",
+        indikatorKeberhasilan: "Ini indikator keberhasilan kegiatan : 4",
         jadwalMulai: new Date(),
         jadwalSelesai: new Date(),
         kebutuhanLogistikDibutuhkan: "Ini kebutuhan logistik kegiatan 4 dibutuhkan",
@@ -62,15 +65,16 @@ export const laporanKegiatanData : Omit<LaporanKegiatan, 'id'|'createdAt'|'updat
         linkDokumen: "",
         metodePelaksanaan: MetodePelaksanaan.FOCUS_GROUP_DISCUSSION,
         user_id: 4,
-        
+        kabupatenKota_id: 1,
+        bidangKegiatan: KategoriMasalah.ADVOKASI,
+        keteranganTambahan: ""
     },
     {
         namaKegiatan: "Laporan Kegiatan 5",
         tujuan: "Ini tujuan kegiatan 5",
         deskripsi: "Ini deskripsi kegiatan 5",
         statusKegiatan: StatusKegiatan.SUDAH_TERLAKSANA,
-        indikatorKeberhasilan: "Ini indikator keberhasilan kegiatan 5",
-        target: "Ini target kegiatan 5",
+        indikatorKeberhasilan: "Ini indikator keberhasilan kegiatan : 5",
         jadwalMulai: new Date(),
         jadwalSelesai: new Date(),
         kebutuhanLogistikDibutuhkan: "Ini kebutuhan logistik kegiatan 5 dibutuhkan",
@@ -78,5 +82,8 @@ export const laporanKegiatanData : Omit<LaporanKegiatan, 'id'|'createdAt'|'updat
         linkDokumen: "",
         metodePelaksanaan: MetodePelaksanaan.HYBRID,
         user_id: 5,
+        kabupatenKota_id: 1,
+        bidangKegiatan: KategoriMasalah.ADVOKASI,
+        keteranganTambahan: ""
     },
 ]

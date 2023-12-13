@@ -4,8 +4,5 @@ import { paramNewsRequestMiddleware } from "./paramNewsRequestMiddleware";
 import { updateNewsRequestMiddleware } from "./updateNewsRequestMiddleware";
 
 export {
-    createNewsRequestMiddleware,
-    updateNewsRequestMiddleware,
-    paramNewsRequestMiddleware,
-    deleteNewsRequestMiddleware,
-}
+    createNewsRequestMiddleware, deleteNewsRequestMiddleware, paramNewsRequestMiddleware, updateNewsRequestMiddleware
+};

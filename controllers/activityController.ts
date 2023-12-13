@@ -1,9 +1,10 @@
-import { Request, Response } from "express";
-import { IActivitiesDTO, IActivityReportBody, IActivityReportQuery, ResponseBuilder } from "@types";
+import { LAPORAN_KEGIATAN, WRITE } from "@constant";
+import BaseController from "./baseController";
+import {UnauthorizedException } from "@exceptions";
 import { ActivityHandler } from "@handlers";
-import { IActivityReportData } from "@types";
-import {InternalServerErrorException } from "exceptions";
-import { BaseController } from "@controllers";
+import { IActivitiesDTO, IActivityReportBody, IActivityReportData, IActivityReportQuery, ResponseBuilder } from "@types";
+import { checkAccess } from "@utils";
+import { Request, Response } from "express";
 
 class ActivityController extends BaseController<ActivityHandler> {
     constructor() {
@@ -15,35 +16,45 @@ class ActivityController extends BaseController<ActivityHandler> {
             
             let { limit, page, ...query } = req.query
             
+            let userId = req.userID
+
+            if(!req.isAuthenticated){
+                userId = -1
+            }
+
             const activityReport : IActivitiesDTO = await this.handler.getReport(
                 query,
-                { limit, page }
+                { limit, page },
+                userId as number,
             )
 
             res.status(200).json(
                 ResponseBuilder.success<IActivitiesDTO>(
                     activityReport,
                     "",
-                    20
+                    200
                 )
             )
         }catch(error: any){
-            console.error(error)
+            this.handleError(res,error);
 
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error<IActivityReportData[]>(
-                    [],
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE,    
-                )
-            )
         }
     }
 
     public createReport = async (req: Request<unknown, unknown, IActivityReportBody>, res: Response) =>{
         try{
-            //TODO: Get user id from middleware
-            const id = 1
+
+            if(!req.isAuthenticated || req.role === undefined || req.userID === undefined){
+                throw new UnauthorizedException()
+            }
+
+            //TODO:Check access matrix
+
+            if(!checkAccess(req.role , LAPORAN_KEGIATAN, WRITE)){
+                
+            }
+
+            const id = req.userID
             const body : IActivityReportBody = req.body
 
             const newLaporanKegiatan : IActivityReportData = await this.handler.createReport(
@@ -59,25 +70,32 @@ class ActivityController extends BaseController<ActivityHandler> {
                 )
             )
         }catch(error: any){
-            console.error(error)
+            this.handleError(res,error);
 
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error<IActivityReportData>(
-                    null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE,    
-                )
-            )
         }
     } 
 
-    public updateReport = async (req: Request<unknown, unknown, IActivityReportBody, number>, res: Response) =>{
+    public updateReport = async (req: Request<{
+        id: number,
+    }, unknown, IActivityReportBody, unknown>, res: Response) =>{
         try{
-            const id : number = req.query
+            const id : number = req.params.id
             const body : IActivityReportBody = req.body
+            if(!req.isAuthenticated || req.role === undefined || req.userID === undefined){
+                throw new UnauthorizedException();
+            }
+
+            //TODO:Check access matrix
+
+            if(!checkAccess(req.role , LAPORAN_KEGIATAN, WRITE)){
+                
+            }
+
+            const user_id = req.userID
 
             const updatedLaporanKegiatan : IActivityReportData = await this.handler.updateReport(
                 body,
+                user_id,
                 id,
             )
 
@@ -89,21 +107,16 @@ class ActivityController extends BaseController<ActivityHandler> {
                 )
             )
         }catch(error: any){
-            console.error(error)
+            this.handleError(res,error);
 
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error<IActivityReportData>(
-                    null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE,    
-                )
-            )
         }
     }
 
-    public deleteReport = async (req: Request<unknown, unknown, unknown, number>, res: Response) =>{
+    public deleteReport = async (req: Request<{
+        id: number,
+    }, unknown, unknown, unknown>, res: Response) =>{
         try{
-            const id : number = req.query
+            const id : number = req.params.id
 
             const deletedLaporanKegiatan : boolean = await this.handler.deleteReport(
                 id,
@@ -117,15 +130,7 @@ class ActivityController extends BaseController<ActivityHandler> {
                 )
             )
         }catch(error: any){
-            console.error(error)
-
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error<boolean>(
-                    null,
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE,    
-                )
-            )
+            this.handleError(res,error);
         }
     }
 }

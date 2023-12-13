@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
-import { IAllNewsRetDto, ICreateNewsArgDto, ICreateNewsRequest, ICreateNewsValidatedBody, IDeleteNewsRequest, INewsByIdRetDto, INewsIdArgDto, INewsOptionsArgDto, INewsOwnedByUserArgDto, INewsParams, INewsValidatedParams, IUpdateNewsArgDto, IUpdateNewsRequest, IUpdateNewsValidatedBody, IValidatedTargetUserId, ResponseBuilder } from "@types";
-import { BadRequestException, HttpException, InternalServerErrorException, NotFoundException } from "@exceptions";
+import BaseController from "./baseController";
+import { BadRequestException} from "@exceptions";
 import { NewsHandler } from "@handlers";
-import { BaseController } from "@controllers";
+import { IAllNewsRetDto, ICreateNewsArgDto, ICreateNewsRequest, ICreateNewsValidatedBody, IDeleteNewsRequest, INewsByIdRetDto, INewsIdArgDto, INewsOptionsArgDto, INewsOwnedByUserArgDto, INewsParams, INewsValidatedParams, IUpdateNewsArgDto, IUpdateNewsRequest, IUpdateNewsValidatedBody, IValidatedTargetUserId, ResponseBuilder } from "@types";
 import { countSkipped, getDateFromString, getNumberFromString } from "@utils";
+import { Request, Response } from "express";
 
 class NewsController extends BaseController<NewsHandler> {
     constructor() {
@@ -34,15 +34,7 @@ class NewsController extends BaseController<NewsHandler> {
 
             res.status(200).json(ResponseBuilder.success<IAllNewsRetDto>(newsRetDto));
         } catch (error: any) {
-            console.error(error);
-
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error(
-                    null, 
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE
-                )
-            );
+            this.handleError(res,error);
         }
     }
 
@@ -67,27 +59,7 @@ class NewsController extends BaseController<NewsHandler> {
 
             res.status(200).json(ResponseBuilder.success<INewsByIdRetDto>(newsRetDto));
         } catch (error: any) {
-            console.error(error);
-
-            if (error instanceof HttpException) {
-                res.status(error.getStatusCode()).json(
-                    ResponseBuilder.error(
-                        null, 
-                        error.getMessage(), 
-                        error.getStatusCode()
-                    )
-                );
-
-                return;
-            }
-
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error(
-                    null, 
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE
-                )
-            );
+            this.handleError(res,error);
         }
     }
 
@@ -113,15 +85,7 @@ class NewsController extends BaseController<NewsHandler> {
 
             res.status(200).json(ResponseBuilder.success());
         } catch (error: any) {
-            console.error(error);
-
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error(
-                    null, 
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE
-                )
-            );
+            this.handleError(res,error);
         }
     }
 
@@ -163,27 +127,7 @@ class NewsController extends BaseController<NewsHandler> {
 
             res.status(200).json(ResponseBuilder.success());
         } catch (error: any) {
-            console.error(error);
-
-            if (error instanceof HttpException) {
-                res.status(error.getStatusCode()).json(
-                    ResponseBuilder.error(
-                        null, 
-                        error.getMessage(), 
-                        error.getStatusCode()
-                    )
-                );
-
-                return;
-            }
-
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error(
-                    null, 
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE
-                )
-            );
+            this.handleError(res,error);
         }
     }
 
@@ -217,27 +161,7 @@ class NewsController extends BaseController<NewsHandler> {
 
             res.status(200).json(ResponseBuilder.success());
         } catch (error: any) {
-            console.error(error);
-
-            if (error instanceof HttpException) {
-                res.status(error.getStatusCode()).json(
-                    ResponseBuilder.error(
-                        null, 
-                        error.getMessage(), 
-                        error.getStatusCode()
-                    )
-                );
-                
-                return;
-            }
-
-            res.status(InternalServerErrorException.STATUS_CODE).json(
-                ResponseBuilder.error(
-                    null, 
-                    InternalServerErrorException.MESSAGE,
-                    InternalServerErrorException.STATUS_CODE
-                )
-            );
+            this.handleError(res,error);
         }
     }
 }

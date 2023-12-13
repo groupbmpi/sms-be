@@ -18,7 +18,7 @@ ALTER TABLE `laporankegiatan` DROP COLUMN `jadwal`,
     ADD COLUMN `jadwalSelesai` DATETIME(3) NOT NULL,
     ADD COLUMN `kebutuhanLogistikDibutuhkan` TEXT NOT NULL,
     ADD COLUMN `kebutuhanLogistikTerpenuhi` TEXT NOT NULL,
-    ADD COLUMN `keteranganTambahan` TEXT NOT NULL DEFAULT '',
+    ADD COLUMN `keteranganTambahan` TEXT,
     MODIFY `statusKegiatan` ENUM('BELUM_TERLAKSANA', 'TAHAP_KOORDINASI', 'SEDANG_BERJALAN', 'SUDAH_TERLAKSANA', 'SEDANG_TERKENDALA') NOT NULL;
 
 -- AlterTable
