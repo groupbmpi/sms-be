@@ -2,7 +2,7 @@ import { BCF_CITY, BCF_PROVINCE, ID_ROLE_ADMIN, ID_ROLE_USER, OTP_LENGTH, SALT_R
 import { BadRequestException, InternalServerErrorException } from "@exceptions";
 import { BaseHandler } from "./baseHandler";
 import { Kategori, Lembaga, User } from "@prisma/client";
-import { ILoginUserBody, IPagination, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IUserWithPaginationDTO, IUserWithVerifDTO, IVerifyUserBody, IVerifyUserDTO, LEMBAGA_OTHERS } from "@types";
+import { ILoginUserBody, IPagination, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IUserStatusDTO, IUserWithPaginationDTO, IUserWithVerifDTO, IVerifyUserBody, IVerifyUserDTO, LEMBAGA_OTHERS } from "@types";
 import { countSkipped, generatePassword, generateRandomNumber, sign, checkValidNoHandphone } from "@utils";
 import bcrypt from "bcrypt";
 
@@ -44,6 +44,7 @@ export class UserHandler extends BaseHandler{
                 }
             }
         })
+        console.log(lembagaName,LEMBAGA_OTHERS)
         if(lembagaName == LEMBAGA_OTHERS){
             const newUser : User = await this.prisma.user.create({
                 data: {
@@ -525,6 +526,26 @@ export class UserHandler extends BaseHandler{
             ...admin,
             realPassword : pass,
         }
+        return response;
+    }
+
+    public async getStatusByID(
+        userID : number
+    ) : Promise<IUserStatusDTO | null>{
+        const user = await this.prisma.user.findFirst({
+            where : {
+                id : userID
+            }
+        })
+        if(!user){
+            return null;
+        }
+        const response : IUserStatusDTO = {
+            is_verified : user?.is_verified as boolean,
+            is_accepted : user?.is_accepted as boolean,
+            is_activated : user?.is_activated as boolean
+        }
+
         return response;
     }
 }

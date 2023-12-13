@@ -28,3 +28,9 @@ export interface IUserWithPaginationDTO{
     listUser : IUserWithVerifDTO[],
     countPages : number
 }
+
+export interface IUserStatusDTO{
+    is_verified : boolean,
+    is_accepted : boolean,
+    is_activated : boolean
+}

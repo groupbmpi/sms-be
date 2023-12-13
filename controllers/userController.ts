@@ -2,7 +2,7 @@ import BaseController from "./baseController";
 import { BadRequestException, UnauthorizedException } from "@exceptions";
 import { UserHandler } from "@handlers";
 import { User } from "@prisma/client";
-import { IActivateUserBody, ILoginUserBody, IPagination, IQueryUserRequest, IRegisterAdminBody, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IUserWithPaginationDTO, IVerifyUserBody, IVerifyUserDTO, ResponseBuilder } from "@types";
+import { IActivateUserBody, ILoginUserBody, IPagination, IQueryUserRequest, IRegisterAdminBody, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IUserStatusDTO, IUserWithPaginationDTO, IVerifyUserBody, IVerifyUserDTO, ResponseBuilder } from "@types";
 import bcrypt from "bcrypt";
 import { ALL_VERIF, EMAIL_KEY, ID_ROLE_USER, OTP_KEY, PASSWORD_KEY, REGISTER_MESSAGE, REGISTER_SUBJECT, VERIF, VERIFY_MESSAGE_ADMIN, VERIFY_MESSAGE_FAIL, VERIFY_MESSAGE_SUCCESS, VERIFY_SUBJECT } from "@constant";
 import { Request, Response } from "express";
@@ -54,7 +54,7 @@ class UserController extends BaseController<UserHandler> {
                 is_verified : false,
                 kategori : req.body.kategori,
             }
-            const lembagaName : string = req.body.lembagaName;
+            const lembagaName : string = req.body.lembaga;
             const lembagaOthers : string | null = req.body.lembagaOthers;
             const kabupatenKota : string = req.body.kabupatenKota;
             const provinsi : string = req.body.provinsi;
@@ -95,7 +95,7 @@ class UserController extends BaseController<UserHandler> {
                 is_verified : true,
                 kategori : req.body.kategori,
             }
-            const lembagaName : string = req.body.lembagaName;
+            const lembagaName : string = req.body.lembaga;
             const lembagaOthers : string | null = req.body.lembagaOthers;
             const kabupatenKota : string = req.body.kabupatenKota;
             const provinsi : string = req.body.provinsi;
@@ -405,6 +405,30 @@ class UserController extends BaseController<UserHandler> {
                     admin,
                     "Admin successfully created",
                     201
+                )
+            )
+        }catch(error : any){
+            this.handleError(res,error);
+        }
+    }
+
+    public getUserStatusByID = async (req: Request<{
+        id: number,
+    },unknown>, res: Response) =>{
+        try{
+            const userID : number = req.params.id;
+
+            const userStatus : IUserStatusDTO | null = await this.handler.getStatusByID(userID);
+
+            if(!userStatus){
+                throw new BadRequestException("User not found");
+            }
+
+            res.status(200).json(
+                ResponseBuilder.success<IUserStatusDTO>(
+                    userStatus,
+                    "Get user status successfully",
+                    200
                 )
             )
         }catch(error : any){

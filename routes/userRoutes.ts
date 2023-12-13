@@ -11,6 +11,8 @@ class UserRoutes extends BaseRoutes {
       this.routes.put("/verify/", UserController.verifyUser);
       this.routes.get("/verify/", UserController.getUserBasedOnVerif);
 
+      this.routes.get("/status/:id",AuthMiddleware, UserController.getUserStatusByID);
+
       this.routes.put("/activate/",UserController.activateUser);
 
       this.routes.get("/:id", [AuthMiddleware], UserController.getUserById);
