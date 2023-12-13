@@ -2,11 +2,12 @@ import BaseController from "./baseController";
 import { BadRequestException, UnauthorizedException } from "@exceptions";
 import { UserHandler } from "@handlers";
 import { User } from "@prisma/client";
-import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterAdminBody, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, ResponseBuilder } from "@types";
+import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterAdminBody, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, IVerifyUserDTO, ResponseBuilder } from "@types";
 import bcrypt from "bcrypt";
-import { ID_ROLE_USER } from "@constant";
+import { EMAIL_KEY, ID_ROLE_USER, OTP_KEY, PASSWORD_KEY, REGISTER_MESSAGE, REGISTER_SUBJECT, VERIFY_MESSAGE_FAIL, VERIFY_MESSAGE_SUCCESS, VERIFY_SUBJECT } from "@constant";
 import { Request, Response } from "express";
 import { checkSuffixBcfEmail } from "@utils";
+import { MailInstance } from "services/mail";
 
 class UserController extends BaseController<UserHandler> {
     constructor() {
@@ -59,9 +60,13 @@ class UserController extends BaseController<UserHandler> {
             const provinsi : string = req.body.provinsi;
             const roleID : number = ID_ROLE_USER;
         
-            // TODO: add role user to database
             await this.handler.addUser(body,lembagaName,lembagaOthers,roleID,kabupatenKota,provinsi);
-
+            MailInstance.getInstance().sendEmail({
+                to: body.email,
+                subject: REGISTER_SUBJECT,
+                text: "",
+                html: `${REGISTER_MESSAGE}`,
+            })
 
             res.status(201).json(
                 ResponseBuilder.success(
@@ -98,9 +103,22 @@ class UserController extends BaseController<UserHandler> {
         
             const newUser : User = await this.handler.addUser(body,lembagaName,lembagaOthers,roleID,kabupatenKota,provinsi);
 
-            await this.handler.verifyUser({
+            const verifiedUser : IVerifyUserDTO | null = await this.handler.verifyUser({
                 userID : newUser.id,
                 statusAcc : true
+            })
+
+            if(!verifiedUser){
+                throw new BadRequestException("User not found");
+            }
+
+            let emailMessage : string = VERIFY_MESSAGE_SUCCESS;
+            emailMessage = emailMessage.replace(PASSWORD_KEY,verifiedUser.passsword).replace(OTP_KEY,verifiedUser.otp).replace(EMAIL_KEY,verifiedUser.email);
+            MailInstance.getInstance().sendEmail({
+                to: verifiedUser.email,
+                subject: VERIFY_SUBJECT,
+                text: "",
+                html: `${emailMessage}`,
             })
 
             res.status(201).json(
@@ -178,10 +196,28 @@ class UserController extends BaseController<UserHandler> {
         try{
             const body : IVerifyUserBody = req.body;
         
-            const newUser : User | null = await this.handler.verifyUser(body);
+            const newUser : IVerifyUserDTO | null = await this.handler.verifyUser(body);
 
             if(!newUser){
                 throw new BadRequestException("User not found");
+            }
+
+            if(body.statusAcc){
+                let emailMessage : string = VERIFY_MESSAGE_SUCCESS;
+                emailMessage = emailMessage.replace(PASSWORD_KEY,newUser.passsword).replace(OTP_KEY,newUser.otp).replace(EMAIL_KEY,newUser.email);
+                MailInstance.getInstance().sendEmail({
+                    to: newUser.email,
+                    subject: VERIFY_SUBJECT,
+                    text: "",
+                    html: `${emailMessage}`,
+                })
+            }else{
+                MailInstance.getInstance().sendEmail({
+                    to: newUser.email,
+                    subject: VERIFY_SUBJECT,
+                    text: "",
+                    html: `${VERIFY_MESSAGE_FAIL}`,
+                })
             }
 
             res.status(200).json(

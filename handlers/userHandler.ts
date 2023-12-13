@@ -2,7 +2,7 @@ import { BCF_CITY, BCF_PROVINCE, ID_ROLE_ADMIN, OTP_LENGTH, SALT_ROUND } from "@
 import { BadRequestException, InternalServerErrorException } from "@exceptions";
 import { BaseHandler } from "./baseHandler";
 import { Kategori, Lembaga, User } from "@prisma/client";
-import { ILoginUserBody, IPagination, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, LEMBAGA_OTHERS } from "@types";
+import { ILoginUserBody, IPagination, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, IVerifyUserDTO, LEMBAGA_OTHERS } from "@types";
 import { countSkipped, generatePassword, generateRandomNumber, sign, checkValidNoHandphone } from "@utils";
 import bcrypt from "bcrypt";
 
@@ -189,13 +189,13 @@ export class UserHandler extends BaseHandler{
 
     public async verifyUser(
         body: IVerifyUserBody
-    ): Promise<User | null>{
+    ): Promise<IVerifyUserDTO | null>{
 
         let newUser : User;
 
+        const pass : string = generatePassword();
+        const otp : string = generateRandomNumber(OTP_LENGTH);
         if(body.statusAcc){
-            const pass : string = generatePassword();
-            const otp : string = generateRandomNumber(OTP_LENGTH);
 
             const currentUser : User | null = await this.prisma.user.findFirst({
                 where : {
@@ -246,8 +246,12 @@ export class UserHandler extends BaseHandler{
                 },
             });
         }
-
-        return newUser;
+        const response : IVerifyUserDTO = {
+            ...newUser,
+            passsword : pass,
+            otp :otp
+        }
+        return response;
     }
 
     public async getUnverifiedUser(
