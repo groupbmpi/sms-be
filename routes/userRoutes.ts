@@ -4,12 +4,12 @@ import { UserController } from "@controllers"
 
 class UserRoutes extends BaseRoutes {
    public setRoutes(): void {
-      this.routes.post("/register/accepted", UserController.registerUserAutoAccepted);
+      this.routes.post("/register/accepted",AuthMiddleware, UserController.registerUserAutoAccepted);
       this.routes.post("/register/", UserController.registerUser);
       this.routes.post("/login/",UserController.loginUser)
 
-      this.routes.put("/verify/", UserController.verifyUser);
-      this.routes.get("/verify/", UserController.getUserBasedOnVerif);
+      this.routes.put("/verify/",AuthMiddleware, UserController.verifyUser);
+      this.routes.get("/verify/", AuthMiddleware, UserController.getUserBasedOnVerif);
 
       this.routes.get("/status/:id",AuthMiddleware, UserController.getUserStatusByID);
 
@@ -22,7 +22,7 @@ class UserRoutes extends BaseRoutes {
       this.routes.get("/", [AuthMiddleware], UserController.getUser);
       this.routes.get("/auth/profile", [AuthMiddleware], UserController.getRoleUser);
 
-      this.routes.post("/admin",UserController.registerAdmin);
+      this.routes.post("/admin",AuthMiddleware, UserController.registerAdmin);
    }
 }
 

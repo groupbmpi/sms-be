@@ -4,9 +4,9 @@ import { UserHandler } from "@handlers";
 import { User } from "@prisma/client";
 import { IActivateUserBody, ILoginUserBody, IPagination, IQueryUserRequest, IRegisterAdminBody, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IUserStatusDTO, IUserWithPaginationDTO, IVerifyUserBody, IVerifyUserDTO, ResponseBuilder } from "@types";
 import bcrypt from "bcrypt";
-import { ALL_VERIF, EMAIL_KEY, ID_ROLE_USER, OTP_KEY, PASSWORD_KEY, REGISTER_MESSAGE, REGISTER_SUBJECT, VERIF, VERIFY_MESSAGE_ADMIN, VERIFY_MESSAGE_FAIL, VERIFY_MESSAGE_SUCCESS, VERIFY_SUBJECT } from "@constant";
+import { ALL_VERIF, EMAIL_KEY, ID_ROLE_USER, OTP_KEY, PASSWORD_KEY, READ, REGISTER_MESSAGE, REGISTER_SUBJECT, UPDATE, USER, VERIF, VERIFY_MESSAGE_ADMIN, VERIFY_MESSAGE_FAIL, VERIFY_MESSAGE_SUCCESS, VERIFY_SUBJECT, WRITE } from "@constant";
 import { Request, Response } from "express";
-import { checkSuffixBcfEmail } from "@utils";
+import { checkAccess, checkSuffixBcfEmail } from "@utils";
 import { MailInstance } from "@services";
 
 class UserController extends BaseController<UserHandler> {
@@ -81,8 +81,15 @@ class UserController extends BaseController<UserHandler> {
         }
     }
 
-    public registerUserAutoAccepted = async (req: Request, res: Response) => {
+    public registerUserAutoAccepted = async (req: Request<unknown>, res: Response) => {
         try{
+            if(!req.isAuthenticated){
+                throw new UnauthorizedException("User not authenticated")
+            }
+
+            if(!checkAccess(req.role!!, USER, WRITE)){
+                throw new UnauthorizedException("User not authorized")
+            }
             const body : IRegisterUserBody = {
                 alamat : req.body.alamat,
                 email : req.body.email,
@@ -134,8 +141,16 @@ class UserController extends BaseController<UserHandler> {
         }
     }
 
-    public getUserBasedOnVerif = async (req: Request, res: Response) => {
+    public getUserBasedOnVerif = async (req: Request<unknown>,res: Response) => {
         try{
+            if(!req.isAuthenticated){
+                throw new UnauthorizedException("User not authenticated")
+            }
+
+            if(!checkAccess(req.role!!, USER, READ)){
+                throw new UnauthorizedException("User not authorized")
+            }
+
             const queryUser : IQueryUserRequest = req.query;
 
             const pagination : IPagination = queryUser;
@@ -157,7 +172,6 @@ class UserController extends BaseController<UserHandler> {
             )
         }catch(error){
             this.handleError(res,error);
-
         }
     }
 
@@ -198,8 +212,15 @@ class UserController extends BaseController<UserHandler> {
         }
     }
 
-    public verifyUser = async (req: Request, res: Response) => {
+    public verifyUser = async (req: Request<unknown>, res: Response) => {
         try{
+            if(!req.isAuthenticated){
+                throw new UnauthorizedException("User not authenticated")
+            }
+
+            if(!checkAccess(req.role!!, USER, UPDATE)){
+                throw new UnauthorizedException("User not authorized")
+            }
             const body : IVerifyUserBody = req.body;
         
             const newUser : IVerifyUserDTO | null = await this.handler.verifyUser(body);
@@ -268,7 +289,7 @@ class UserController extends BaseController<UserHandler> {
                 throw new BadRequestException("User not authenticated")
             }
 
-            const userID : number = req.userID as number;
+            const userID : number = req.userID!!;
 
             const roleUser : IUserRoleDTO | null = await this.handler.getUserRole(userID);
 
@@ -383,6 +404,12 @@ class UserController extends BaseController<UserHandler> {
 
     public registerAdmin = async (req: Request<unknown>, res: Response) =>{
         try{
+            if(!req.isAuthenticated){
+                throw new UnauthorizedException("User not authenticated")
+            }
+            if(!checkAccess(req.role!!, USER, WRITE)){
+                throw new UnauthorizedException("User not authorized")
+            }
             const body : IRegisterAdminBody = req.body;
 
             if (!checkSuffixBcfEmail(body.email)) {

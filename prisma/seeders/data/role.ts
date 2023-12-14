@@ -7,10 +7,10 @@ export const roleData : Omit<Role, 'id' | 'createdAt' | 'updatedAt'>[] = [
     },
     {
         role: "Admin",
-        akses: "user:read,write,update,delete;lembaga:read,update,write,delete;berita:read,write,update,delete;laporankegiatan:read,write,update,delete;laporanmasalah:read,write,update,delete"
+        akses: "user:;lembaga:read,update,write,delete;berita:read,write,update,delete;laporankegiatan:read,write,update,delete;laporanmasalah:read,write,update,delete"
     },
     {
         role: "User",
-        akses: "user:read,write,update,delete;lembaga:read,update,write,delete;berita:read,write,update,delete;laporankegiatan:read,write,update,delete;laporanmasalah:read,write,update,delete"
+        akses: "user:;lembaga:read,update,write,delete;berita:read,write,update,delete;laporankegiatan:read,write,update,delete;laporanmasalah:read,write,update,delete"
     }
 ]
