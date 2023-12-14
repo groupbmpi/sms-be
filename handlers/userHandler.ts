@@ -3,7 +3,7 @@ import { BadRequestException, InternalServerErrorException } from "@exceptions";
 import { BaseHandler } from "./baseHandler";
 import { Kategori, Lembaga, User } from "@prisma/client";
 import { ILoginUserBody, IPagination, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IUserStatusDTO, IUserWithPaginationDTO, IUserWithVerifDTO, IVerifyUserBody, IVerifyUserDTO, LEMBAGA_OTHERS } from "@types";
-import { countSkipped, generatePassword, generateRandomNumber, sign, checkValidNoHandphone } from "@utils";
+import { countSkipped, generatePassword, generateRandomNumber, sign, checkValidNoHandphone, uppercaseFirstLetter } from "@utils";
 import bcrypt from "bcrypt";
 
 export class UserHandler extends BaseHandler{
@@ -121,6 +121,7 @@ export class UserHandler extends BaseHandler{
         if(!kabupatenKotaUser){
             return null;
         }
+        console.log(lembagaName,LEMBAGA_OTHERS)
         if(lembagaName == LEMBAGA_OTHERS){
             const user : User = await this.prisma.user.update({
                 where : {
@@ -129,8 +130,14 @@ export class UserHandler extends BaseHandler{
                 data : {
                     ...body,
                     lembagaOthers : lembagaOthers,
-                    lembaga_id : null,
-                    kabupatenKota_id : kabupatenKotaUser.id
+                    lembaga : {
+                        disconnect : true
+                    },
+                    kabupatenKota : {
+                        connect : {
+                            id : kabupatenKotaUser.id
+                        }
+                    }
                 }
             })
             return user;
@@ -212,7 +219,7 @@ export class UserHandler extends BaseHandler{
             if(currentUser.lembaga_id == null){
                 const newLembaga : Lembaga = await this.prisma.lembaga.create({
                     data : {
-                        nama : currentUser.lembagaOthers as string,
+                        nama : uppercaseFirstLetter(currentUser.lembagaOthers!!),
                         kategori : currentUser.kategori,
                     }
                 })

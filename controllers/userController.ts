@@ -187,7 +187,7 @@ class UserController extends BaseController<UserHandler> {
                 kodePos: req.body.kodePos,
                 kategori : req.body.kategori,
             }
-            const lembagaName : string = req.body.lembagaName;
+            const lembagaName : string = req.body.lembaga;
             const lembagaOthers : string | null = req.body.lembagaOthers;
             const kabupatenKota : string = req.body.kabupatenKota;
             const provinsi : string = req.body.provinsi;
