@@ -1,11 +1,11 @@
 import { BadRequestException } from "@exceptions";
 import { BaseHandler } from "./baseHandler";
-import { KabupatenKota, LaporanKegiatan, Lembaga, Provinsi } from "@prisma/client";
+import { KabupatenKota, Kategori, LaporanKegiatan, Lembaga, Provinsi } from "@prisma/client";
 import { IActivitiesDTO, IActivityDTO, IActivityReportBody, IActivityReportQuery, IIndikatorKeberhasilanDTO, IPagination } from "@types";
 import { countSkipped, getDateFromString, checkValidKategoriMasalah, checkValidMetodePelaksanaan, checkValidStatusKegiatan } from "@utils";
 
 const ALL_LEMBAGA = "Semua Lembaga"
-
+const ALL_KATEGORI = "Semua Kategori"
 export class ActivityHandler extends BaseHandler{
 
     private indikatorKeberhasilanToString(rawData: IIndikatorKeberhasilanDTO[]) : string {
@@ -82,7 +82,7 @@ export class ActivityHandler extends BaseHandler{
         updateOwn: boolean,
     ): Promise<IActivitiesDTO>{
         let { limit, page } = pagination
-        let { lembaga, ...parsedQuery } = query
+        let { lembaga, kategori, ...parsedQuery } = query
     
         if(typeof limit === 'undefined'){
             limit = 0;
@@ -100,6 +100,14 @@ export class ActivityHandler extends BaseHandler{
             lembaga = undefined
         }
         
+        if(typeof kategori !== 'undefined'){
+            kategori = decodeURIComponent(kategori)
+        }
+
+        if(kategori === ALL_KATEGORI){
+            kategori = undefined
+        }
+
         const skipped = countSkipped(page, limit)
         
         const totalData : number = await this.prisma.laporanKegiatan.count({
@@ -109,7 +117,8 @@ export class ActivityHandler extends BaseHandler{
                     lembaga:{
                         nama: {
                             contains: lembaga,
-                        }
+                        },
+                        kategori: kategori as Kategori,
                     }
                 }
             },
@@ -122,7 +131,8 @@ export class ActivityHandler extends BaseHandler{
                     lembaga:{
                         nama: {
                             contains: lembaga,
-                        }
+                        },
+                        kategori: kategori as Kategori,
                     }
                 }
             },

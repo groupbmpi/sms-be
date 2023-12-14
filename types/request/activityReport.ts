@@ -5,6 +5,7 @@ export interface IActivityReportQuery extends IPagination {
     id?     : number,
     user_id? : number
     lembaga? : string, 
+    kategori? : string,
 }
 
 
