@@ -2,11 +2,11 @@ import BaseController from "./baseController";
 import { BadRequestException, UnauthorizedException } from "@exceptions";
 import { UserHandler } from "@handlers";
 import { User } from "@prisma/client";
-import { IActivateUserBody, ILoginUserBody, IPagination, IRegisterAdminBody, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, IVerifyUserDTO, ResponseBuilder } from "@types";
+import { IActivateUserBody, ILoginUserBody, IPagination, IQueryUserRequest, IRegisterAdminBody, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IUserStatusDTO, IUserWithPaginationDTO, IVerifyUserBody, IVerifyUserDTO, ResponseBuilder } from "@types";
 import bcrypt from "bcrypt";
-import { EMAIL_KEY, ID_ROLE_USER, OTP_KEY, PASSWORD_KEY, REGISTER_MESSAGE, REGISTER_SUBJECT, VERIFY_MESSAGE_FAIL, VERIFY_MESSAGE_SUCCESS, VERIFY_SUBJECT } from "@constant";
+import { ALL_VERIF, EMAIL_KEY, ID_ROLE_USER, OTP_KEY, PASSWORD_KEY, READ, REGISTER_MESSAGE, REGISTER_SUBJECT, UPDATE, URL_ACTIVATE, URL_KEY, USER, VERIF, VERIFY_MESSAGE_ADMIN, VERIFY_MESSAGE_FAIL, VERIFY_MESSAGE_SUCCESS, VERIFY_SUBJECT, WRITE } from "@constant";
 import { Request, Response } from "express";
-import { checkSuffixBcfEmail } from "@utils";
+import { checkAccess, checkSuffixBcfEmail } from "@utils";
 import { MailInstance } from "@services";
 
 class UserController extends BaseController<UserHandler> {
@@ -54,7 +54,7 @@ class UserController extends BaseController<UserHandler> {
                 is_verified : false,
                 kategori : req.body.kategori,
             }
-            const lembagaName : string = req.body.lembagaName;
+            const lembagaName : string = req.body.lembaga;
             const lembagaOthers : string | null = req.body.lembagaOthers;
             const kabupatenKota : string = req.body.kabupatenKota;
             const provinsi : string = req.body.provinsi;
@@ -64,8 +64,7 @@ class UserController extends BaseController<UserHandler> {
             MailInstance.getInstance().sendEmail({
                 to: body.email,
                 subject: REGISTER_SUBJECT,
-                text: "",
-                html: `${REGISTER_MESSAGE}`,
+                html: `<p>${REGISTER_MESSAGE}</p>`,
             })
 
             res.status(201).json(
@@ -81,8 +80,15 @@ class UserController extends BaseController<UserHandler> {
         }
     }
 
-    public registerUserAutoAccepted = async (req: Request, res: Response) => {
+    public registerUserAutoAccepted = async (req: Request<unknown>, res: Response) => {
         try{
+            if(!req.isAuthenticated){
+                throw new UnauthorizedException("User not authenticated")
+            }
+
+            if(!checkAccess(req.role!!, USER, WRITE)){
+                throw new UnauthorizedException("User not authorized")
+            }
             const body : IRegisterUserBody = {
                 alamat : req.body.alamat,
                 email : req.body.email,
@@ -95,7 +101,7 @@ class UserController extends BaseController<UserHandler> {
                 is_verified : true,
                 kategori : req.body.kategori,
             }
-            const lembagaName : string = req.body.lembagaName;
+            const lembagaName : string = req.body.lembaga;
             const lembagaOthers : string | null = req.body.lembagaOthers;
             const kabupatenKota : string = req.body.kabupatenKota;
             const provinsi : string = req.body.provinsi;
@@ -113,7 +119,7 @@ class UserController extends BaseController<UserHandler> {
             }
 
             let emailMessage : string = VERIFY_MESSAGE_SUCCESS;
-            emailMessage = emailMessage.replace(PASSWORD_KEY,verifiedUser.passsword).replace(OTP_KEY,verifiedUser.otp).replace(EMAIL_KEY,verifiedUser.email);
+            emailMessage = emailMessage.replace(PASSWORD_KEY,verifiedUser.realPassword).replace(OTP_KEY,verifiedUser.realOtp!!).replace(EMAIL_KEY,verifiedUser.email).replace(URL_KEY,URL_ACTIVATE);
             MailInstance.getInstance().sendEmail({
                 to: verifiedUser.email,
                 subject: VERIFY_SUBJECT,
@@ -134,28 +140,41 @@ class UserController extends BaseController<UserHandler> {
         }
     }
 
-    public getUnverifiedUser = async (req: Request, res: Response) => {
+    public getUserBasedOnVerif = async (req: Request<unknown>,res: Response) => {
         try{
-            const pagination : IPagination = req.query
+            if(!req.isAuthenticated){
+                throw new UnauthorizedException("User not authenticated")
+            }
+
+            if(!checkAccess(req.role!!, USER, READ)){
+                throw new UnauthorizedException("User not authorized")
+            }
+
+            const queryUser : IQueryUserRequest = req.query;
+
+            const pagination : IPagination = queryUser;
         
-            const listUnverifiedUser : IUserDTO[] = await this.handler.getUnverifiedUser(pagination);
+            let listUnverifiedUser : IUserWithPaginationDTO;
+
+            if(queryUser.filterVerif == ALL_VERIF || !queryUser.filterVerif){
+                listUnverifiedUser = await this.handler.getUserBasedOnVerifStatus(pagination);
+            }else{
+                listUnverifiedUser = await this.handler.getUserBasedOnVerifStatus(pagination,queryUser.filterVerif == VERIF? true:false);
+            }
 
             res.status(200).json(
                 ResponseBuilder.success(
-                    {
-                        user:listUnverifiedUser
-                    },
+                    listUnverifiedUser,
                     "Get list user successfully",
                     200
                 )
             )
         }catch(error){
             this.handleError(res,error);
-
         }
     }
 
-    public updateUnverifiedUser = async (req: Request<{
+    public updateUserByID = async (req: Request<{
         id: number,
     },unknown>, res: Response) => {
         try{
@@ -168,7 +187,7 @@ class UserController extends BaseController<UserHandler> {
                 kodePos: req.body.kodePos,
                 kategori : req.body.kategori,
             }
-            const lembagaName : string = req.body.lembagaName;
+            const lembagaName : string = req.body.lembaga;
             const lembagaOthers : string | null = req.body.lembagaOthers;
             const kabupatenKota : string = req.body.kabupatenKota;
             const provinsi : string = req.body.provinsi;
@@ -192,8 +211,15 @@ class UserController extends BaseController<UserHandler> {
         }
     }
 
-    public verifyUser = async (req: Request, res: Response) => {
+    public verifyUser = async (req: Request<unknown>, res: Response) => {
         try{
+            if(!req.isAuthenticated){
+                throw new UnauthorizedException("User not authenticated")
+            }
+
+            if(!checkAccess(req.role!!, USER, UPDATE)){
+                throw new UnauthorizedException("User not authorized")
+            }
             const body : IVerifyUserBody = req.body;
         
             const newUser : IVerifyUserDTO | null = await this.handler.verifyUser(body);
@@ -204,7 +230,7 @@ class UserController extends BaseController<UserHandler> {
 
             if(body.statusAcc){
                 let emailMessage : string = VERIFY_MESSAGE_SUCCESS;
-                emailMessage = emailMessage.replace(PASSWORD_KEY,newUser.passsword).replace(OTP_KEY,newUser.otp).replace(EMAIL_KEY,newUser.email);
+                emailMessage = emailMessage.replace(PASSWORD_KEY,newUser.realPassword).replace(OTP_KEY,newUser.realOtp!!).replace(EMAIL_KEY,newUser.email).replace(URL_KEY,URL_ACTIVATE);
                 MailInstance.getInstance().sendEmail({
                     to: newUser.email,
                     subject: VERIFY_SUBJECT,
@@ -262,7 +288,7 @@ class UserController extends BaseController<UserHandler> {
                 throw new BadRequestException("User not authenticated")
             }
 
-            const userID : number = req.userID as number;
+            const userID : number = req.userID!!;
 
             const roleUser : IUserRoleDTO | null = await this.handler.getUserRole(userID);
 
@@ -377,19 +403,58 @@ class UserController extends BaseController<UserHandler> {
 
     public registerAdmin = async (req: Request<unknown>, res: Response) =>{
         try{
+            if(!req.isAuthenticated){
+                throw new UnauthorizedException("User not authenticated")
+            }
+            if(!checkAccess(req.role!!, USER, WRITE)){
+                throw new UnauthorizedException("User not authorized")
+            }
             const body : IRegisterAdminBody = req.body;
 
             if (!checkSuffixBcfEmail(body.email)) {
                 throw new BadRequestException("Email harus menggunakan domain bcf.or.id");
             }
 
-            const admin = await this.handler.addAdmin(body.email);
+            const admin : IVerifyUserDTO = await this.handler.addAdmin(body.email);
+
+            const emailMessage = VERIFY_MESSAGE_ADMIN.replace(EMAIL_KEY,admin.email).replace(PASSWORD_KEY,admin.realPassword);
+
+            MailInstance.getInstance().sendEmail({
+                to: admin.email,
+                subject: VERIFY_SUBJECT,
+                text: "",
+                html: `${emailMessage}`,
+            })
 
             res.status(201).json(
-                ResponseBuilder.success<IUserDTO>(
+                ResponseBuilder.success<IVerifyUserDTO>(
                     admin,
                     "Admin successfully created",
                     201
+                )
+            )
+        }catch(error : any){
+            this.handleError(res,error);
+        }
+    }
+
+    public getUserStatusByID = async (req: Request<{
+        id: number,
+    },unknown>, res: Response) =>{
+        try{
+            const userID : number = req.params.id;
+
+            const userStatus : IUserStatusDTO | null = await this.handler.getStatusByID(userID);
+
+            if(!userStatus){
+                throw new BadRequestException("User not found");
+            }
+
+            res.status(200).json(
+                ResponseBuilder.success<IUserStatusDTO>(
+                    userStatus,
+                    "Get user status successfully",
+                    200
                 )
             )
         }catch(error : any){

@@ -1,7 +1,7 @@
 import { Kategori, Lembaga } from "@prisma/client";
 import { BaseHandler } from "./baseHandler";
 import { ILembagaBody, ILembagaByKategoriDTO, ILembagaDTO, ILembagaQuery, ILembagasDTO, IPagination } from "@types";
-import { checkValidKategori, countSkipped } from "@utils";
+import { checkValidKategori, countSkipped, uppercaseFirstLetter } from "@utils";
 import { BadRequestException } from "@exceptions";
 
 export class LembagaHandler extends BaseHandler{
@@ -94,6 +94,8 @@ export class LembagaHandler extends BaseHandler{
         if(!checkValidKategori(body.kategori)){
             throw new BadRequestException(`Kategori ${body.kategori} tidak valid`)
         }
+
+        body.nama = uppercaseFirstLetter(body.nama);
 
         const data : Lembaga = await this.prisma.lembaga.create({
             data: this.dtoToData(body),

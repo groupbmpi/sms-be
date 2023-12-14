@@ -1,9 +1,9 @@
-import { BCF_CITY, BCF_PROVINCE, ID_ROLE_ADMIN, OTP_LENGTH, SALT_ROUND } from "@constant";
+import { BCF_CITY, BCF_PROVINCE, ID_ROLE_ADMIN, ID_ROLE_USER, OTP_LENGTH, SALT_ROUND } from "@constant";
 import { BadRequestException, InternalServerErrorException } from "@exceptions";
 import { BaseHandler } from "./baseHandler";
 import { Kategori, Lembaga, User } from "@prisma/client";
-import { ILoginUserBody, IPagination, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IVerifyUserBody, IVerifyUserDTO, LEMBAGA_OTHERS } from "@types";
-import { countSkipped, generatePassword, generateRandomNumber, sign, checkValidNoHandphone } from "@utils";
+import { ILoginUserBody, IPagination, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IUserStatusDTO, IUserWithPaginationDTO, IUserWithVerifDTO, IVerifyUserBody, IVerifyUserDTO, LEMBAGA_OTHERS } from "@types";
+import { countSkipped, generatePassword, generateRandomNumber, sign, checkValidNoHandphone, uppercaseFirstLetter } from "@utils";
 import bcrypt from "bcrypt";
 
 export class UserHandler extends BaseHandler{
@@ -44,6 +44,7 @@ export class UserHandler extends BaseHandler{
                 }
             }
         })
+        console.log(lembagaName,LEMBAGA_OTHERS)
         if(lembagaName == LEMBAGA_OTHERS){
             const newUser : User = await this.prisma.user.create({
                 data: {
@@ -120,6 +121,7 @@ export class UserHandler extends BaseHandler{
         if(!kabupatenKotaUser){
             return null;
         }
+        console.log(lembagaName,LEMBAGA_OTHERS)
         if(lembagaName == LEMBAGA_OTHERS){
             const user : User = await this.prisma.user.update({
                 where : {
@@ -128,8 +130,14 @@ export class UserHandler extends BaseHandler{
                 data : {
                     ...body,
                     lembagaOthers : lembagaOthers,
-                    lembaga_id : null,
-                    kabupatenKota_id : kabupatenKotaUser.id
+                    lembaga : {
+                        disconnect : true
+                    },
+                    kabupatenKota : {
+                        connect : {
+                            id : kabupatenKotaUser.id
+                        }
+                    }
                 }
             })
             return user;
@@ -211,7 +219,7 @@ export class UserHandler extends BaseHandler{
             if(currentUser.lembaga_id == null){
                 const newLembaga : Lembaga = await this.prisma.lembaga.create({
                     data : {
-                        nama : currentUser.lembagaOthers as string,
+                        nama : uppercaseFirstLetter(currentUser.lembagaOthers!!),
                         kategori : currentUser.kategori,
                     }
                 })
@@ -247,34 +255,114 @@ export class UserHandler extends BaseHandler{
         }
         const response : IVerifyUserDTO = {
             ...newUser,
-            passsword : pass,
-            otp :otp
+            realPassword : pass,
+            realOtp :otp
         }
         return response;
     }
 
-    public async getUnverifiedUser(
-        pagination : IPagination
-    ): Promise<IUserDTO[]>{
-        const skipped = countSkipped(pagination.page!!, pagination.limit!!)
-
-        const users = await this.prisma.user.findMany({
-            where : {
-                is_verified : false
-            },
-            include : {
-                lembaga : true,
-                kabupatenKota : {
-                    include : {
-                        provinsi : true
+    public async getUserBasedOnVerifStatus(
+        pagination : IPagination,
+        isVerified? : boolean
+    ): Promise<IUserWithPaginationDTO>{
+        let { limit, page } = pagination
+        if(!limit){
+            limit = 100;
+        }
+        if(!page){
+            page = 1;
+        }
+        const skipped = countSkipped(page, limit)
+        let totalData : number;
+        let users : any[];
+        if(isVerified == undefined){
+            totalData = await this.prisma.user.count({
+                where : {
+                    role_id : ID_ROLE_USER,
+                    NOT:{
+                        AND :[
+                            {
+                                is_verified : true
+                            },
+                            {
+                                is_accepted : false
+                            }
+                        ]
                     }
                 }
-            },
-            take: pagination.limit,
-            skip: skipped,
-        })
+            });
+            users = await this.prisma.user.findMany({
+                where : {
+                    role_id : ID_ROLE_USER,
+                    NOT:{
+                        AND :[
+                            {
+                                is_verified : true
+                            },
+                            {
+                                is_accepted : false
+                            }
+                        ]
+                    }
+                },
+                include : {
+                    lembaga : true,
+                    kabupatenKota : {
+                        include : {
+                            provinsi : true
+                        }
+                    }
+                },
+                take: pagination.limit,
+                skip: skipped,
+            })
+        }else{
+            totalData = await this.prisma.user.count({
+                where : {
+                    role_id : ID_ROLE_USER,
+                    is_verified : isVerified,
+                    NOT:{
+                        AND :[
+                            {
+                                is_verified : true
+                            },
+                            {
+                                is_accepted : false
+                            }
+                        ]
+                    }
+                }
+            })
+            users = await this.prisma.user.findMany({
+                where : {
+                    role_id : ID_ROLE_USER,
+                    is_verified : isVerified,
+                    NOT:{
+                        AND :[
+                            {
+                                is_verified : true
+                            },
+                            {
+                                is_accepted : false
+                            }
+                        ]
+                    }
+                },
+                include : {
+                    lembaga : true,
+                    kabupatenKota : {
+                        include : {
+                            provinsi : true
+                        }
+                    }
+                },
+                take: pagination.limit,
+                skip: skipped,
+            })
+        }
+        
 
-        const userDto : IUserDTO[] = []
+        const userDto : IUserWithVerifDTO[] = []
         for(const user of users){
             let url = ""
             if(user.linkFoto){
@@ -283,10 +371,18 @@ export class UserHandler extends BaseHandler{
             const lembaga = user.lembaga? user.lembaga.nama : "";
             const kabupatenKota = user.kabupatenKota? user.kabupatenKota.nama : "";
             const provinsi = user.kabupatenKota? user.kabupatenKota.provinsi.nama : "";
-            userDto.push(this.dataToDTO(user, url, lembaga, kabupatenKota, provinsi))
+            const data : IUserDTO = this.dataToDTO(user, url, lembaga, kabupatenKota, provinsi)
+            const dataDTO : IUserWithVerifDTO = {
+                ...data,
+                is_verified : user.is_verified
+            }
+            userDto.push(dataDTO);
         }
-
-        return userDto;
+        const response : IUserWithPaginationDTO = {
+            listUser : userDto,
+            countPages : Math.ceil(totalData/limit)
+        }
+        return response;
     }
 
     public async getUserRole(
@@ -435,7 +531,7 @@ export class UserHandler extends BaseHandler{
 
     public async addAdmin(
         email : string
-    ) : Promise<IUserDTO>{
+    ) : Promise<IVerifyUserDTO>{
         const kabupatenKotaUser = await this.prisma.kabupatenKota.findFirst({
             where : {
                 nama : BCF_CITY,
@@ -473,8 +569,31 @@ export class UserHandler extends BaseHandler{
                 }
             }
         })
+        const response : IVerifyUserDTO = {
+            ...admin,
+            realPassword : pass,
+        }
+        return response;
+    }
 
-        return this.dataToDTO(admin, "", "", "", "");
+    public async getStatusByID(
+        userID : number
+    ) : Promise<IUserStatusDTO | null>{
+        const user = await this.prisma.user.findFirst({
+            where : {
+                id : userID
+            }
+        })
+        if(!user){
+            return null;
+        }
+        const response : IUserStatusDTO = {
+            is_verified : user?.is_verified as boolean,
+            is_accepted : user?.is_accepted as boolean,
+            is_activated : user?.is_activated as boolean
+        }
+
+        return response;
     }
 }
 

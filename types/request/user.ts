@@ -35,13 +35,17 @@ export interface IUserBody {
 type PropsUpdateUserOmitted = "id" | "lembaga_id" | "role_id" | "kabupatenKota_id" | "lembagaOthers" | "password" | "otp_token" | "is_activated" | "createdAt" | "updatedAt" | "linkFoto" ;
 export interface IUpdateUserBody extends Omit<User,PropsUpdateUserOmitted>{}
 
-export const LEMBAGA_OTHERS = "Others"
+export const LEMBAGA_OTHERS = "Lainnya"
 
 export interface IRegisterAdminBody{
     email : string,
 }
 
 export interface IVerifyUserDTO extends User{
-    passsword: string
-    otp: string
+    realPassword: string
+    realOtp?: string
+}
+
+export interface IQueryUserRequest extends IPagination{
+    filterVerif?: string
 }

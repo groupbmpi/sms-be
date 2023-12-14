@@ -7,8 +7,10 @@ export function convertAccessToMap(access : string) :  Map<string, string[]> {
     accessArray.forEach((accessString) => {
         const accessStringArray = accessString.split(':');
         const object = accessStringArray[0];
-        const objectAccess = accessStringArray[1].split(',');
-        accessMap.set(object, objectAccess);
+        if(accessStringArray.length != 1){
+            const objectAccess = accessStringArray[1].split(',');
+            accessMap.set(object, objectAccess);
+        }
     });
 
     return accessMap;
