@@ -2,7 +2,7 @@ import { BadRequestException } from "@exceptions";
 import { BaseHandler } from "./baseHandler";
 import { KabupatenKota, LaporanKegiatan, Lembaga, Provinsi } from "@prisma/client";
 import { IActivitiesDTO, IActivityDTO, IActivityReportBody, IActivityReportQuery, IIndikatorKeberhasilanDTO, IPagination } from "@types";
-import { countSkipped, getDateFromString, checkValidKategoriMasalah, checkValidMetodePelaksanaan, checkValidStatusKegiatan } from "@utils";
+import { countSkipped, getDate, checkValidKategoriMasalah, checkValidMetodePelaksanaan, checkValidStatusKegiatan } from "@utils";
 
 const ALL_LEMBAGA = "Semua Lembaga"
 
@@ -48,8 +48,8 @@ export class ActivityHandler extends BaseHandler{
     private dtoToData(dto : IActivityDTO, userId: number, kabupatenKotaId: number) : Omit<LaporanKegiatan, 'id' | 'createdAt' | 'updatedAt'> | string{
         const {provinsi, kabupatenKota, jadwalMulai, jadwalSelesai, ...tempDto} = dto;
         
-        const jadwalMulaiConverted = getDateFromString(jadwalMulai)
-        const jadwalSelesaiConverted = getDateFromString(jadwalSelesai)
+        const jadwalMulaiConverted = getDate(jadwalMulai)
+        const jadwalSelesaiConverted = getDate(jadwalSelesai)
 
         if(typeof jadwalMulaiConverted  === 'undefined' || typeof jadwalSelesaiConverted === 'undefined'){
             return "Format tanggal tidak valid"
