@@ -13,7 +13,6 @@ export default async function seedUser(prisma: PrismaClient) {
         };
     }))
 
-    console.log(modified)
 
     await prisma.$queryRaw`ALTER Table User AUTO_INCREMENT = 1`
 

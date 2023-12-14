@@ -1,6 +1,6 @@
 import { ChatController } from "@controllers";
 import BaseRoutes from "./baseRoutes";
-import { AuthMiddleware } from "middlewares";
+import { AuthMiddleware } from "@middlewares";
 
 class ChatRoutes extends BaseRoutes {
     public setRoutes(): void {

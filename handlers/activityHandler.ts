@@ -12,10 +12,8 @@ export class ActivityHandler extends BaseHandler{
         let result = ""
 
         for(const data of rawData){
-            console.log(data.indicator)
             result = result.concat(`${data.indicator} : ${data.target}\n`)
         }
-        // console.log(result)
         return result.substring(0, result.length - 1)   
     }
 
