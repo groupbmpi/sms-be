@@ -4,7 +4,7 @@ import { UserHandler } from "@handlers";
 import { User } from "@prisma/client";
 import { IActivateUserBody, ILoginUserBody, IPagination, IQueryUserRequest, IRegisterAdminBody, IRegisterUserBody, IUpdateUnverifiedUserBody, IUserBody, IUserDTO, IUserRoleDTO, IUserStatusDTO, IUserWithPaginationDTO, IVerifyUserBody, IVerifyUserDTO, ResponseBuilder } from "@types";
 import bcrypt from "bcrypt";
-import { ALL_VERIF, EMAIL_KEY, ID_ROLE_USER, OTP_KEY, PASSWORD_KEY, READ, REGISTER_MESSAGE, REGISTER_SUBJECT, UPDATE, USER, VERIF, VERIFY_MESSAGE_ADMIN, VERIFY_MESSAGE_FAIL, VERIFY_MESSAGE_SUCCESS, VERIFY_SUBJECT, WRITE } from "@constant";
+import { ALL_VERIF, EMAIL_KEY, ID_ROLE_USER, OTP_KEY, PASSWORD_KEY, READ, REGISTER_MESSAGE, REGISTER_SUBJECT, UPDATE, URL_ACTIVATE, URL_KEY, USER, VERIF, VERIFY_MESSAGE_ADMIN, VERIFY_MESSAGE_FAIL, VERIFY_MESSAGE_SUCCESS, VERIFY_SUBJECT, WRITE } from "@constant";
 import { Request, Response } from "express";
 import { checkAccess, checkSuffixBcfEmail } from "@utils";
 import { MailInstance } from "@services";
@@ -64,8 +64,7 @@ class UserController extends BaseController<UserHandler> {
             MailInstance.getInstance().sendEmail({
                 to: body.email,
                 subject: REGISTER_SUBJECT,
-                text: "",
-                html: `${REGISTER_MESSAGE}`,
+                html: `<p>${REGISTER_MESSAGE}</p>`,
             })
 
             res.status(201).json(
@@ -120,7 +119,7 @@ class UserController extends BaseController<UserHandler> {
             }
 
             let emailMessage : string = VERIFY_MESSAGE_SUCCESS;
-            emailMessage = emailMessage.replace(PASSWORD_KEY,verifiedUser.realPassword).replace(OTP_KEY,verifiedUser.realOtp!!).replace(EMAIL_KEY,verifiedUser.email);
+            emailMessage = emailMessage.replace(PASSWORD_KEY,verifiedUser.realPassword).replace(OTP_KEY,verifiedUser.realOtp!!).replace(EMAIL_KEY,verifiedUser.email).replace(URL_KEY,URL_ACTIVATE);
             MailInstance.getInstance().sendEmail({
                 to: verifiedUser.email,
                 subject: VERIFY_SUBJECT,
@@ -231,7 +230,7 @@ class UserController extends BaseController<UserHandler> {
 
             if(body.statusAcc){
                 let emailMessage : string = VERIFY_MESSAGE_SUCCESS;
-                emailMessage = emailMessage.replace(PASSWORD_KEY,newUser.realPassword).replace(OTP_KEY,newUser.realOtp!!).replace(EMAIL_KEY,newUser.email);
+                emailMessage = emailMessage.replace(PASSWORD_KEY,newUser.realPassword).replace(OTP_KEY,newUser.realOtp!!).replace(EMAIL_KEY,newUser.email).replace(URL_KEY,URL_ACTIVATE);
                 MailInstance.getInstance().sendEmail({
                     to: newUser.email,
                     subject: VERIFY_SUBJECT,
