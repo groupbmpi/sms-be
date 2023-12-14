@@ -278,12 +278,32 @@ export class UserHandler extends BaseHandler{
         if(isVerified == undefined){
             totalData = await this.prisma.user.count({
                 where : {
-                    role_id : ID_ROLE_USER
+                    role_id : ID_ROLE_USER,
+                    NOT:{
+                        AND :[
+                            {
+                                is_verified : true
+                            },
+                            {
+                                is_accepted : false
+                            }
+                        ]
+                    }
                 }
             });
             users = await this.prisma.user.findMany({
                 where : {
-                    role_id : ID_ROLE_USER
+                    role_id : ID_ROLE_USER,
+                    NOT:{
+                        AND :[
+                            {
+                                is_verified : true
+                            },
+                            {
+                                is_accepted : false
+                            }
+                        ]
+                    }
                 },
                 include : {
                     lembaga : true,
@@ -300,13 +320,33 @@ export class UserHandler extends BaseHandler{
             totalData = await this.prisma.user.count({
                 where : {
                     role_id : ID_ROLE_USER,
-                    is_verified : isVerified
+                    is_verified : isVerified,
+                    NOT:{
+                        AND :[
+                            {
+                                is_verified : true
+                            },
+                            {
+                                is_accepted : false
+                            }
+                        ]
+                    }
                 }
             })
             users = await this.prisma.user.findMany({
                 where : {
                     role_id : ID_ROLE_USER,
-                    is_verified : isVerified
+                    is_verified : isVerified,
+                    NOT:{
+                        AND :[
+                            {
+                                is_verified : true
+                            },
+                            {
+                                is_accepted : false
+                            }
+                        ]
+                    }
                 },
                 include : {
                     lembaga : true,
