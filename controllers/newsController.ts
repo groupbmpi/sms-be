@@ -1,8 +1,9 @@
 import BaseController from "./baseController";
 import { BadRequestException} from "@exceptions";
 import { NewsHandler } from "@handlers";
-import { IAllNewsRetDto, ICreateNewsArgDto, ICreateNewsRequest, ICreateNewsValidatedBody, IDeleteNewsRequest, INewsByIdRetDto, INewsIdArgDto, INewsOptionsArgDto, INewsOwnedByUserArgDto, INewsParams, INewsValidatedParams, IUpdateNewsArgDto, IUpdateNewsRequest, IUpdateNewsValidatedBody, IValidatedTargetUserId, ResponseBuilder } from "@types";
-import { countSkipped, getDateFromString, getNumberFromString } from "@utils";
+import { Kategori } from "@prisma/client";
+import { IAllNewsRetDto, ICreateNewsArgDto, ICreateNewsRequest, ICreateNewsValidatedBody, IDeleteNewsRequest, INewsByIdRetDto, INewsIdArgDto, INewsOptimumDatesRetDto, INewsOptionsArgDto, INewsOwnedByUserArgDto, INewsParams, INewsValidatedParams, IUpdateNewsArgDto, IUpdateNewsRequest, IUpdateNewsValidatedBody, IValidatedTargetUserId, ResponseBuilder } from "@types";
+import { countSkipped, getDate, getInt } from "@utils";
 import { Request, Response } from "express";
 
 class NewsController extends BaseController<NewsHandler> {
@@ -16,17 +17,26 @@ class NewsController extends BaseController<NewsHandler> {
      */
     public getAllNews = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { institutionId, creatorId, startDateAt, endDateAt, page, limit } = req.query;
+            const { 
+                institutionCategory, 
+                institution, 
+                creatorId, 
+                startDateAt, 
+                endDateAt, 
+                page, 
+                limit 
+            } = req.query;
 
             const newsArgDto: INewsOptionsArgDto = {
-                institutionId: getNumberFromString(institutionId),
-                creatorId: getNumberFromString(creatorId),
-                startDateAt: getDateFromString(startDateAt),
-                endDateAt: getDateFromString(endDateAt),
-                take: getNumberFromString(limit),
+                institutionCategory: institutionCategory as Kategori,
+                institution: institution as string,
+                creatorId: getInt(creatorId),
+                startDateAt: getDate(startDateAt),
+                endDateAt: getDate(endDateAt),
+                take: getInt(limit),
                 skip: countSkipped(
-                    getNumberFromString(page),
-                    getNumberFromString(limit)
+                    getInt(page),
+                    getInt(limit)
                 ),
             };
 
@@ -34,7 +44,7 @@ class NewsController extends BaseController<NewsHandler> {
 
             res.status(200).json(ResponseBuilder.success<IAllNewsRetDto>(newsRetDto));
         } catch (error: any) {
-            this.handleError(res,error);
+            this.handleError(res, error);
         }
     }
 
@@ -59,7 +69,21 @@ class NewsController extends BaseController<NewsHandler> {
 
             res.status(200).json(ResponseBuilder.success<INewsByIdRetDto>(newsRetDto));
         } catch (error: any) {
-            this.handleError(res,error);
+            this.handleError(res, error);
+        }
+    }
+
+    /**
+     * @Method ('GET')
+     * @Route ('/api/v1/news/optimum-dates')
+     */
+    public getNewsOptimumDates = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const newsRetDto: INewsOptimumDatesRetDto = await this.handler.getNewsOptimumDates();
+
+            res.status(200).json(ResponseBuilder.success<INewsOptimumDatesRetDto>(newsRetDto));
+        } catch (error: any) {
+            this.handleError(res, error);
         }
     }
 
@@ -70,7 +94,7 @@ class NewsController extends BaseController<NewsHandler> {
      */
     public createNews = async(req: ICreateNewsRequest, res: Response): Promise<void> => {
         try {
-            const { title, detail, photoLink } = req.body as ICreateNewsValidatedBody;
+            const { title, detail, photoLink, date, publicationLink } = req.body as ICreateNewsValidatedBody;
             
             const { targetUserId } = req as IValidatedTargetUserId;
 
@@ -78,14 +102,18 @@ class NewsController extends BaseController<NewsHandler> {
                 title,
                 detail,
                 photoLink,
+                publicationLink,
+                date: new Date(date),
                 creatorId: targetUserId,
             };
 
+            console.log(newsArgDto);
+
             await this.handler.createNews(newsArgDto);
 
-            res.status(200).json(ResponseBuilder.success());
+            res.status(201).json(ResponseBuilder.success());
         } catch (error: any) {
-            this.handleError(res,error);
+            this.handleError(res, error);
         }
     }
 
@@ -98,7 +126,7 @@ class NewsController extends BaseController<NewsHandler> {
         try {
             const { newsId } = req.params as INewsValidatedParams;
             
-            const { title, detail, photoLink } = req.body as IUpdateNewsValidatedBody;
+            const { title, detail, photoLink, publicationLink, date } = req.body as IUpdateNewsValidatedBody;
 
             const { targetUserId } = req as IValidatedTargetUserId;
 
@@ -119,15 +147,19 @@ class NewsController extends BaseController<NewsHandler> {
                     title,
                     detail,
                     photoLink,
+                    publicationLink,
+                    date: date !== undefined
+                        ? new Date(date)
+                        : undefined,
                     creatorId: targetUserId
                 }
             };
 
             await this.handler.updateNews(newsUpdateArgDto);
 
-            res.status(200).json(ResponseBuilder.success());
+            res.status(204).json(ResponseBuilder.success());
         } catch (error: any) {
-            this.handleError(res,error);
+            this.handleError(res, error);
         }
     }
 
@@ -157,11 +189,14 @@ class NewsController extends BaseController<NewsHandler> {
                 id: newsOwnArgDto.newsId,
             };
 
+
+            console.log(newsOwnArgDto);
+
             await this.handler.deleteNews(newsIdArgDto);
 
-            res.status(200).json(ResponseBuilder.success());
+            res.status(204).json(ResponseBuilder.success());
         } catch (error: any) {
-            this.handleError(res,error);
+            this.handleError(res, error);
         }
     }
 }

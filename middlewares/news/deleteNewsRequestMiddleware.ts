@@ -12,11 +12,11 @@ export function deleteNewsRequestMiddleware(req: IDeleteNewsRequest, res: Respon
 
         validateNewsId(newsId);
 
-        if (isSuperAdmin === false) {
-            req.targetUserId = 1;
+        // if (isSuperAdmin === false) {
+        //     req.targetUserId = 1;
 
-            return next();
-        }
+        //     return next();
+        // }
 
         validateCreatorId(creatorId);
 
@@ -50,34 +50,26 @@ export function deleteNewsRequestMiddleware(req: IDeleteNewsRequest, res: Respon
 
 /** @throws BadRequestException */
 function validateNewsId(newsId?: string): void {
-    if (typeof newsId !== 'string') {
-        throw new NotFoundException();
+    if (typeof newsId === 'number' && Number.isInteger(newsId)) {
+        return;
     }
 
-    if (Number.isNaN(newsId)) {
-        throw new NotFoundException();
-    }
-
-    if (Number.isInteger(parseFloat(newsId)) === false) {
+    if (typeof newsId !== 'string' || Number.isNaN(parseInt(newsId))) {
         throw new NotFoundException();
     }
 }
 
 /** @throws BadRequestException */
 function validateCreatorId(creatorId: unknown): void {
+    if (typeof creatorId === 'number' && Number.isInteger(creatorId)) {
+        return;
+    }
+
     if (typeof creatorId === 'undefined') {
         throw new BadRequestException('creatorId query param must be present');
     }
 
-    if (typeof creatorId !== 'string') {
-        throw new BadRequestException('creatorId query param data type must be an integer');
-    }
-
-    if (Number.isNaN(creatorId)) {
-        throw new BadRequestException('creatorId query param data type must be an integer');
-    }
-
-    if (Number.isInteger(parseFloat(creatorId)) === false) {
+    if (typeof creatorId !== 'string' || Number.isNaN(parseInt(creatorId))) {
         throw new BadRequestException('creatorId query param data type must be an integer');
     }
 }

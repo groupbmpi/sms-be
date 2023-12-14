@@ -8,5 +8,7 @@ export interface ICreateNewsValidatedBody {
     title: string,
     detail: string, 
     photoLink: string,
+    date: string,
     creatorId?: number,
+    publicationLink?: string,
 }

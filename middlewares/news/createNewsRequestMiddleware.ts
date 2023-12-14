@@ -5,7 +5,7 @@ import { NextFunction, Response } from "express";
 export function createNewsRequestMiddleware(req: ICreateNewsRequest, res: Response, next: NextFunction) {
     try {
         const { title, detail, photoLink, creatorId } = req.body;
-        
+
         const isSuperAdmin: boolean = Math.random() > 0.5;
 
         if (isSuperAdmin === false) {

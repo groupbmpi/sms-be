@@ -1,5 +1,8 @@
+import { Kategori } from "@prisma/client";
+
 export interface INewsOptionsArgDto {
-    institutionId?: number,
+    institutionCategory?: Kategori,
+    institution?: string,
     creatorId?: number,
     startDateAt?: Date,
     endDateAt?: Date,
@@ -17,18 +20,22 @@ export interface INewsOwnedByUserArgDto {
 }
 
 export interface ICreateNewsArgDto {
+    creatorId: number,
     title: string,
     detail: string,
     photoLink: string,
-    creatorId: number,
+    date: Date,
+    publicationLink?: string,
 }
 
 export interface IUpdateNewsArgDto {
     id: number,
     data: {
+        creatorId?: number,
         title?: string,
         detail?: string,
         photoLink?: string,
-        creatorId?: number,
+        publicationLink?: string,
+        date?: Date,
     },
 }

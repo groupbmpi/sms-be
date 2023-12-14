@@ -12,20 +12,20 @@ export function updateNewsRequestMiddleware(req: IUpdateNewsRequest, res: Respon
 
         validateNewsId(newsId);
 
-        if (isSuperAdmin === false) {
-            validateTitleDetailPhotoLinkNotUndefined(
-                title,
-                detail,
-                photoLink
-            );
-            validateUndefinedOrString('title', title);
-            validateUndefinedOrString('detail', detail);
-            validateUndefinedOrString('photoLink', photoLink);
+        // if (isSuperAdmin === false) {
+        //     validateTitleDetailPhotoLinkNotUndefined(
+        //         title,
+        //         detail,
+        //         photoLink
+        //     );
+        //     validateUndefinedOrString('title', title);
+        //     validateUndefinedOrString('detail', detail);
+        //     validateUndefinedOrString('photoLink', photoLink);
 
-            req.targetUserId = 1;
+        //     req.targetUserId = 1;
 
-            return next();
-        }
+        //     return next();
+        // }
 
         validateAllFieldsNotUndefined(
             title,
