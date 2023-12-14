@@ -65,6 +65,16 @@ export class ActivityHandler extends BaseHandler{
         }
     }
 
+    private verifyBody(dto : IActivityDTO) : string{
+        for(let key in dto){
+            if(typeof dto[key as keyof IActivityDTO] === 'string' && key != "keteranganTambahan" && dto[key as keyof IActivityDTO] === ''){
+                return key
+            }
+        }
+
+        return ""
+    }
+
     public async getReport(
         query : Omit<IActivityReportQuery, "limit" | "page">,
         pagination : IPagination,
@@ -210,6 +220,12 @@ export class ActivityHandler extends BaseHandler{
             throw new BadRequestException(`Bidang kegiatan ${body.bidangKegiatan} tidak valid`)
         }
 
+        const verify = this.verifyBody(body)
+
+        if(this.verifyBody(body).length !== 0){
+            throw new BadRequestException(`Field ${verify} kosong`)
+        }
+
         const kabupatenKota : Pick<KabupatenKota, 'id'> | null = await this.prisma.kabupatenKota.findFirst({
             where: {
                 provinsi: {
@@ -252,6 +268,16 @@ export class ActivityHandler extends BaseHandler{
 
         if(!checkValidMetodePelaksanaan(body.metodePelaksanaan)){
             throw new BadRequestException(`Metode pelaksanaan ${body.metodePelaksanaan} tidak valid`)
+        }
+
+        if(!checkValidKategoriMasalah(body.bidangKegiatan)){
+            throw new BadRequestException(`Bidang kegiatan ${body.bidangKegiatan} tidak valid`)
+        }
+
+        const verify = this.verifyBody(body)
+
+        if(this.verifyBody(body).length !== 0){
+            throw new BadRequestException(`Field ${verify} kosong`)
         }
 
         const kabupatenKota : Pick<KabupatenKota, 'id'> | null = await this.prisma.kabupatenKota.findFirst({

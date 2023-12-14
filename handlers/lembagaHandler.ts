@@ -61,7 +61,7 @@ export class LembagaHandler extends BaseHandler{
         }
 
         const skipped = countSkipped(page, limit)
-
+        
         const totalData : number = await this.prisma.lembaga.count({
             where: {
                 id: parsedQuery.id,
@@ -79,7 +79,7 @@ export class LembagaHandler extends BaseHandler{
                 }
             },
             skip: skipped,
-            take: limit,
+            take: (limit === 0 ? totalData : limit),
         })
 
         return {
@@ -93,6 +93,10 @@ export class LembagaHandler extends BaseHandler{
     ) : Promise<ILembagaDTO>{
         if(!checkValidKategori(body.kategori)){
             throw new BadRequestException(`Kategori ${body.kategori} tidak valid`)
+        }
+        
+        if(body.nama.length === 0){
+            throw new BadRequestException(`Nama lembaga ${body.nama} tidak valid`)
         }
 
         body.nama = uppercaseFirstLetter(body.nama);
@@ -111,6 +115,10 @@ export class LembagaHandler extends BaseHandler{
     ) : Promise<ILembagaDTO>{
         if(!checkValidKategori(body.kategori)){
             throw new BadRequestException(`Kategori ${body.kategori} tidak valid`)
+        }
+
+        if(body.nama.length === 0){
+            throw new BadRequestException(`Nama lembaga ${body.nama} tidak valid`)
         }
 
         const data : Lembaga = await this.prisma.lembaga.update({
