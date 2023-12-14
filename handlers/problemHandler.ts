@@ -1,32 +1,33 @@
 import { BadRequestException } from "@exceptions";
 import { BaseHandler } from "./baseHandler";
-import { LaporanMasalah, Provinsi, User } from "@prisma/client";
+import { KabupatenKota, LaporanMasalah, Provinsi, User } from "@prisma/client";
 import { IPagination, IProblemDTO, IProblemReportBody, IProblemReportQuery, IProblemsDTO } from "@types";
 import { countSkipped, checkValidKategoriMasalah } from "@utils";
 
 export class ProblemHandler extends BaseHandler{
-    private dtoToData(dto : IProblemDTO, userId: number, provinsiId: number) : Omit<LaporanMasalah, 'id' | 'createdAt' | 'updatedAt'> | string{
-        const {provinsi, ...tempDto} = dto;
+    private dtoToData(dto : IProblemDTO, userId: number, kabupatenKota_id: number) : Omit<LaporanMasalah, 'id' | 'createdAt' | 'updatedAt'> | string{
+        const {kabupatenKota, provinsi, ...tempDto} = dto;
 
         if(userId === -1){
             return {
                 ...tempDto,
                 user_id: null,
-                provinsi_id: provinsiId,
+                kabupatenKota_id: kabupatenKota_id,
             }
         }
 
         return {
             ...tempDto,
             user_id: userId,
-            provinsi_id: provinsiId,
+            kabupatenKota_id: kabupatenKota_id,
         }
     }
 
-    private dataToDTO(data : LaporanMasalah, provinsi: string, namaUser: string) : IProblemDTO {
+    private dataToDTO(data : LaporanMasalah, provinsi: string, kabupatenKota: string, namaUser: string) : IProblemDTO {
         return {
             ...data,
             provinsi: provinsi,
+            kabupatenKota: kabupatenKota,
             namaUser: namaUser,
         }
     }
@@ -51,9 +52,14 @@ export class ProblemHandler extends BaseHandler{
                 id: true,
                 masalah: true,
                 kategoriMasalah: true,
-                provinsi: {
+                kabupatenKota: {
                     select: {
                         nama: true,
+                        provinsi: {
+                            select: {
+                                nama: true,
+                            }
+                        }
                     }
                 },
                 user: {
@@ -81,8 +87,9 @@ export class ProblemHandler extends BaseHandler{
                 id: data.id,
                 masalah: data.masalah,
                 kategoriMasalah: data.kategoriMasalah,
-                provinsi: data.provinsi.nama,
-                namaUser: data.user? data.user.namaLengkap : 'anonymous',
+                provinsi: data.kabupatenKota.provinsi.nama,
+                kabupatenKota: data.kabupatenKota.nama,
+                namaUser: data.user? data.user.namaLengkap : 'Anonimus',
                 createdAt: data.createdAt,
                 updatedAt: data.updatedAt,
             })
@@ -107,21 +114,28 @@ export class ProblemHandler extends BaseHandler{
             throw new BadRequestException(`Bidang kegiatan ${body.kategoriMasalah} tidak valid`)
         }
 
-        const provinsi : Pick<Provinsi, 'id'> | null = await this.prisma.provinsi.findFirst({
+        if(!body.masalah){
+            throw new BadRequestException('Masalah tidak boleh kosong')
+        }
+
+        const kabupatenKota : Pick<KabupatenKota, 'id'> | null = await this.prisma.kabupatenKota.findFirst({
             where: {
-                nama: body.provinsi,
+                nama: body.kabupatenKota,
+                provinsi: {
+                    nama: body.provinsi,
+                }
             },
             select:{
                 id: true,
             }
         })
 
-        if(provinsi === null){
+        if(kabupatenKota === null){
             throw new BadRequestException(`Provinsi ${body.provinsi} tidak ditemukan`)
         }
 
         let user: Pick<User, 'namaLengkap'> | null = {
-            namaLengkap: 'anonymous',
+            namaLengkap: 'Anonimus',
         }
 
         if(userId !== -1){
@@ -140,7 +154,7 @@ export class ProblemHandler extends BaseHandler{
         }
 
 
-        const data = this.dtoToData(body, userId, provinsi.id)
+        const data = this.dtoToData(body, userId, kabupatenKota.id)
 
         if(typeof data === 'string'){
             throw new BadRequestException(data)
@@ -150,7 +164,7 @@ export class ProblemHandler extends BaseHandler{
             data: data,
         })
 
-        return this.dataToDTO(newLaporanMasalah, body.provinsi, user.namaLengkap)
+        return this.dataToDTO(newLaporanMasalah, body.provinsi, body.kabupatenKota, user.namaLengkap)
 
     }
 

@@ -55,6 +55,7 @@ class ProblemController extends BaseController<ProblemHandler> {
             )
 
         } catch (error: any) {
+            console.log(error)
             this.handleError(res,error);
         }
     }

@@ -6,7 +6,7 @@ export interface IProblemReportQuery extends IPagination{
 }
 
 
-type PropsLaporanMasalahOmitted = "id" | "user_id" | "createdAt" | "updatedAt" | "provinsi_id"
+type PropsLaporanMasalahOmitted = "id" | "user_id" | "createdAt" | "updatedAt" | "kabupatenKota_id"
 export interface IProblemReportBody extends IProblemDTO{}
 
 export interface IProblemDTO extends Omit<LaporanMasalah, PropsLaporanMasalahOmitted> {
@@ -14,8 +14,9 @@ export interface IProblemDTO extends Omit<LaporanMasalah, PropsLaporanMasalahOmi
     user_id? : number | null,
     createdAt? : Date,
     updatedAt? : Date,
-    provinsi_id? : number,
+    kabupatenKota_id?: number,
     provinsi: string,
+    kabupatenKota: string,
     namaUser: string,
 }
 
