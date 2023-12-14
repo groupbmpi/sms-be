@@ -6,8 +6,9 @@ import { LembagaHandler } from "./lembagaHandler";
 import { NewsHandler } from "./newsHandler";
 import { ProblemHandler } from "./problemHandler";
 import { UserHandler } from "./userHandler";
+import { ChatHandler } from "./chatHandler";
 
 export {
     ActivityHandler, BaseHandler, DaerahHandler, EnumHandler, LembagaHandler, NewsHandler, ProblemHandler,
-    UserHandler
+    UserHandler,ChatHandler
 };

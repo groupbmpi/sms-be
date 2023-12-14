@@ -19,8 +19,9 @@ class UserController extends BaseController<UserHandler> {
             const body : IUserBody = req.body
 
             if(!req.isAuthenticated){
-                throw new UnauthorizedException()
+                throw new UnauthorizedException("User not authenticated")
             }
+
 
             const user_id: number = req.userID as number
 
@@ -356,6 +357,10 @@ class UserController extends BaseController<UserHandler> {
 
     public getUser = async (req: Request<unknown>, res: Response) => {
         try{
+            if(!req.isAuthenticated){
+                throw new UnauthorizedException("User not authenticated")
+            }
+
             const userID : number = req.userID as number;
 
             const user : IUserDTO | null = await this.handler.getUser(userID);

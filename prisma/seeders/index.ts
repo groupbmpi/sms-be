@@ -6,6 +6,7 @@ import seedLembaga from "./lib/lembaga.seeder";
 import seedLaporanKegiatan from "./lib/laporanKegiatan.seeder";
 import seedBerita from "./lib/berita.seeder";
 import seedLaporanMasalah from "./lib/laporanMasalah.seeder";
+import seedChat from "./lib/chat.seeder";
 
 const prisma = new PrismaClient();
 
@@ -18,6 +19,7 @@ async function clear(){
     await prisma.kabupatenKota.deleteMany({});
     await prisma.provinsi.deleteMany({});
     await prisma.role.deleteMany({});
+    await prisma.chat.deleteMany({});
 }
 
 async function main(){
@@ -30,6 +32,7 @@ async function main(){
     await seedLaporanKegiatan(prisma);
     await seedBerita(prisma);
     await seedLaporanMasalah(prisma);
+    await seedChat(prisma);
 }
 
 main().then(async () => {

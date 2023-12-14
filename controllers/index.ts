@@ -5,6 +5,7 @@ import NewsController from "./newsController";
 import ProblemController from "./problemController";
 import UserController from "./userController";
 import LembagaController from "./lembagaController";
+import ChatController from "./chatController";
 
 export {
     ActivityController, 
@@ -14,4 +15,5 @@ export {
     ProblemController, 
     UserController,
     LembagaController,
+    ChatController
 };

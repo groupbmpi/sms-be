@@ -3,7 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
-import { ActivityRoutes, NewsRoutes, ProblemRoutes, UserRoutes, DataRoutes, LembagaRoutes } from '@routes';
+import { ActivityRoutes, NewsRoutes, ProblemRoutes, UserRoutes, DataRoutes, LembagaRoutes, ChatRoutes } from '@routes';
 import { queryParser } from 'express-query-parser';
 
 export class ExpressInstance {
@@ -43,6 +43,7 @@ export class ExpressInstance {
         this._app.use('/api/v1/activity', ActivityRoutes);
         this._app.use('/api/v1/data', DataRoutes);
         this._app.use('/api/v1/lembaga', LembagaRoutes);
+        this._app.use('/api/v1/chat', ChatRoutes);
     }
 
     public static getInstance(): ExpressInstance {

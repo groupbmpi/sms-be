@@ -44,7 +44,6 @@ export class UserHandler extends BaseHandler{
                 }
             }
         })
-        console.log(lembagaName,LEMBAGA_OTHERS)
         if(lembagaName == LEMBAGA_OTHERS){
             const newUser : User = await this.prisma.user.create({
                 data: {
@@ -121,7 +120,6 @@ export class UserHandler extends BaseHandler{
         if(!kabupatenKotaUser){
             return null;
         }
-        console.log(lembagaName,LEMBAGA_OTHERS)
         if(lembagaName == LEMBAGA_OTHERS){
             const user : User = await this.prisma.user.update({
                 where : {
@@ -453,7 +451,8 @@ export class UserHandler extends BaseHandler{
         let pictureUploaded = false;
         let oldFilePath = "";
         let newFilePath = "";
-        if (body.avatar) {
+        const isBase64 = body.avatar?.startsWith("data:image");
+        if (body.avatar && isBase64 ) {
             newFilePath = await this.uploadPictureFile(`profile/${userId}`, body.avatar);
 
             if (newFilePath === "") {
@@ -485,9 +484,12 @@ export class UserHandler extends BaseHandler{
                 },
                 data: payload
             });
+
+            if(user.linkFoto){
+                user.linkFoto = await this.getSignedURL(user.linkFoto);
+            }
             
             if(pictureUploaded && newFilePath !== ""){
-                user.linkFoto = await this.getSignedURL(newFilePath);
                 this.deletePictureFile(oldFilePath);
             }
 

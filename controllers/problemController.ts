@@ -1,7 +1,10 @@
 import BaseController from "./baseController";
 import { ProblemHandler } from "@handlers";
 import { IProblemReportBody, IProblemReportQuery, IProblemsDTO, ResponseBuilder, IProblemReportData} from "@types";
+import { LAPORAN_MASALAH, READ } from "constant";
+import { UnauthorizedException } from "exceptions";
 import { Request, Response } from "express";
+import { checkAccess } from "utils";
 
 class ProblemController extends BaseController<ProblemHandler> {
     constructor() {
@@ -10,6 +13,14 @@ class ProblemController extends BaseController<ProblemHandler> {
 
     getReport = async (req: Request<unknown, unknown, unknown, IProblemReportQuery>, res: Response) => {
         try {
+
+            if(!req.isAuthenticated){
+                throw new UnauthorizedException("Anda tidak memiliki akses untuk melihat laporan masalah")
+            }
+
+            if(!checkAccess(req.role!!, LAPORAN_MASALAH, READ)){
+                throw new UnauthorizedException("Anda tidak memiliki akses untuk melihat laporan masalah")
+            }
 
             let { limit, page, ...query } = req.query
 
@@ -55,6 +66,7 @@ class ProblemController extends BaseController<ProblemHandler> {
             )
 
         } catch (error: any) {
+            console.log(error)
             this.handleError(res,error);
         }
     }

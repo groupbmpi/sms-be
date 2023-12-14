@@ -69,6 +69,7 @@ model User {
   kegiatan LaporanKegiatan[]
   berita   Berita[]
   masalah  LaporanMasalah[]
+  chat     Chat[]
 
   lembaga          Lembaga?      @relation(fields: [lembaga_id], references: [id])
   lembaga_id       Int?
@@ -155,8 +156,8 @@ model LaporanMasalah {
 
   user        User?    @relation(fields: [user_id], references: [id])
   user_id     Int?
-  provinsi    Provinsi @relation(fields: [provinsi_id], references: [id])
-  provinsi_id Int
+  kabupatenKota    KabupatenKota @relation(fields: [kabupatenKota_id], references: [id])
+  kabupatenKota_id Int
 }
 
 model Provinsi {
@@ -167,7 +168,6 @@ model Provinsi {
   nama String @db.VarChar(255)
 
   kabupatenKota  KabupatenKota[]
-  laporanMasalah LaporanMasalah[]
 }
 
 model KabupatenKota {
@@ -179,8 +179,20 @@ model KabupatenKota {
 
   user            User[]
   laporanKegiatan LaporanKegiatan[]
+  laporanMasalah  LaporanMasalah[]
 
   provinsi    Provinsi @relation(fields: [provinsi_id], references: [id])
   provinsi_id Int
 
+}
+
+model Chat {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  pesan String @db.Text
+
+  user User @relation(fields: [user_id], references: [id])
+  user_id Int
 }
