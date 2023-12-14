@@ -17,6 +17,7 @@ export const READ = "read";
 export const WRITE = "write";
 export const UPDATE = "update";
 export const DELETE = "delete";
+export const UPDATEOWN = "updateOwn";
 
 //Access control Object
 export const USER = "user";

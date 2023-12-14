@@ -79,6 +79,7 @@ export class ActivityHandler extends BaseHandler{
         query : Omit<IActivityReportQuery, "limit" | "page">,
         pagination : IPagination,
         userId: number,
+        updateOwn: boolean,
     ): Promise<IActivitiesDTO>{
         let { limit, page } = pagination
         let { lembaga, ...parsedQuery } = query
@@ -192,7 +193,7 @@ export class ActivityHandler extends BaseHandler{
             }
             activityReportParsed.push({
                 ...this.dataToDTO(data, kabupatenKota.nama, provinsi.nama),
-                isEditable: (lembagaId === lembaga.id)
+                isEditable: (updateOwn? lembagaId === lembaga.id : true),
             })
         }
 
