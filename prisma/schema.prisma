@@ -156,8 +156,8 @@ model LaporanMasalah {
 
   user        User?    @relation(fields: [user_id], references: [id])
   user_id     Int?
-  provinsi    Provinsi @relation(fields: [provinsi_id], references: [id])
-  provinsi_id Int
+  kabupatenKota    KabupatenKota @relation(fields: [kabupatenKota_id], references: [id])
+  kabupatenKota_id Int
 }
 
 model Provinsi {
@@ -168,7 +168,6 @@ model Provinsi {
   nama String @db.VarChar(255)
 
   kabupatenKota  KabupatenKota[]
-  laporanMasalah LaporanMasalah[]
 }
 
 model KabupatenKota {
@@ -180,6 +179,7 @@ model KabupatenKota {
 
   user            User[]
   laporanKegiatan LaporanKegiatan[]
+  laporanMasalah  LaporanMasalah[]
 
   provinsi    Provinsi @relation(fields: [provinsi_id], references: [id])
   provinsi_id Int

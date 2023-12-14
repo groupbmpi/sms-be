@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaInstance, StorageInstance } from "@services";
 import { randomUUID } from "crypto";
 import { MailInstance } from "@services";
-// import sharp from "sharp";
+import sharp from "sharp";
 
 export abstract class BaseHandler {
     protected prisma: PrismaClient;
@@ -23,8 +23,8 @@ export abstract class BaseHandler {
             const imageBuffer = Buffer.from(base64Image, "base64");
 
             // compress image buffer
-            // const compressedImageBuffer = await sharp(imageBuffer).resize(150, 150).toBuffer();
-            const compressedImageBuffer = imageBuffer
+            const compressedImageBuffer = await sharp(imageBuffer).resize(150, 150).toBuffer();
+            // const compressedImageBuffer = imageBuffer
 
             // Get file extension {jpeg, png}
             const terminator = pictureData.indexOf(";");
