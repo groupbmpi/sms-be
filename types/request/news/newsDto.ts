@@ -24,8 +24,8 @@ export interface ICreateNewsArgDto {
     title: string,
     detail: string,
     photoLink: string,
-    date: Date,
     publicationLink?: string,
+    createdAt?: Date,
 }
 
 export interface IUpdateNewsArgDto {
@@ -36,6 +36,6 @@ export interface IUpdateNewsArgDto {
         detail?: string,
         photoLink?: string,
         publicationLink?: string,
-        date?: Date,
+        updatedAt?: Date,
     },
 }

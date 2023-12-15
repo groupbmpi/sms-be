@@ -190,7 +190,7 @@ export class NewsHandler extends BaseHandler {
     }
 
     public async createNews(dto: ICreateNewsArgDto): Promise<void> {
-        const { title, detail, photoLink, publicationLink, date, creatorId } = dto;
+        const { title, detail, photoLink, publicationLink, createdAt, creatorId } = dto;
 
         await this.prisma.berita.create({
             data: {
@@ -198,8 +198,8 @@ export class NewsHandler extends BaseHandler {
                 detail,
                 linkPhoto: photoLink,
                 linkPublication: publicationLink,
-                createdAt: date,
-                updatedAt: date,
+                createdAt,
+                updatedAt: createdAt,
                 user: {
                     connect: {
                         id: creatorId,
@@ -211,16 +211,17 @@ export class NewsHandler extends BaseHandler {
 
     public async updateNews(dto: IUpdateNewsArgDto): Promise<void> {
         const { id } = dto;
-        const { title, detail, photoLink, publicationLink, date, creatorId } = dto.data;
+        const { title, detail, photoLink, publicationLink, updatedAt, creatorId } = dto.data;
 
         if (
             title === undefined && 
             detail === undefined && 
             photoLink === undefined && 
             publicationLink === undefined &&
+            updatedAt === undefined &&
             creatorId === undefined
         ) {
-            throw new Error('title, detail, photoLink, publicationLink, and creatorId arguments cannot all be undefined');
+            throw new Error('title, detail, photoLink, publicationLink, updatedAt, and creatorId arguments cannot all be undefined');
         }
 
         await this.prisma.berita.update({
@@ -229,7 +230,7 @@ export class NewsHandler extends BaseHandler {
                 detail,
                 linkPhoto: photoLink,
                 linkPublication: publicationLink,
-                updatedAt: date,
+                updatedAt,
                 user: {
                     connect: {
                         id: creatorId,

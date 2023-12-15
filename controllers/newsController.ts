@@ -1,9 +1,10 @@
 import BaseController from "./baseController";
-import { BadRequestException} from "@exceptions";
+import { BadRequestException, NotFoundException, UnauthorizedException} from "@exceptions";
 import { NewsHandler } from "@handlers";
 import { Kategori } from "@prisma/client";
 import { IAllNewsRetDto, ICreateNewsArgDto, ICreateNewsRequest, ICreateNewsValidatedBody, IDeleteNewsRequest, INewsByIdRetDto, INewsIdArgDto, INewsOptimumDatesRetDto, INewsOptionsArgDto, INewsOwnedByUserArgDto, INewsParams, INewsValidatedParams, IUpdateNewsArgDto, IUpdateNewsRequest, IUpdateNewsValidatedBody, IValidatedTargetUserId, ResponseBuilder } from "@types";
-import { countSkipped, getDate, getInt } from "@utils";
+import { checkAccess, checkIntCast, checkString, countSkipped, getDate, getInt } from "@utils";
+import { BERITA, DELETE, UPDATE, UPDATEOWN, WRITE } from "constant";
 import { Request, Response } from "express";
 
 class NewsController extends BaseController<NewsHandler> {
@@ -15,7 +16,7 @@ class NewsController extends BaseController<NewsHandler> {
      * @Method ('GET')
      * @Route ('/api/v1/news')
      */
-    public getAllNews = async (req: Request, res: Response): Promise<void> => {
+    public getAllNews = async (req: Request<unknown, unknown, unknown, any>, res: Response): Promise<void> => {
         try {
             const { 
                 institutionCategory, 
@@ -51,14 +52,17 @@ class NewsController extends BaseController<NewsHandler> {
     /**
      * @Method ('GET')
      * @Route ('/api/v1/news/:newsId')
-     * @Middleware ([paramNewsRequestMiddleware])
      */
-    public getNewsById = async (req: Request<INewsParams>, res: Response): Promise<void> => {
+    public getNewsById = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { newsId } = req.params as INewsValidatedParams;
+            const { id } = req.params;
+
+            if (checkIntCast(id) === false) {
+                throw new NotFoundException();
+            }
 
             const newsArgDto: INewsIdArgDto = {
-                id: parseInt(newsId),
+                id: parseInt(id),
             };
 
             const newsRetDto: INewsByIdRetDto | null = await this.handler.getNewsById(newsArgDto);
@@ -90,24 +94,80 @@ class NewsController extends BaseController<NewsHandler> {
     /**
      * @Method ('POST')
      * @Route ('/api/v1/news')
-     * @Middleware ([createNewsRequestMiddleware])
      */
-    public createNews = async(req: ICreateNewsRequest, res: Response): Promise<void> => {
+    public createNews = async(req: Request<{id: number}, unknown, any>, res: Response): Promise<void> => {
         try {
-            const { title, detail, photoLink, date, publicationLink } = req.body as ICreateNewsValidatedBody;
-            
-            const { targetUserId } = req as IValidatedTargetUserId;
+            const { 
+                title, 
+                detail, 
+                photoLink, 
+                publicationLink, 
+                createdAt,
+                creatorId
+            } = req.body;
+
+            const {
+                isAuthenticated,
+                userID,
+                role
+            } = req;
+
+            if (isAuthenticated === false) {
+                throw new UnauthorizedException();
+            }
+
+            if (checkAccess(role as Map<string, string[]>, BERITA, WRITE) === true) {
+                if (typeof creatorId === 'undefined') {
+                    throw new BadRequestException(`creatorId field must be present`);
+                }
+
+                if (checkIntCast(creatorId) === false) {
+                    throw new BadRequestException(`creatorId data type must be an integer`);
+                }
+            }
+
+            if (typeof title === 'undefined') {
+                throw new BadRequestException(`title field must be present`);
+            }
+
+            if (typeof title !== 'string') {
+                throw new BadRequestException(`title data type must be a string`);
+            }
+
+            if (typeof detail === 'undefined') {
+                throw new BadRequestException(`detail field must be present`);
+            }
+
+            if (typeof detail !== 'string') {
+                throw new BadRequestException(`detail data type must be a string`);
+            }
+
+            if (typeof photoLink === 'undefined') {
+                throw new BadRequestException(`photoLink field must be present`);
+            }
+
+            if (typeof photoLink !== 'string') {
+                throw new BadRequestException(`photoLink data type must be a string`);
+            }
+
+            if (typeof publicationLink !== 'undefined' && typeof publicationLink !== 'string') {
+                throw new BadRequestException(`publicationLink data type must be a string`);
+            }
+
+            if (typeof createdAt !== 'undefined' && typeof createdAt !== 'string') {
+                throw new BadRequestException(`createdAt data type must be a string`);
+            }
 
             const newsArgDto: ICreateNewsArgDto = {
                 title,
                 detail,
                 photoLink,
                 publicationLink,
-                date: new Date(date),
-                creatorId: targetUserId,
+                createdAt: getDate(createdAt),
+                creatorId: checkAccess(role as Map<string, string[]>, BERITA, WRITE)
+                    ? creatorId as number
+                    : userID as number,
             };
-
-            console.log(newsArgDto);
 
             await this.handler.createNews(newsArgDto);
 
@@ -120,19 +180,83 @@ class NewsController extends BaseController<NewsHandler> {
     /**
      * @Method ('PUT')
      * @Route ('/api/v1/news/:newsId')
-     * @Middleware ([updateNewsRequestMiddleware])
+     * @Middleware ([AuthMiddleware])
      */
-    public updateNews = async (req: IUpdateNewsRequest, res: Response): Promise<void> => {
+    public updateNews = async (req: Request<{id: number}, unknown, any>, res: Response): Promise<void> => {
         try {
-            const { newsId } = req.params as INewsValidatedParams;
-            
-            const { title, detail, photoLink, publicationLink, date } = req.body as IUpdateNewsValidatedBody;
+            const { id } = req.params;
 
-            const { targetUserId } = req as IValidatedTargetUserId;
+            const { 
+                title, 
+                detail, 
+                photoLink, 
+                publicationLink, 
+                updatedAt, 
+                creatorId 
+            } = req.body;
+
+            const {
+                isAuthenticated,
+                userID,
+                role
+            } = req;
+
+            if (isAuthenticated === false) {
+                throw new UnauthorizedException();
+            }
+
+            if (checkAccess(role as Map<string, string[]>, BERITA, UPDATE) === true) {
+                if (
+                    typeof title === 'undefined' &&
+                    typeof detail === 'undefined' &&
+                    typeof photoLink === 'undefined' &&
+                    typeof publicationLink === 'undefined' &&
+                    typeof updatedAt === 'undefined' &&
+                    typeof creatorId === 'undefined'
+                ) {
+                    throw new BadRequestException('title, detail, photoLink, publicationLink, updatedAt, or creatorId field must be present');
+                }
+
+                if (typeof creatorId !== 'undefined' && checkIntCast(creatorId) === false) {
+                    throw new BadRequestException('creatorId field must be an integer');
+                }
+            } else {
+                if (
+                    typeof title === 'undefined' &&
+                    typeof detail === 'undefined' &&
+                    typeof photoLink === 'undefined' &&
+                    typeof publicationLink === 'undefined' &&
+                    typeof updatedAt === 'undefined'
+                ) {
+                    throw new BadRequestException('title, detail, photoLink, publicationLink, updatedAt field must be present');
+                }
+            }
+
+            if (typeof title !== 'undefined' && typeof title !== 'string') {
+                throw new BadRequestException('title field must be a string');
+            }
+
+            if (typeof detail !== 'undefined' && typeof detail !== 'string') {
+                throw new BadRequestException('detail field must be a string');
+            }
+
+            if (typeof photoLink !== 'undefined' && typeof photoLink !== 'string') {
+                throw new BadRequestException('photoLink field must be a string');
+            }
+
+            if (typeof publicationLink !== 'undefined' && typeof publicationLink !== 'string') {
+                throw new BadRequestException('publicationLink field must be a string');
+            }
+
+            if (typeof updatedAt !== 'undefined' && typeof updatedAt !== 'string') {
+                throw new BadRequestException('updatedAt field must be a string');
+            }
 
             const newsOwnArgDto: INewsOwnedByUserArgDto = {
-                newsId: parseInt(newsId),
-                userId: targetUserId
+                newsId: id,
+                userId: checkAccess(role as Map<string, string[]>, BERITA, UPDATE) === true
+                    ? getInt(creatorId) as number
+                    : userID as number
             };
 
             const isNewsOwnedByUser: boolean = await this.handler.isNewsOwnedByUser(newsOwnArgDto);
@@ -148,10 +272,10 @@ class NewsController extends BaseController<NewsHandler> {
                     detail,
                     photoLink,
                     publicationLink,
-                    date: date !== undefined
-                        ? new Date(date)
+                    updatedAt: updatedAt !== undefined
+                        ? new Date(updatedAt)
                         : undefined,
-                    creatorId: targetUserId
+                    creatorId: newsOwnArgDto.userId
                 }
             };
 
@@ -166,17 +290,39 @@ class NewsController extends BaseController<NewsHandler> {
     /**
      * @Method ('DELETE')
      * @Route ('/api/v1/news/:newsId')
-     * @Middleware ([deleteNewsRequestMiddleware])
+     * @Middleware ([AuthMiddleware])
      */
-    public deleteNews = async (req: IDeleteNewsRequest, res: Response): Promise<void> => {
+    public deleteNews = async (req: Request<{id: number}, unknown, unknown, qs.ParsedQs>, res: Response): Promise<void> => {
         try {
-            const { newsId } = req.params as INewsValidatedParams;
+            const { id } = req.params;
 
-            const { targetUserId } = req as IValidatedTargetUserId;
+            const { creatorId } = req.query;
+
+            const {
+                isAuthenticated,
+                userID,
+                role
+            } = req;
+
+            if (isAuthenticated === false) {
+                throw new UnauthorizedException();
+            }
+
+            if (checkAccess(role as Map<string, string[]>, BERITA, DELETE) === true) {
+                if (typeof creatorId === 'undefined') {
+                    throw new BadRequestException('creatorId query param must be present');
+                }
+
+                if (checkIntCast(creatorId) === false) {
+                    throw new BadRequestException('creatorId query param data type must be an integer');
+                }
+            }
 
             const newsOwnArgDto: INewsOwnedByUserArgDto = {
-                newsId: parseInt(newsId),
-                userId: targetUserId
+                newsId: id,
+                userId: checkAccess(role as Map<string, string[]>, BERITA, DELETE) === true
+                    ? getInt(creatorId) as number
+                    : userID as number
             };
 
             const isNewsOwnedByUser: boolean = await this.handler.isNewsOwnedByUser(newsOwnArgDto);
@@ -188,9 +334,6 @@ class NewsController extends BaseController<NewsHandler> {
             const newsIdArgDto: INewsIdArgDto = {
                 id: newsOwnArgDto.newsId,
             };
-
-
-            console.log(newsOwnArgDto);
 
             await this.handler.deleteNews(newsIdArgDto);
 
