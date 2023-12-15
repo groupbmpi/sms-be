@@ -2,9 +2,9 @@ import BaseController from "./baseController";
 import { BadRequestException, NotFoundException, UnauthorizedException} from "@exceptions";
 import { NewsHandler } from "@handlers";
 import { Kategori } from "@prisma/client";
-import { IAllNewsRetDto, ICreateNewsArgDto, ICreateNewsRequest, ICreateNewsValidatedBody, IDeleteNewsRequest, INewsByIdRetDto, INewsIdArgDto, INewsOptimumDatesRetDto, INewsOptionsArgDto, INewsOwnedByUserArgDto, INewsParams, INewsValidatedParams, IUpdateNewsArgDto, IUpdateNewsRequest, IUpdateNewsValidatedBody, IValidatedTargetUserId, ResponseBuilder } from "@types";
+import { IAllNewsRetDto, ICreateNewsArgDto, INewsByIdRetDto, INewsIdArgDto, INewsOptimumDatesRetDto, INewsOptionsArgDto, INewsOwnedByUserArgDto, IUpdateNewsArgDto, ResponseBuilder } from "@types";
 import { checkAccess, checkIntCast, countSkipped, getDate, getInt } from "@utils";
-import { BERITA, DELETE, UPDATE, UPDATEOWN, WRITE } from "constant";
+import { BERITA, DELETE, UPDATE, WRITE } from "constant";
 import { Request, Response } from "express";
 
 class NewsController extends BaseController<NewsHandler> {
