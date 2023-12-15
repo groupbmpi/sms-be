@@ -1,8 +1,8 @@
 import { BaseHandler } from "./baseHandler";
-import { IAllNewsRetDto, ICreateNewsArgDto, INewsByIdRetDto, INewsIdArgDto, INewsOptimumDatesRetDto, INewsOptionsArgDto, INewsOwnedByUserArgDto, IUpdateNewsArgDto } from "@types";
+import { IAllNewsRetDto, ICreateNewsArgDto, INewsByIdRetDto, INewsIdArgDto, INewsModifyAccessArgDto, INewsOptimumDatesRetDto, INewsOptionsArgDto, INewsOwnedByUserArgDto, IUpdateNewsArgDto } from "@types";
 
 export class NewsHandler extends BaseHandler {
-    public async getAllNews(dto: INewsOptionsArgDto): Promise<IAllNewsRetDto> {
+    public async getAllNews(dto: INewsOptionsArgDto, modifyAcessDto: INewsModifyAccessArgDto): Promise<IAllNewsRetDto> {
         const {  
             institutionCategory, 
             institution, 
@@ -12,6 +12,8 @@ export class NewsHandler extends BaseHandler {
             take, 
             skip 
         } = dto;
+
+        const { userId, isAdmin } = modifyAcessDto;
 
         const news = await this.prisma.berita.findMany({
             select: {
@@ -80,6 +82,9 @@ export class NewsHandler extends BaseHandler {
                         publicationLink: value.linkPublication,
                         createdAt: value.createdAt,
                         updatedAt: value.updatedAt,
+                        canModify: isAdmin === true
+                            ? true
+                            : userId === value.user.id
                     }
                 };
             }),
@@ -87,8 +92,10 @@ export class NewsHandler extends BaseHandler {
         };
     }
 
-    public async getNewsById(dto: INewsIdArgDto): Promise<INewsByIdRetDto | null> {
+    public async getNewsById(dto: INewsIdArgDto, dtoRequester: INewsModifyAccessArgDto): Promise<INewsByIdRetDto | null> {
         const { id } = dto;
+
+        const { userId, isAdmin } = dtoRequester;
 
         const news = await this.prisma.berita.findUnique({
             select: {
@@ -128,6 +135,9 @@ export class NewsHandler extends BaseHandler {
                 publicationLink: news.linkPublication,
                 createdAt: news.createdAt,
                 updatedAt: news.updatedAt,
+                canModify: isAdmin === true
+                    ? true
+                    : userId === news.user.id
             }
         };
     }
