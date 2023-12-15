@@ -2,7 +2,7 @@ import BaseController from "./baseController";
 import { BadRequestException, NotFoundException, UnauthorizedException} from "@exceptions";
 import { NewsHandler } from "@handlers";
 import { Kategori } from "@prisma/client";
-import { IAllNewsRetDto, ICreateNewsArgDto, INewsByIdRetDto, INewsIdArgDto, INewsOptimumDatesRetDto, INewsOptionsArgDto, INewsOwnedByUserArgDto, IUpdateNewsArgDto, ResponseBuilder } from "@types";
+import { IAllNewsRetDto, ICreateNewsArgDto, INewsByIdRetDto, INewsIdArgDto, INewsModifyAccessArgDto, INewsOptimumDatesRetDto, INewsOptionsArgDto, INewsOwnedByUserArgDto, IUpdateNewsArgDto, ResponseBuilder } from "@types";
 import { checkAccess, checkIntCast, countSkipped, getDate, getInt } from "@utils";
 import { BERITA, DELETE, UPDATE, WRITE } from "@constant";
 import { Request, Response } from "express";
@@ -28,6 +28,12 @@ class NewsController extends BaseController<NewsHandler> {
                 limit 
             } = req.query;
 
+            const {
+                isAuthenticated,
+                userID,
+                role
+            } = req;
+
             const newsArgDto: INewsOptionsArgDto = {
                 institutionCategory: institutionCategory as Kategori,
                 institution: institution as string,
@@ -41,7 +47,16 @@ class NewsController extends BaseController<NewsHandler> {
                 ),
             };
 
-            const newsRetDto: IAllNewsRetDto = await this.handler.getAllNews(newsArgDto);
+            const newsModifyAccessArgDto: INewsModifyAccessArgDto = {
+                userId: userID !== undefined
+                    ? userID
+                    : -1,
+                isAdmin: role !== undefined
+                    ? checkAccess(role as Map<string, string[]>, BERITA, UPDATE)
+                    : false
+            };
+
+            const newsRetDto: IAllNewsRetDto = await this.handler.getAllNews(newsArgDto, newsModifyAccessArgDto);
 
             res.status(200).json(ResponseBuilder.success<IAllNewsRetDto>(newsRetDto));
         } catch (error: any) {
@@ -53,19 +68,30 @@ class NewsController extends BaseController<NewsHandler> {
      * @Method ('GET')
      * @Route ('/api/v1/news/:newsId')
      */
-    public getNewsById = async (req: Request, res: Response): Promise<void> => {
+    public getNewsById = async (req: Request<{ id: number }>, res: Response): Promise<void> => {
         try {
             const { id } = req.params;
 
-            if (checkIntCast(id) === false) {
-                throw new NotFoundException();
-            }
+            const {
+                isAuthenticated,
+                userID,
+                role
+            } = req;
 
             const newsArgDto: INewsIdArgDto = {
-                id: parseInt(id),
+                id,
             };
 
-            const newsRetDto: INewsByIdRetDto | null = await this.handler.getNewsById(newsArgDto);
+            const newsModifyAccessArgDto: INewsModifyAccessArgDto = {
+                userId: userID !== undefined
+                    ? userID
+                    : -1,
+                isAdmin: role !== undefined
+                    ? checkAccess(role as Map<string, string[]>, BERITA, UPDATE)
+                    : false
+            };
+
+            const newsRetDto: INewsByIdRetDto | null = await this.handler.getNewsById(newsArgDto, newsModifyAccessArgDto);
 
             if (newsRetDto === null) {
                 throw new BadRequestException('News was not found');

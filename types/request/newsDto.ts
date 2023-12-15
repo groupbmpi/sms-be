@@ -10,6 +10,11 @@ export interface INewsOptionsArgDto {
     skip?: number,
 }
 
+export interface INewsModifyAccessArgDto {
+    userId: number,
+    isAdmin: boolean,
+}
+
 export interface INewsIdArgDto {
     id: number
 }

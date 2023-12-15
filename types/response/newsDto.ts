@@ -16,6 +16,7 @@ export interface INewsByIdRetDto {
         publicationLink: string | null,
         createdAt: Date,
         updatedAt: Date,
+        canModify: boolean,
     }
 }
 
