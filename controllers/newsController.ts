@@ -142,16 +142,6 @@ class NewsController extends BaseController<NewsHandler> {
                 throw new UnauthorizedException();
             }
 
-            if (checkAccess(role as Map<string, string[]>, BERITA, WRITE) === true) {
-                if (typeof creatorId === 'undefined') {
-                    throw new BadRequestException(`creatorId field must be present`);
-                }
-
-                if (checkIntCast(creatorId) === false) {
-                    throw new BadRequestException(`creatorId data type must be an integer`);
-                }
-            }
-
             if (typeof title === 'undefined') {
                 throw new BadRequestException(`title field must be present`);
             }
@@ -190,9 +180,7 @@ class NewsController extends BaseController<NewsHandler> {
                 photoLink,
                 publicationLink,
                 createdAt: getDate(createdAt),
-                creatorId: checkAccess(role as Map<string, string[]>, BERITA, WRITE)
-                    ? creatorId as number
-                    : userID as number,
+                creatorId: userID as number
             };
 
             await this.handler.createNews(newsArgDto);
