@@ -40,9 +40,9 @@ steps:
         /cloudsql/cloud-sql-proxy --port $$MYSQL_PORT ${_INSTANCE_CONNECTION_NAME} & sleep 7;
         export DATABASE_URL=mysql://$$MYSQL_USER:$$MYSQL_PASSWORD@localhost/$$MYSQL_DATABASE?host=/cloudsql/${_INSTANCE_CONNECTION_NAME}
         npx prisma migrate deploy
-    # npx prisma generate
-    # npm install -g ts-node
-    # ts-node prisma/seeders/index.ts
+      # npx prisma generate
+      # npm install -g ts-node
+      # ts-node prisma/seeders/index.ts
     # deploy to Cloud Run
   - id: "deploy-cloud-run"
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -68,8 +68,9 @@ steps:
         --image ${_IMAGE_NAME} \
         --platform managed \
         --region asia-southeast2 \
-        --no-allow-unauthenticated \
-        --add-cloudsql-instances ${_INSTANCE_CONNECTION_NAME}
+        --allow-unauthenticated \
+        --add-cloudsql-instances ${_INSTANCE_CONNECTION_NAME} \
+        --memory 1024Mi
     secretEnv:
       - MYSQL_PASSWORD
       - MYSQL_DATABASE

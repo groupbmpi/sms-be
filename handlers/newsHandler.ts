@@ -182,7 +182,7 @@ export class NewsHandler extends BaseHandler {
     public async isNewsOwnedByUser(dto: INewsOwnedByUserArgDto): Promise<boolean> {
         const { newsId, userId } = dto;
 
-        const news = await this.prisma.berita.findUnique({
+        const news = await this.prisma.berita.findFirst({
             select: {
                 id: true,
             },
