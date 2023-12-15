@@ -3,7 +3,7 @@ import { BadRequestException, NotFoundException, UnauthorizedException} from "@e
 import { NewsHandler } from "@handlers";
 import { Kategori } from "@prisma/client";
 import { IAllNewsRetDto, ICreateNewsArgDto, ICreateNewsRequest, ICreateNewsValidatedBody, IDeleteNewsRequest, INewsByIdRetDto, INewsIdArgDto, INewsOptimumDatesRetDto, INewsOptionsArgDto, INewsOwnedByUserArgDto, INewsParams, INewsValidatedParams, IUpdateNewsArgDto, IUpdateNewsRequest, IUpdateNewsValidatedBody, IValidatedTargetUserId, ResponseBuilder } from "@types";
-import { checkAccess, checkIntCast, checkString, countSkipped, getDate, getInt } from "@utils";
+import { checkAccess, checkIntCast, countSkipped, getDate, getInt } from "@utils";
 import { BERITA, DELETE, UPDATE, UPDATEOWN, WRITE } from "constant";
 import { Request, Response } from "express";
 
