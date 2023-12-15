@@ -4,7 +4,7 @@ import { NewsHandler } from "@handlers";
 import { Kategori } from "@prisma/client";
 import { IAllNewsRetDto, ICreateNewsArgDto, INewsByIdRetDto, INewsIdArgDto, INewsModifyAccessArgDto, INewsOptimumDatesRetDto, INewsOptionsArgDto, INewsOwnedByUserArgDto, IUpdateNewsArgDto, ResponseBuilder } from "@types";
 import { checkAccess, checkIntCast, countSkipped, getDate, getInt } from "@utils";
-import { BERITA, DELETE, UPDATE, WRITE } from "constant";
+import { BERITA, DELETE, UPDATE, WRITE } from "@constant";
 import { Request, Response } from "express";
 
 class NewsController extends BaseController<NewsHandler> {
