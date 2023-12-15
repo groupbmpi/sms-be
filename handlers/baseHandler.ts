@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaInstance, StorageInstance } from "@services";
 import { randomUUID } from "crypto";
 import { MailInstance } from "@services";
-import sharp from "sharp";
+import Jimp from "jimp";
 
 export abstract class BaseHandler {
     protected prisma: PrismaClient;
@@ -23,10 +23,11 @@ export abstract class BaseHandler {
             const imageBuffer = Buffer.from(base64Image, "base64");
 
             // compress image buffer
-            const compressedImageBuffer = await sharp(imageBuffer).resize(150, 150).toBuffer();
-            // const compressedImageBuffer = imageBuffer
+            // const compressedImageBuffer = await sharp(imageBuffer).resize(150, 150).toBuffer();
+            const compressedImageBuffer = await Jimp.read(imageBuffer);
+            compressedImageBuffer.scaleToFit(200, 200).quality(60);
+            const image = await compressedImageBuffer.getBufferAsync(Jimp.MIME_JPEG);
 
-            // Get file extension {jpeg, png}
             const terminator = pictureData.indexOf(";");
             const imgExt = pictureData.substring(11, terminator);
             filePath = `${folder}/${randomUUID()}.${imgExt}`;
@@ -47,9 +48,10 @@ export abstract class BaseHandler {
                 return filePath;
             });
 
-            stream.end(compressedImageBuffer);
+            stream.end(image);
 
-            return filePath;
+            return filePath; 
+
 
         } catch (err: any) {
             console.error(err);
