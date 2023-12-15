@@ -2,7 +2,7 @@ import { ChatHandler } from "@handlers";
 import BaseController from "./baseController";
 import { Request, Response } from "express";
 import { IChatDTO, IChatRequest, IChatRequestQuery, ResponseBuilder } from "@types";
-import { UnauthorizedException } from "exceptions";
+import { UnauthorizedException } from "@exceptions";
 
 class ChatController extends BaseController<ChatHandler> {
     constructor() {

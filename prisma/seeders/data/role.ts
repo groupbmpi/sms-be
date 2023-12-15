@@ -11,6 +11,6 @@ export const roleData : Omit<Role, 'id' | 'createdAt' | 'updatedAt'>[] = [
     },
     {
         role: "User",
-        akses: "user:;lembaga:read,update,write,delete;berita:read,write,update,delete;laporankegiatan:read,write,update,delete;laporanmasalah:read,write,update,delete"
+        akses: "user:;lembaga:read,update,write,delete;berita:read,writeOwn,updateOwn,deleteOwn;laporankegiatan:read,write,updateOwn,delete;laporanmasalah:read,write,update,delete"
     }
 ]

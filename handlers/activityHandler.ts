@@ -1,21 +1,19 @@
 import { BadRequestException } from "@exceptions";
 import { BaseHandler } from "./baseHandler";
-import { KabupatenKota, LaporanKegiatan, Lembaga, Provinsi } from "@prisma/client";
+import { KabupatenKota, Kategori, LaporanKegiatan, Lembaga, Provinsi } from "@prisma/client";
 import { IActivitiesDTO, IActivityDTO, IActivityReportBody, IActivityReportQuery, IIndikatorKeberhasilanDTO, IPagination } from "@types";
-import { countSkipped, getDateFromString, checkValidKategoriMasalah, checkValidMetodePelaksanaan, checkValidStatusKegiatan } from "@utils";
+import { countSkipped, getDate, checkValidKategoriMasalah, checkValidMetodePelaksanaan, checkValidStatusKegiatan } from "@utils";
 
 const ALL_LEMBAGA = "Semua Lembaga"
-
+const ALL_KATEGORI = "Semua Kategori"
 export class ActivityHandler extends BaseHandler{
 
     private indikatorKeberhasilanToString(rawData: IIndikatorKeberhasilanDTO[]) : string {
         let result = ""
 
         for(const data of rawData){
-            console.log(data.indicator)
             result = result.concat(`${data.indicator} : ${data.target}\n`)
         }
-        // console.log(result)
         return result.substring(0, result.length - 1)   
     }
 
@@ -48,8 +46,8 @@ export class ActivityHandler extends BaseHandler{
     private dtoToData(dto : IActivityDTO, userId: number, kabupatenKotaId: number) : Omit<LaporanKegiatan, 'id' | 'createdAt' | 'updatedAt'> | string{
         const {provinsi, kabupatenKota, jadwalMulai, jadwalSelesai, ...tempDto} = dto;
         
-        const jadwalMulaiConverted = getDateFromString(jadwalMulai)
-        const jadwalSelesaiConverted = getDateFromString(jadwalSelesai)
+        const jadwalMulaiConverted = getDate(jadwalMulai)
+        const jadwalSelesaiConverted = getDate(jadwalSelesai)
 
         if(typeof jadwalMulaiConverted  === 'undefined' || typeof jadwalSelesaiConverted === 'undefined'){
             return "Format tanggal tidak valid"
@@ -65,13 +63,24 @@ export class ActivityHandler extends BaseHandler{
         }
     }
 
+    private verifyBody(dto : IActivityDTO) : string{
+        for(let key in dto){
+            if(typeof dto[key as keyof IActivityDTO] === 'string' && key != "keteranganTambahan" && dto[key as keyof IActivityDTO] === ''){
+                return key
+            }
+        }
+
+        return ""
+    }
+
     public async getReport(
         query : Omit<IActivityReportQuery, "limit" | "page">,
         pagination : IPagination,
         userId: number,
+        updateOwn: boolean,
     ): Promise<IActivitiesDTO>{
         let { limit, page } = pagination
-        let { lembaga, ...parsedQuery } = query
+        let { lembaga, kategori, ...parsedQuery } = query
     
         if(typeof limit === 'undefined'){
             limit = 0;
@@ -89,6 +98,14 @@ export class ActivityHandler extends BaseHandler{
             lembaga = undefined
         }
         
+        if(typeof kategori !== 'undefined'){
+            kategori = decodeURIComponent(kategori)
+        }
+
+        if(kategori === ALL_KATEGORI){
+            kategori = undefined
+        }
+
         const skipped = countSkipped(page, limit)
         
         const totalData : number = await this.prisma.laporanKegiatan.count({
@@ -98,7 +115,8 @@ export class ActivityHandler extends BaseHandler{
                     lembaga:{
                         nama: {
                             contains: lembaga,
-                        }
+                        },
+                        kategori: kategori as Kategori,
                     }
                 }
             },
@@ -111,7 +129,8 @@ export class ActivityHandler extends BaseHandler{
                     lembaga:{
                         nama: {
                             contains: lembaga,
-                        }
+                        },
+                        kategori: kategori as Kategori,
                     }
                 }
             },
@@ -182,7 +201,7 @@ export class ActivityHandler extends BaseHandler{
             }
             activityReportParsed.push({
                 ...this.dataToDTO(data, kabupatenKota.nama, provinsi.nama),
-                isEditable: (lembagaId === lembaga.id)
+                isEditable: (updateOwn? lembagaId === lembaga.id : true),
             })
         }
 
@@ -208,6 +227,12 @@ export class ActivityHandler extends BaseHandler{
 
         if(!checkValidKategoriMasalah(body.bidangKegiatan)){
             throw new BadRequestException(`Bidang kegiatan ${body.bidangKegiatan} tidak valid`)
+        }
+
+        const verify = this.verifyBody(body)
+
+        if(this.verifyBody(body).length !== 0){
+            throw new BadRequestException(`Field ${verify} kosong`)
         }
 
         const kabupatenKota : Pick<KabupatenKota, 'id'> | null = await this.prisma.kabupatenKota.findFirst({
@@ -252,6 +277,16 @@ export class ActivityHandler extends BaseHandler{
 
         if(!checkValidMetodePelaksanaan(body.metodePelaksanaan)){
             throw new BadRequestException(`Metode pelaksanaan ${body.metodePelaksanaan} tidak valid`)
+        }
+
+        if(!checkValidKategoriMasalah(body.bidangKegiatan)){
+            throw new BadRequestException(`Bidang kegiatan ${body.bidangKegiatan} tidak valid`)
+        }
+
+        const verify = this.verifyBody(body)
+
+        if(this.verifyBody(body).length !== 0){
+            throw new BadRequestException(`Field ${verify} kosong`)
         }
 
         const kabupatenKota : Pick<KabupatenKota, 'id'> | null = await this.prisma.kabupatenKota.findFirst({

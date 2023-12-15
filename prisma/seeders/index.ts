@@ -15,11 +15,11 @@ async function clear(){
     await prisma.laporanMasalah.deleteMany({});
     await prisma.berita.deleteMany({});
     await prisma.lembaga.deleteMany({});
+    await prisma.chat.deleteMany({});
     await prisma.user.deleteMany({});
     await prisma.kabupatenKota.deleteMany({});
     await prisma.provinsi.deleteMany({});
     await prisma.role.deleteMany({});
-    await prisma.chat.deleteMany({});
 }
 
 async function main(){

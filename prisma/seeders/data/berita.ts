@@ -19,6 +19,7 @@ export const beritaData : Omit<Berita, 'id'|'createdAt'|'updatedAt'>[] = [
         
         “Seminar nasional ini akan kembali dapat memberikan manfaat yang signifikan, dalam membantu memecahkan persoalan yang menjadi urgensi nasional sehingga dapat mempercepat pencapaian target Sustainability Development Goals (SDGs). Semoga kegiatan ini akan terus kami laksanakan di tahun-tahun yang akan datang untuk menciptakan forum diskusi dan advokasi dalam rangka mengawal isu-isu strategis terkait sustainability,” jelas Aninditha.`,
         linkPhoto: "https://i0.wp.com/bcf.or.id/file/uploads/2023/10/MG_9342-scaled.jpg?resize=1024%2C683&ssl=1",
+        linkPublication: "https://bcf.or.id/menkes-setiap-20-menit-1-orang-meninggal-karena-tbc/",
         user_id: 1,
     },
     {
@@ -41,6 +42,7 @@ export const beritaData : Omit<Berita, 'id'|'createdAt'|'updatedAt'>[] = [
         
         “Tantangannya lebih menyiapkan kesehatan fisik untuk bolak-balik mengurus keperluan ujian terkait dengan data diri adik-adik. Kemudian untuk sukanya, Alhamdulillah sangat bangga melihat semangat adik-adik untuk melanjutkan pendidikan, sehingga kami para relawan dan donatur pun ikut semangat memberikan dukungan kepada adik adik walaupun harus menguras waktu dan tenaga di dalam persiapan ujian mereka.” Ujar Riha.`,
         linkPhoto: "https://i0.wp.com/bcf.or.id/images/stories/Alumni/artikel%20riha%201.jpg?resize=534%2C401&ssl=1",
+        linkPublication: "https://bcf.or.id/merajut-asa-anak-jalanan-melalui-pendidikan-dan-pemberdayaan-berbasis-lingkungan/",
         user_id: 2,
     },
     {
@@ -75,6 +77,7 @@ export const beritaData : Omit<Berita, 'id'|'createdAt'|'updatedAt'>[] = [
         +6281519881767
         
         waode.rizky@bcf.or.id`,
+        linkPublication: "https://bcf.or.id/gerakan-lanjut-kuliah-memutus-mata-rantai-kemiskinan-dengan-pendidikan/",
         user_id: 3,
     },
     {
@@ -126,6 +129,7 @@ export const beritaData : Omit<Berita, 'id'|'createdAt'|'updatedAt'>[] = [
         
         Pada akhir program, BCF akan menentukan 3 peserta terbaik berdasarkan keaktifan peserta, kedisplinan, komitmen, serta progres penggalangan dana dalam bakriemanah.id. 3 peserta terbaik akan mendapatkan donasi pengembangan lembaga dari BCF.`,
         linkPhoto: "https://picsum.photos/201",
+        linkPublication: "https://bcf.or.id/bcf-buka-opening-ceremony-lead-indonesia-2022-23-organisasi-lintas-kegiatan-ikut-serta/",
         user_id: 4,
     },
     {
@@ -279,6 +283,7 @@ export const beritaData : Omit<Berita, 'id'|'createdAt'|'updatedAt'>[] = [
         ***
         `,
         linkPhoto: "https://picsum.photos/201",
+        linkPublication: "https://bcf.or.id/bcf-buka-kompetisi-essay-infografis-dan-tiktok-dalam-mendukung-percepatan-pencapaian-sdgs-2030/",
         user_id: 5,
     },
     {
@@ -311,6 +316,7 @@ export const beritaData : Omit<Berita, 'id'|'createdAt'|'updatedAt'>[] = [
         Dari penyelenggaraan magang Campus Leaders Program batch 5 ini, diharapkan para peserta magang dapat langsung menerapkan kemampuan yang telah dipelajari selama duduk di bangku kuliah melalui pengalaman nyata bersentuhan langsung dengan masyarakat. Sehingga, peserta magang tidak hanya memperoleh peningkatan hard skill namun juga dalam hal empati sosial.
         `,
         linkPhoto: "https://picsum.photos/201",
+        linkPublication: "https://suarajatim.co.id/news/wakil-bupati-lombok-tengah-sambut-kehadiran-peserta-magang-bakrie-center-foundation/",
         user_id: 5,
     },
     {
@@ -343,6 +349,7 @@ export const beritaData : Omit<Berita, 'id'|'createdAt'|'updatedAt'>[] = [
         
         Dalam bidang kesehatan khususnya pada penyakit menular, BCF sejak tahun 2018 mengupayakan peningkatan kapasitas bagi pegiat sosial yang bergerak di bidang TBC melalui program Leadership and Development Experience (LEAD Indonesia). Hingga saat ini BCF mendampingi 6 orang peraih fellowship yang bergerak di bidang pencegahan dan pendampingan pasien TBC. Selain pemberian donasi pengembangan lembaga, BCF juga meningkatkan kapasitas Sumber Daya Manusia dalam organisasi binaan.`,
         linkPhoto: "https://picsum.photos/201",
+        linkPublication: "https://bcf.or.id/bakrie-center-foundation-bcf-berkolaborasi-dengan-global-health-security-consortium-dan-b20/",
         user_id: 1,
     },
     {
@@ -367,6 +374,7 @@ export const beritaData : Omit<Berita, 'id'|'createdAt'|'updatedAt'>[] = [
         “3 peserta terbaik sudah mengupayakan yang terbaik, hanya rekan-rekan sekalian harus lebih memperjelas apa tujuan dari kegiatan sosial yang akan dilakukan, kenapa memilih tujuan tersebut, bagaimana mewujudkan tujuannya dengan melakukan langkah-langkah konkret, dan kapan tujuan itu dapat diwujudkan. Ketiganya sudah memiliki dasar pemikiran dan tujuan yang jelas,” tutur Amru.   Program LEAD Indonesia merupakan program unggulan dari Bakrie Center Foundation sejak 2018. Sejak awal dijalankan hingga hari ini BCF telah memiliki 76 fellows dan telah menghimpun donasi dari kegiatan ini sebesar Rp 1,290,360,136. Donasi tersebut telah disalurkan oleh para fellows di 121 Kabupaten dan Kota di seluruh Indonesia.
         `,
         linkPhoto: "https://picsum.photos/201",
+        linkPublication: "https://bcf.or.id/donasi-sebesar-rp-466-juta-terkumpul-dari-program-lead-indonesia-2022/",
         user_id: 2,
     },
     {
@@ -397,6 +405,7 @@ export const beritaData : Omit<Berita, 'id'|'createdAt'|'updatedAt'>[] = [
         
         Melalui dukungan SDM mahasiswa pada program magang, diharapkan dapat berkontribusi pada target penemuan kasus TBC dapat memenuhi target nasional yakni sebanyak 90% di tahun 2023.`,
         linkPhoto: "https://picsum.photos/201",
+        linkPublication: "https://bcf.or.id/200-tb-rangers-siap-menjalankan-magang-campus-leaders-program-batch-7-untuk-menekan-kasus-tbc-di-6-provinsi/",
         user_id: 3,
     },
     {
@@ -409,6 +418,7 @@ export const beritaData : Omit<Berita, 'id'|'createdAt'|'updatedAt'>[] = [
         Surat Tanggapan Permohonan Pernyataan Dukungan bisa di unduh disini
         `,
         linkPhoto: "https://picsum.photos/201",
+        linkPublication: "https://bcf.or.id/surat-tanggapan-permohonan-pernyataan-dukungan/",
         user_id: 3,
     },
     {
@@ -431,12 +441,14 @@ export const beritaData : Omit<Berita, 'id'|'createdAt'|'updatedAt'>[] = [
         Untuk mendorong proses transisi energi menuju EBT, diperlukan edukasi dan sosialisasi yang intensif kepada masyarakat agar menyadari pentingnya pemanfaatan EBT untuk pencegahan krisis iklim dan meningkatkan kemandirian masyarakat. 
         `,
         linkPhoto: "https://picsum.photos/201",
+        linkPublication: "https://bcf.or.id/energi-baru-terbarukan-meningkatkan-kemandirian-dan-ekonomi-masyarakat-desa/",
         user_id: 3,
     },
     {
         judul: "Diskusi Online: Timbang Menimbang Relaksasi PSBB",
         detail: `Pekan ini diskusi online #leadfightcovid19 akan membahas soal rencana kebijakan pemerintah untuk relaksasi PSBB. Banyak hal yang dipertanyakan dari wacana ini, salah satunya akankah ini menuju penerapan Herd Immunity sebagai cara untuk mengatasi COVID-19 di Indonesia? Apa saja plus minus jika kebijakan ini diterapkan? Siapkah Indonesia menghadapi segala risikonya? Yuk, daftarkan diri kamu di sini`,
         linkPhoto: "https://picsum.photos/201",
+        linkPublication: "https://bcf.or.id/diskusi-online-timbang-menimbang-relaksasi-psbb/",
         user_id: 3,
     },
     {
@@ -447,12 +459,14 @@ export const beritaData : Omit<Berita, 'id'|'createdAt'|'updatedAt'>[] = [
         
         Bakrie Center Foundation berkolaborasi dengan TB Care Aisyiyah Sulawesi Selatan menghadirkan workshop online yang akan membahas apa saja yang perlu dilakukan caregiver dan relawan pasien TBC di tengah wabah agar penderita TBC bisa tetap mendapatkan pengobatan dengan layak. Dapatkan juga cara memproteksi penderita TBC dari paparan Covid-19.`,
         linkPhoto: "https://picsum.photos/201",
+        linkPublication: "https://bcf.or.id/workshop-peran-caregiver-bagi-penderita-tbc-saat-pandemi/",
         user_id: 3,
     },
     {
         judul: "Diskusi Online: Peran Pemuda dalam Membangun Indonesia Sehat",
         detail: `Pernahkan kita merasakan kondisi dimana secara fisik dan mental terasa sangat lelah? Terlebih saat ini kita berhadapan dengan pandemi yang penuh ketidakpastian. Kondisi ini dalam istilah psikologi kerap disebut dengan burn out   Dalam Diskusi Online #leadfightcovid19 kali ini kita akan lebih jauh mengenal istilah burn out, gejalanya, serta langkah-langkah apa saja yang bisa dilakukan untuk mengatasinya agar performa dalam menjalani pekerjaan agar bisa selalu optimal.`,
         linkPhoto: "https://picsum.photos/201",
+        linkPublication: "",
         user_id: 3,
     },
     {
@@ -466,6 +480,7 @@ export const beritaData : Omit<Berita, 'id'|'createdAt'|'updatedAt'>[] = [
         Selain itu, edukasi dan kesadaran masyarakat akan peran orang tanpa gejala menjadi landasan penting dalam upaya memutus rantai penyebaran COVID-19. Kampanye edukasi yang terfokus pada pengenalan gejala ringan atau bahkan tanpa gejala menjadi kunci dalam mengajak masyarakat untuk berperan aktif dalam pencegahan penularan. Diskusi ini akan mengeksplorasi pendekatan terbaik dalam meningkatkan kesadaran akan pentingnya peran individu yang tidak menunjukkan gejala dalam memutus rantai penyebaran virus.
         `,
         linkPhoto: "https://picsum.photos/201",
+        linkPublication: "https://bcf.or.id/diskusi-online-orang-tanpa-gejala-tantangan-memutus-rantau-covid-19/",
         user_id: 3,
     },
     {
@@ -480,12 +495,14 @@ export const beritaData : Omit<Berita, 'id'|'createdAt'|'updatedAt'>[] = [
         Dok. Sociopreneuer Indonesia
         Networking dan menjalin kolaborasi antar organisasi menjadi salah satu agenda penting dalam New Year Gathering kali ini, karena kita semua percaya bahwa setiap orang/lembaga adalah change maker. `,
         linkPhoto: "https://picsum.photos/201",
+        linkPublication: "https://bcf.or.id/jalin-kolaborasi-dengan-sociopreneur-indonesia-demi-mencapai-sdgs-2030/",
         user_id: 3,
     },
     {
         judul: "Diskusi Online: Peran Tenaga Medis & Keperawatan di Sulawesi Selatan Dalam Menangani Pandemi Covid19",
         detail: `Wabah COVID-19 sudah menjangkau hampir ke seluruh wilayah Indonesia. Ragam lapisan masyarakat bersatu padu untuk menghadapi bencana nonalam ini. Tenaga medis dan keperawatan menjadi pasukan yang berjaga di barisan terdepan. Namun, perlindungan diri bagi para tenaga medis dan keperawatan justru belum bisa dikatakan maksimal. Minimnya APD dan kesempatan rapid test bagi para tenaga medis dan keperawatan menjadi kekhawatiran bagi seluruh tenaga kesehatan saat ini. Terutama bagi tenaga kesehatan yang bekerja mengatasi COVID-19 di daerah.`,
         linkPhoto: "https://picsum.photos/201",
+        linkPublication: "http://bcf.or.id/news-news/diskusi-online/",
         user_id: 3,
     }
 ]

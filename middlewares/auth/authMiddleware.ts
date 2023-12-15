@@ -17,7 +17,6 @@ export const AuthMiddleware = (req: Request<{id: number}>, res: Response,next : 
             req.role = convertAccessToMap(role);
             req.isAuthenticated = true;
         }catch(error){
-            console.log(error);
             req.isAuthenticated = false;
         }
     }

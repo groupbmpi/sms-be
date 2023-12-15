@@ -4,10 +4,27 @@ export interface IAllNewsRetDto {
 }
 
 export interface INewsByIdRetDto {
-    id: number,
-    title: string, 
-    detail: string, 
-    photoLink: string,
-    createdAt: Date,
-    updatedAt: Date,
+    owner: {
+        id: number,
+        name: string,
+    },
+    news: {
+        id: number,
+        title: string, 
+        detail: string, 
+        photoLink: string,
+        publicationLink: string | null,
+        createdAt: Date,
+        updatedAt: Date,
+    }
+}
+
+export interface INewsOptimumDatesRetDto {
+    minDates: OptimumDates,
+    maxDates: OptimumDates,
+}
+
+interface OptimumDates {
+    createdAt: Date | null,
+    updatedAt: Date | null,
 }

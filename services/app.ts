@@ -24,7 +24,6 @@ export class ExpressInstance {
         this._app.use(express.json({limit: '50mb'}));
         this._app.use(express.urlencoded({limit: '50mb', extended:true}));
         this._app.use(morgan('dev'));
-        // TODO: set spesific origin
         this._app.use(cors({ origin: '*', credentials: true }));
         this._app.use(helmet({ crossOriginResourcePolicy: false }));
         this._app.use(cookieParser());

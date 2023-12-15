@@ -1,4 +1,4 @@
-import { LAPORAN_KEGIATAN, WRITE } from "@constant";
+import { LAPORAN_KEGIATAN, LEMBAGA, UPDATE, UPDATEOWN, WRITE } from "@constant";
 import BaseController from "./baseController";
 import {UnauthorizedException } from "@exceptions";
 import { ActivityHandler } from "@handlers";
@@ -18,14 +18,21 @@ class ActivityController extends BaseController<ActivityHandler> {
             
             let userId = req.userID
 
-            if(!req.isAuthenticated){
+            let updateOwn = true
+
+            if(!req.isAuthenticated || typeof req.role === "undefined"){
                 userId = -1
+            }else{
+                if(checkAccess(req.role, LAPORAN_KEGIATAN, UPDATE)){
+                    updateOwn = false
+                }
             }
 
             const activityReport : IActivitiesDTO = await this.handler.getReport(
                 query,
                 { limit, page },
                 userId as number,
+                updateOwn
             )
 
             res.status(200).json(
@@ -48,10 +55,8 @@ class ActivityController extends BaseController<ActivityHandler> {
                 throw new UnauthorizedException()
             }
 
-            //TODO:Check access matrix
-
             if(!checkAccess(req.role , LAPORAN_KEGIATAN, WRITE)){
-                
+                throw new UnauthorizedException()
             }
 
             const id = req.userID
@@ -85,10 +90,8 @@ class ActivityController extends BaseController<ActivityHandler> {
                 throw new UnauthorizedException();
             }
 
-            //TODO:Check access matrix
-
-            if(!checkAccess(req.role , LAPORAN_KEGIATAN, WRITE)){
-                
+            if(!checkAccess(req.role , LAPORAN_KEGIATAN, UPDATE) && ! checkAccess(req.role, LAPORAN_KEGIATAN, UPDATEOWN)){
+                throw new UnauthorizedException()
             }
 
             const user_id = req.userID

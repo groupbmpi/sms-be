@@ -1,25 +1,23 @@
-export function getNumberFromString(arg: unknown): number | undefined {
-    if (typeof arg !== 'string') {
-        return undefined;
+export function getInt(arg: unknown): number | undefined {
+    if (typeof arg === 'number') {
+        return Math.floor(arg);
     }
 
-    if (Number.isNaN(parseInt(arg))) {
+    if (typeof arg !== 'string' || Number.isNaN(parseInt(arg))) {
         return undefined;
     }
 
     return parseInt(arg);
 }
 
-export function getDateFromString(arg: unknown): Date | undefined {
-    if (typeof arg !== 'string') {
+export function getDate(arg: unknown): Date | undefined {
+    if (arg instanceof Date) {
+        return arg;
+    }
+
+    if (typeof arg !== 'string' || Number.isNaN(Date.parse(arg))) {
         return undefined;
     }
 
-    const parsedDate = Date.parse(arg);
-
-    if (Number.isNaN(parsedDate)) {
-        return undefined;
-    }
-
-    return new Date(parsedDate);
+    return new Date(Date.parse(arg));
 }
