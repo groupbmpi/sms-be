@@ -1,6 +1,7 @@
 import { IChatDTO, IChatRequest } from "@types";
 import { BaseHandler } from "./baseHandler";
 import { Chat, User } from "@prisma/client";
+import moment from "moment-timezone";
 
 export class ChatHandler extends BaseHandler{
 
@@ -10,7 +11,7 @@ export class ChatHandler extends BaseHandler{
             pesan: data.pesan,
             user: user.namaLengkap,
             linkFoto: user.linkFoto,
-            messageTime: `${data.createdAt.toLocaleDateString()} ${data.createdAt.toLocaleTimeString()}`,
+            messageTime: moment(data.createdAt).tz("Asia/Jakarta").format("DD MMM YYYY HH:mm"),
             isSelf: user.id === userID
         }
     }
